@@ -7,8 +7,6 @@ const INDEX_HTML = `<!DOCTYPE html>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Table Share - The Fastest Way to Share a Table</title>
-    <meta name="description" content="Turn any table into a shareable link in 5 seconds. No signup, no screenshots, no friction. Just paste, share, done.">
-    
     <style>
         * {
             margin: 0;
@@ -22,11 +20,6 @@ const INDEX_HTML = `<!DOCTYPE html>
             color: #000000;
             line-height: 1.6;
             padding: 20px;
-        }
-        
-        .container {
-            max-width: 800px;
-            margin: 0 auto;
         }
         
         header {
@@ -362,7 +355,6 @@ const PRIVACY_HTML = `<!DOCTYPE html>
     </style>
 </head>
 <body>
-    <div class="container">
         <header>
             <h1>Table Share</h1>
             <p class="tagline">The fastest way to share a table</p>
@@ -390,7 +382,6 @@ Bob     25     LA"></textarea>
                         <div class="step-number">1</div>
                         <h3>Paste</h3>
                         <p>Copy data from Excel, Sheets, CSV, or any table</p>
-                    </div>
                     <div class="step">
                         <div class="step-number">2</div>
                         <h3>Generate</h3>

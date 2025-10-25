@@ -4,336 +4,142 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Table Share - The Fastest Way to Share a Table</title>
-    <meta name="description" content="Turn any table into a shareable link in 5 seconds. No signup, no screenshots, no friction. Just paste, share, done.">
-    
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-        
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif;
-            background: #FFFFFF;
-            color: #000000;
-            line-height: 1.6;
-            padding: 20px;
-        }
-        
-        .container {
-            max-width: 800px;
-            margin: 0 auto;
-        }
-        
-        header {
-            text-align: center;
-            margin-bottom: 60px;
-            padding-top: 40px;
-        }
-        
-        h1 {
-            font-size: 48px;
-            font-weight: 700;
-            margin-bottom: 20px;
-        }
-        
-        .tagline {
-            font-size: 24px;
-            color: #333;
-            margin-bottom: 40px;
-        }
-        
-        .cta {
-            font-size: 18px;
-            color: #666;
-            margin-bottom: 60px;
-        }
-        
-        .paste-box {
-            width: 100%;
-            border: 2px solid #000;
-            padding: 20px;
-            font-size: 16px;
-            font-family: monospace;
-            resize: vertical;
-            min-height: 200px;
-            margin-bottom: 20px;
-        }
-        
-        .button {
-            display: none;
-            width: 100%;
-            background: #0066CC;
-            color: #FFFFFF;
-            border: none;
-            padding: 15px;
-            font-size: 18px;
-            font-weight: 600;
-            cursor: pointer;
-            margin-bottom: 20px;
-        }
-        
-        .button:hover {
-            background: #0052A3;
-        }
-        
-        .status {
-            text-align: center;
-            font-size: 16px;
-            color: #666;
-            min-height: 24px;
-        }
-        
-        .how-it-works {
-            margin: 80px 0;
-            padding: 40px;
-            background: #F5F5F5;
-        }
-        
-        .how-it-works h2 {
-            font-size: 32px;
-            margin-bottom: 30px;
-            text-align: center;
-        }
-        
-        .steps {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 30px;
-        }
-        
-        .step {
-            text-align: center;
-        }
-        
-        .step-number {
-            font-size: 48px;
-            font-weight: 700;
-            color: #0066CC;
-            margin-bottom: 10px;
-        }
-        
-        .step h3 {
-            font-size: 20px;
-            margin-bottom: 10px;
-        }
-        
-        .step p {
-            color: #666;
-        }
-        
-        .use-cases {
-            margin: 80px 0;
-        }
-        
-        .use-cases h2 {
-            font-size: 32px;
-            margin-bottom: 30px;
-            text-align: center;
-        }
-        
-        .case-list {
-            display: grid;
-            gap: 20px;
-        }
-        
-        .case {
-            padding: 20px;
-            border: 2px solid #000;
-        }
-        
-        .case h3 {
-            font-size: 20px;
-            margin-bottom: 10px;
-        }
-        
-        .case p {
-            color: #666;
-        }
-        
-        .features {
-            margin: 80px 0;
-            padding: 40px;
-            background: #F5F5F5;
-        }
-        
-        .features h2 {
-            font-size: 32px;
-            margin-bottom: 30px;
-            text-align: center;
-        }
-        
-        .feature-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 30px;
-        }
-        
-        .feature {
-            text-align: center;
-        }
-        
-        .feature-icon {
-            font-size: 36px;
-            margin-bottom: 10px;
-        }
-        
-        .feature h3 {
-            font-size: 18px;
-            margin-bottom: 10px;
-        }
-        
-        .feature p {
-            color: #666;
-            font-size: 14px;
-        }
-        
-        footer {
-            margin-top: 80px;
-            padding-top: 40px;
-            border-top: 2px solid #000;
-            text-align: center;
-            color: #666;
-        }
-        
-        footer a {
-            color: #0066CC;
-            text-decoration: none;
-        }
-        
-        footer a:hover {
-            text-decoration: underline;
-        }
-        
-        @media (max-width: 600px) {
-            h1 {
-                font-size: 32px;
-            }
-            
-            .tagline {
-                font-size: 18px;
-            }
-            
-            .how-it-works, .features {
-                padding: 20px;
-            }
-        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: system-ui, -apple-system, sans-serif; max-width: 800px; margin: 40px auto; padding: 20px; background: #fff; color: #000; line-height: 1.6; }
+        h1 { font-size: 48px; font-weight: 700; margin-bottom: 20px; text-align: center; }
+        .tagline { font-size: 24px; color: #333; margin-bottom: 40px; text-align: center; }
+        .cta { font-size: 18px; color: #666; margin-bottom: 60px; text-align: center; }
+        .paste-box { width: 100%; border: 2px solid #000; padding: 20px; font-size: 16px; font-family: monospace; resize: vertical; min-height: 200px; margin-bottom: 20px; }
+        .button { display: none; width: 100%; background: #0066CC; color: #fff; border: none; padding: 15px; font-size: 18px; font-weight: 600; cursor: pointer; margin-bottom: 20px; }
+        .button:hover { background: #0052A3; }
+        .status { text-align: center; font-size: 16px; color: #666; min-height: 24px; }
+        .how-it-works { margin: 80px 0; padding: 40px; background: #F5F5F5; }
+        .how-it-works h2 { font-size: 32px; margin-bottom: 30px; text-align: center; }
+        .steps { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 30px; }
+        .step { text-align: center; }
+        .step-number { font-size: 48px; font-weight: 700; color: #0066CC; margin-bottom: 10px; }
+        .step h3 { font-size: 20px; margin-bottom: 10px; }
+        .step p { color: #666; }
+        .use-cases { margin: 80px 0; }
+        .use-cases h2 { font-size: 32px; margin-bottom: 30px; text-align: center; }
+        .case-list { display: grid; gap: 20px; }
+        .case { padding: 20px; border: 2px solid #000; }
+        .case h3 { font-size: 20px; margin-bottom: 10px; }
+        .case p { color: #666; }
+        .features { margin: 80px 0; padding: 40px; background: #F5F5F5; }
+        .features h2 { font-size: 32px; margin-bottom: 30px; text-align: center; }
+        .feature-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 30px; }
+        .feature { text-align: center; }
+        .feature-icon { font-size: 36px; margin-bottom: 10px; }
+        .feature h3 { font-size: 18px; margin-bottom: 10px; }
+        .feature p { color: #666; font-size: 14px; }
+        footer { margin-top: 80px; padding-top: 40px; border-top: 2px solid #000; text-align: center; color: #666; }
+        footer a { color: #0066CC; text-decoration: none; }
+        footer a:hover { text-decoration: underline; }
+        @media (max-width: 600px) { h1 { font-size: 32px; } .tagline { font-size: 18px; } .how-it-works, .features { padding: 20px; } }
     </style>
 </head>
 <body>
-    <div class="container">
-        <header>
-            <h1>Table Share</h1>
-            <p class="tagline">The fastest way to share a table</p>
-            <p class="cta">Stop taking screenshots. Paste your data and get an instant shareable link.</p>
-        </header>
-        
-        <main>
-            <textarea 
-                id="pasteBox" 
-                class="paste-box" 
-                placeholder="Paste your table data here (from Excel, Google Sheets, CSV, or anywhere)...
+    <header>
+        <h1>Table Share</h1>
+        <p class="tagline">The fastest way to share a table</p>
+        <p class="cta">Stop taking screenshots. Paste your data and get an instant shareable link.</p>
+    </header>
+    <main>
+        <textarea id="pasteBox" class="paste-box" placeholder="Paste your table data here (from Excel, Google Sheets, CSV, or anywhere)...
 
 Example:
 Name    Age    City
 Alice   30     NYC
 Bob     25     LA"></textarea>
-            
-            <button id="generateBtn" class="button">Generate Link</button>
-            <div id="status" class="status"></div>
-            
-            <section class="how-it-works">
-                <h2>How It Works</h2>
-                <div class="steps">
-                    <div class="step">
-                        <div class="step-number">1</div>
-                        <h3>Paste</h3>
-                        <p>Copy data from Excel, Sheets, CSV, or any table</p>
-                    </div>
-                    <div class="step">
-                        <div class="step-number">2</div>
-                        <h3>Generate</h3>
-                        <p>Get an instant shareable link (auto-copied)</p>
-                    </div>
-                    <div class="step">
-                        <div class="step-number">3</div>
-                        <h3>Share</h3>
-                        <p>Send link anywhere. Recipients need no account.</p>
-                    </div>
+        <button id="generateBtn" class="button">Generate Link</button>
+        <div id="status" class="status"></div>
+        <section class="how-it-works">
+            <h2>How It Works</h2>
+            <div class="steps">
+                <div class="step">
+                    <div class="step-number">1</div>
+                    <h3>Paste</h3>
+                    <p>Copy data from Excel, Sheets, CSV, or any table</p>
                 </div>
-            </section>
-            
-            <section class="use-cases">
-                <h2>Perfect For</h2>
-                <div class="case-list">
-                    <div class="case">
-                        <h3>🔧 Developers</h3>
-                        <p>Share SQL query results, API responses, or log data with teammates or clients instantly</p>
-                    </div>
-                    <div class="case">
-                        <h3>💼 Freelancers</h3>
-                        <p>Send pricing tables, project timelines, or deliverables without formatting nightmares</p>
-                    </div>
-                    <div class="case">
-                        <h3>👥 Teams</h3>
-                        <p>Quick data snapshots for meetings, action items, or temporary lists</p>
-                    </div>
-                    <div class="case">
-                        <h3>📊 Data Analysts</h3>
-                        <p>Share analysis results, pandas DataFrame outputs, or R data tables</p>
-                    </div>
+                <div class="step">
+                    <div class="step-number">2</div>
+                    <h3>Generate</h3>
+                    <p>Get an instant shareable link (auto-copied)</p>
                 </div>
-            </section>
-            
-            <section class="features">
-                <h2>Why Table Share?</h2>
-                <div class="feature-grid">
-                    <div class="feature">
-                        <div class="feature-icon">⚡</div>
-                        <h3>5-Second Workflow</h3>
-                        <p>From paste to shareable link in under 5 seconds</p>
-                    </div>
-                    <div class="feature">
-                        <div class="feature-icon">🚫</div>
-                        <h3>No Accounts</h3>
-                        <p>Zero signup for you or recipients. Forever.</p>
-                    </div>
-                    <div class="feature">
-                        <div class="feature-icon">📱</div>
-                        <h3>Mobile-Perfect</h3>
-                        <p>Clean, readable tables on any device</p>
-                    </div>
-                    <div class="feature">
-                        <div class="feature-icon">🔒</div>
-                        <h3>Auto-Expires</h3>
-                        <p>Links expire in 30 days (privacy by default)</p>
-                    </div>
-                    <div class="feature">
-                        <div class="feature-icon">💾</div>
-                        <h3>CSV Download</h3>
-                        <p>Recipients can export to spreadsheet</p>
-                    </div>
-                    <div class="feature">
-                        <div class="feature-icon">🛡️</div>
-                        <h3>Security Built-In</h3>
-                        <p>XSS prevention, rate limiting, content filtering</p>
-                    </div>
+                <div class="step">
+                    <div class="step-number">3</div>
+                    <h3>Share</h3>
+                    <p>Send link anywhere. Recipients need no account.</p>
                 </div>
-            </section>
-        </main>
-        
-        <footer>
-            <p>&copy; 2025 Table Share | <a href="mailto:hello@tableshare.com">Contact</a> | <a href="/terms">Terms</a> | <a href="/privacy">Privacy</a></p>
-        </footer>
-    </div>
-    
+            </div>
+        </section>
+        <section class="use-cases">
+            <h2>Perfect For</h2>
+            <div class="case-list">
+                <div class="case">
+                    <h3>🔧 Developers</h3>
+                    <p>Share SQL query results, API responses, or log data with teammates or clients instantly</p>
+                </div>
+                <div class="case">
+                    <h3>💼 Freelancers</h3>
+                    <p>Send pricing tables, project timelines, or deliverables without formatting nightmares</p>
+                </div>
+                <div class="case">
+                    <h3>👥 Teams</h3>
+                    <p>Quick data snapshots for meetings, action items, or temporary lists</p>
+                </div>
+                <div class="case">
+                    <h3>📊 Data Analysts</h3>
+                    <p>Share analysis results, pandas DataFrame outputs, or R data tables</p>
+                </div>
+            </div>
+        </section>
+        <section class="features">
+            <h2>Why Table Share?</h2>
+            <div class="feature-grid">
+                <div class="feature">
+                    <div class="feature-icon">⚡</div>
+                    <h3>5-Second Workflow</h3>
+                    <p>From paste to shareable link in under 5 seconds</p>
+                </div>
+                <div class="feature">
+                    <div class="feature-icon">🚫</div>
+                    <h3>No Accounts</h3>
+                    <p>Zero signup for you or recipients. Forever.</p>
+                </div>
+                <div class="feature">
+                    <div class="feature-icon">📱</div>
+                    <h3>Mobile-Perfect</h3>
+                    <p>Clean, readable tables on any device</p>
+                </div>
+                <div class="feature">
+                    <div class="feature-icon">🔒</div>
+                    <h3>Auto-Expires</h3>
+                    <p>Links expire in 30 days (privacy by default)</p>
+                </div>
+                <div class="feature">
+                    <div class="feature-icon">💾</div>
+                    <h3>CSV Download</h3>
+                    <p>Recipients can export to spreadsheet</p>
+                </div>
+                <div class="feature">
+                    <div class="feature-icon">🛡️</div>
+                    <h3>Security Built-In</h3>
+                    <p>XSS prevention, rate limiting, content filtering</p>
+                </div>
+            </div>
+        </section>
+    </main>
+    <footer>
+        <p>&copy; 2025 Table Share | <a href="mailto:hello@tableshare.com">Contact</a> | <a href="/terms">Terms</a> | <a href="/privacy">Privacy</a></p>
+    </footer>
     <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
     <script>
         const pasteBox = document.getElementById('pasteBox');
         const generateBtn = document.getElementById('generateBtn');
         const status = document.getElementById('status');
-        
         pasteBox.addEventListener('paste', () => {
             setTimeout(() => {
                 if (pasteBox.value.trim()) {
@@ -341,7 +147,6 @@ Bob     25     LA"></textarea>
                 }
             }, 100);
         });
-        
         pasteBox.addEventListener('input', () => {
             if (pasteBox.value.trim()) {
                 generateBtn.style.display = 'block';
@@ -349,14 +154,11 @@ Bob     25     LA"></textarea>
                 generateBtn.style.display = 'none';
             }
         });
-        
         generateBtn.addEventListener('click', async () => {
             const data = pasteBox.value.trim();
             if (!data) return;
-            
             status.textContent = 'Generating link...';
             generateBtn.disabled = true;
-            
             try {
                 const parsed = Papa.parse(data, {
                     delimiter: '',
@@ -367,22 +169,18 @@ Bob     25     LA"></textarea>
                     dynamicTyping: false,
                     skipEmptyLines: true
                 });
-                
                 const response = await fetch('/api/create', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ 
+                    body: JSON.stringify({
                         data: parsed.data,
-                        honeypot: '' 
+                        honeypot: ''
                     })
                 });
-                
                 const result = await response.json();
-                
                 if (result.url) {
                     await navigator.clipboard.writeText(result.url);
                     status.textContent = '✓ Link copied to clipboard!';
-                    
                     setTimeout(() => {
                         window.location.href = result.url;
                     }, 1000);
