@@ -4,45 +4,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Table Share - The Fastest Way to Share a Table</title>
-    <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { font-family: system-ui, -apple-system, sans-serif; max-width: 800px; margin: 40px auto; padding: 20px; background: #fff; color: #000; line-height: 1.6; }
-        h1 { font-size: 48px; font-weight: 700; margin-bottom: 20px; text-align: center; }
-        .tagline { font-size: 24px; color: #333; margin-bottom: 40px; text-align: center; }
-        .cta { font-size: 18px; color: #666; margin-bottom: 60px; text-align: center; }
-        .paste-box { width: 100%; border: 2px solid #000; padding: 20px; font-size: 16px; font-family: monospace; resize: vertical; min-height: 200px; margin-bottom: 20px; }
-        .button { display: none; width: 100%; background: #0066CC; color: #fff; border: none; padding: 15px; font-size: 18px; font-weight: 600; cursor: pointer; margin-bottom: 20px; }
-        .button:hover { background: #0052A3; }
-        .status { text-align: center; font-size: 16px; color: #666; min-height: 24px; }
-        .how-it-works { margin: 80px 0; padding: 40px; background: #F5F5F5; }
-        .how-it-works h2 { font-size: 32px; margin-bottom: 30px; text-align: center; }
-        .steps { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 30px; }
-        .step { text-align: center; }
-        .step-number { font-size: 48px; font-weight: 700; color: #0066CC; margin-bottom: 10px; }
-        .step h3 { font-size: 20px; margin-bottom: 10px; }
-        .step p { color: #666; }
-        .use-cases { margin: 80px 0; }
-        .use-cases h2 { font-size: 32px; margin-bottom: 30px; text-align: center; }
-        .case-list { display: grid; gap: 20px; }
-        .case { padding: 20px; border: 2px solid #000; }
-        .case h3 { font-size: 20px; margin-bottom: 10px; }
-        .case p { color: #666; }
-        .features { margin: 80px 0; padding: 40px; background: #F5F5F5; }
-        .features h2 { font-size: 32px; margin-bottom: 30px; text-align: center; }
-        .feature-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 30px; }
-        .feature { text-align: center; }
-        .feature-icon { font-size: 36px; margin-bottom: 10px; }
-        .feature h3 { font-size: 18px; margin-bottom: 10px; }
-        .feature p { color: #666; font-size: 14px; }
-        footer { margin-top: 80px; padding-top: 40px; border-top: 2px solid #000; text-align: center; color: #666; }
-        footer a { color: #0066CC; text-decoration: none; }
-        footer a:hover { text-decoration: underline; }
-        @media (max-width: 600px) { h1 { font-size: 32px; } .tagline { font-size: 18px; } .how-it-works, .features { padding: 20px; } }
-    </style>
+    <link rel="stylesheet" href="/styles.css">
 </head>
 <body>
     <header>
-        <h1>Table Share</h1>
+        <img src="/logo.png" width="48" height="48" alt="Table Share" class="logo">
+        <h1 class="logo-text">Table Share</h1>
         <p class="tagline">The fastest way to share a table</p>
         <p class="cta">Stop taking screenshots. Paste your data and get an instant shareable link.</p>
     </header>
@@ -161,8 +128,6 @@ Bob     25     LA"></textarea>
             generateBtn.disabled = true;
             try {
                 const parsed = Papa.parse(data, {
-                    delimiter: '',
-                    newline: '',
                     quoteChar: '"',
                     escapeChar: '"',
                     header: false,
@@ -182,7 +147,7 @@ Bob     25     LA"></textarea>
                     await navigator.clipboard.writeText(result.url);
                     status.textContent = '✓ Link copied to clipboard!';
                     setTimeout(() => {
-                        window.location.href = result.url;
+                        globalThis.location.href = result.url;
                     }, 1000);
                 } else {
                     throw new Error('Failed to generate link');

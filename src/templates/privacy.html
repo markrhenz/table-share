@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
+    <meta charset="UTF-8">
     <title>Privacy Policy - Table Share</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <style>
@@ -59,67 +60,3 @@
     <p>Email: <a href="mailto:markrhenz2@gmail.com">markrhenz2@gmail.com</a></p>
 </body>
 </html>
-```
-
----
-
-# **NEXT STEPS:**
-
-## **Prompt for Kilo Code - Integrate Homepage Copy:**
-```
-SINGLE OBJECTIVE: Replace existing index.html with new homepage copy including value proposition, how-it-works, and use cases.
-
-FILE TO REPLACE:
-- src/templates/index.html
-
-STEPS:
-1. Read the new index.html content provided above
-2. Replace entire file content
-3. Verify PapaParse CDN link is correct
-4. Test paste functionality still works
-
-VERIFICATION:
-1. Run: wrangler dev
-2. Open: http://127.0.0.1:8787
-3. Check: All sections render (header, how-it-works, use cases, features, footer)
-4. Test: Paste sample data, generate link still works
-
-CONFIDENCE CHECK: Rate 1-10 before proceeding.
-```
-
----
-
-## **Prompt for Kilo Code - Add Terms & Privacy Pages:**
-```
-SINGLE OBJECTIVE: Create terms.html and privacy.html, then add routes to serve them.
-
-FILES TO CREATE:
-1. src/templates/terms.html (provided above)
-2. src/templates/privacy.html (provided above)
-
-FILE TO MODIFY:
-- src/index.js (add routes)
-
-ADD THESE ROUTES TO index.js:
-
-// After existing routes, before 404 handler
-if (url.pathname === '/terms') {
-  return new Response(TERMS_HTML, {
-    headers: { 'Content-Type': 'text/html' }
-  });
-}
-
-if (url.pathname === '/privacy') {
-  return new Response(PRIVACY_HTML, {
-    headers: { 'Content-Type': 'text/html' }
-  });
-}
-
-// At top of file with other constants
-const TERMS_HTML = `[paste terms.html content]`;
-const PRIVACY_HTML = `[paste privacy.html content]`;
-
-VERIFICATION:
-1. Test: http://127.0.0.1:8787/terms
-2. Test: http://127.0.0.1:8787/privacy
-3. Confirm: Footer links work

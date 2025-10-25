@@ -9,13 +9,27 @@ const VIEW_TEMPLATE = `<!DOCTYPE html>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Table Share</title>
   <style>
+    :root {
+      --bg-color: #fff;
+      --text-color: #000;
+      --border-color: #000;
+      --accent-color: #0066cc;
+      --muted-color: #666;
+    }
+    [data-theme="dark"] {
+      --bg-color: #1a1a1a;
+      --text-color: #fff;
+      --border-color: #fff;
+      --accent-color: #4da6ff;
+      --muted-color: #aaa;
+    }
     body {
       font-family: system-ui, sans-serif;
       max-width: 900px;
       margin: 40px auto;
       padding: 20px;
-      background: #fff;
-      color: #000;
+      background: var(--bg-color);
+      color: var(--text-color);
     }
 
     .table-container {
@@ -29,19 +43,19 @@ const VIEW_TEMPLATE = `<!DOCTYPE html>
       width: auto;
       margin: 0 auto;
       border-collapse: collapse;
-      border: 2px solid #000;
+      border: 2px solid var(--border-color);
     }
 
     th, td {
       padding: 8px 12px;
-      border: 1px solid #000;
+      border: 1px solid var(--border-color);
       text-align: left;
     }
 
     .download-link {
       display: block;
       margin: 20px 0;
-      color: #0066CC;
+      color: var(--accent-color);
       text-decoration: none;
     }
 
@@ -52,14 +66,14 @@ const VIEW_TEMPLATE = `<!DOCTYPE html>
     footer {
       margin-top: 40px;
       padding-top: 20px;
-      border-top: 2px solid #000;
+      border-top: 2px solid var(--border-color);
       text-align: center;
       font-size: 12px;
-      color: #666;
+      color: var(--muted-color);
     }
 
     footer a {
-      color: #0066CC;
+      color: var(--accent-color);
       text-decoration: none;
     }
   </style>
@@ -82,6 +96,17 @@ const VIEW_TEMPLATE = `<!DOCTYPE html>
   </footer>
 
   <script>
+    function applyTheme(theme) {
+      document.documentElement.setAttribute('data-theme', theme);
+    }
+    const storedTheme = localStorage.getItem('theme');
+    if (storedTheme) {
+      applyTheme(storedTheme);
+    } else {
+      const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+      applyTheme(prefersDark ? 'dark' : 'light');
+    }
+
     function downloadCSV() {
       const table = document.querySelector('table');
       if (!table) {
@@ -143,7 +168,7 @@ export async function handleView(request, env, id) {
 
     const maxCols = Math.max(...data.map(r => r.length));
     data = data.map(r => {
-      while (r.length > 0 && r[r.length - 1] === "") r.pop();
+      while (r.length > 0 && r.at(-1) === "") r.pop();
       while (r.length < maxCols) r.push("");
       return r;
     });
@@ -151,17 +176,17 @@ export async function handleView(request, env, id) {
     let tableHtml = '';
     if (data.length > 0) {
       tableHtml += '<thead><tr>';
-      data[0].forEach(cell => {
+      for (const cell of data[0]) {
         tableHtml += `<th>${sanitizeCell(cell)}</th>`;
-      });
+      }
       tableHtml += '</tr></thead>';
 
       tableHtml += '<tbody>';
       for (let i = 1; i < data.length; i++) {
         tableHtml += '<tr>';
-        data[i].forEach(cell => {
+        for (const cell of data[i]) {
           tableHtml += `<td>${sanitizeCell(cell)}</td>`;
-        });
+        }
         tableHtml += '</tr>';
       }
       tableHtml += '</tbody>';
@@ -180,6 +205,7 @@ export async function handleView(request, env, id) {
     });
 
   } catch (error) {
+    console.error('Error in handleView:', error);
     return new Response('Internal Server Error', { status: 500 });
   }
 }

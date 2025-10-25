@@ -1,5 +1,6 @@
 import { handleCreate } from './handlers/create.js';
 import { handleView } from './handlers/view.js';
+import logoFile from '../public/logo.png';
 
 const INDEX_HTML = `<!DOCTYPE html>
 <html lang="en">
@@ -8,47 +9,68 @@ const INDEX_HTML = `<!DOCTYPE html>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Table Share</title>
     <style>
+        :root {
+            --bg-color: #fff;
+            --text-color: #000;
+            --secondary-bg: #f5f5f5;
+            --border-color: #000;
+            --accent-color: #0066cc;
+            --muted-color: #666;
+            --tagline-color: #333;
+        }
+        [data-theme="dark"] {
+            --bg-color: #1a1a1a;
+            --text-color: #fff;
+            --secondary-bg: #2a2a2a;
+            --border-color: #fff;
+            --accent-color: #4da6ff;
+            --muted-color: #aaa;
+            --tagline-color: #ccc;
+        }
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif; background: #FFF; color: #000; line-height: 1.6; padding: 20px; }
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif; background: var(--bg-color); color: var(--text-color); line-height: 1.6; padding: 20px; }
         .container { max-width: 800px; margin: 0 auto; }
         header { text-align: center; margin-bottom: 60px; padding-top: 40px; }
         h1 { font-size: 48px; font-weight: 700; margin-bottom: 20px; }
-        .tagline { font-size: 24px; color: #333; margin-bottom: 40px; }
-        .cta { font-size: 18px; color: #666; margin-bottom: 60px; }
-        .paste-box { width: 100%; border: 2px solid #000; padding: 20px; font-size: 16px; font-family: monospace; resize: vertical; min-height: 200px; margin-bottom: 20px; }
-        .button { display: none; width: 100%; background: #0066CC; color: #FFF; border: none; padding: 15px; font-size: 18px; font-weight: 600; cursor: pointer; margin-bottom: 20px; }
+        .tagline { font-size: 24px; color: var(--tagline-color); margin-bottom: 40px; }
+        .cta { font-size: 18px; color: var(--muted-color); margin-bottom: 60px; }
+        .paste-box { width: 100%; border: 2px solid var(--border-color); padding: 20px; font-size: 16px; font-family: monospace; resize: vertical; min-height: 200px; margin-bottom: 20px; background: var(--bg-color); color: var(--text-color); }
+        .button { display: none; width: 100%; background: var(--accent-color); color: #fff; border: none; padding: 15px; font-size: 18px; font-weight: 600; cursor: pointer; margin-bottom: 20px; }
         .button:hover { background: #0052A3; }
-        .status { text-align: center; font-size: 16px; color: #666; min-height: 24px; }
-        .how-it-works { margin: 80px 0; padding: 40px; background: #F5F5F5; }
+        .status { text-align: center; font-size: 16px; color: var(--muted-color); min-height: 24px; }
+        .how-it-works { margin: 80px 0; padding: 40px; background: var(--secondary-bg); }
         .how-it-works h2 { font-size: 32px; margin-bottom: 30px; text-align: center; }
         .steps { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 30px; }
         .step { text-align: center; }
-        .step-number { font-size: 48px; font-weight: 700; color: #0066CC; margin-bottom: 10px; }
+        .step-number { font-size: 48px; font-weight: 700; color: var(--accent-color); margin-bottom: 10px; }
         .step h3 { font-size: 20px; margin-bottom: 10px; }
-        .step p { color: #666; }
+        .step p { color: var(--muted-color); }
         .use-cases { margin: 80px 0; }
         .use-cases h2 { font-size: 32px; margin-bottom: 30px; text-align: center; }
         .case-list { display: grid; gap: 20px; }
-        .case { padding: 20px; border: 2px solid #000; }
+        .case { padding: 20px; border: 2px solid var(--border-color); }
         .case h3 { font-size: 20px; margin-bottom: 10px; }
-        .case p { color: #666; }
-        .features { margin: 80px 0; padding: 40px; background: #F5F5F5; }
+        .case p { color: var(--muted-color); }
+        .features { margin: 80px 0; padding: 40px; background: var(--secondary-bg); }
         .features h2 { font-size: 32px; margin-bottom: 30px; text-align: center; }
         .feature-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 30px; }
         .feature { text-align: center; }
         .feature-icon { font-size: 36px; margin-bottom: 10px; }
         .feature h3 { font-size: 18px; margin-bottom: 10px; }
-        .feature p { color: #666; font-size: 14px; }
-        footer { margin-top: 80px; padding-top: 40px; border-top: 2px solid #000; text-align: center; color: #666; }
-        footer a { color: #0066CC; text-decoration: none; }
+        .feature p { color: var(--muted-color); font-size: 14px; }
+        footer { margin-top: 80px; padding-top: 40px; border-top: 2px solid var(--border-color); text-align: center; color: var(--muted-color); }
+        footer a { color: var(--accent-color); text-decoration: none; }
         footer a:hover { text-decoration: underline; }
+        .theme-toggle { position: absolute; top: 20px; right: 20px; background: none; border: none; font-size: 24px; cursor: pointer; color: var(--text-color); }
         @media (max-width: 600px) { h1 { font-size: 32px; } .tagline { font-size: 18px; } .how-it-works, .features { padding: 20px; } }
     </style>
 </head>
 <body>
     <div class="container">
         <header>
-            <h1>Table Share</h1>
+            <button id="themeToggle" class="theme-toggle" aria-label="Toggle dark mode">🌙</button>
+            <img src="/logo.png" width="48" height="48" alt="Table Share" style="display: inline-block; vertical-align: middle; margin-right: 16px;">
+            <h1 style="display: inline-block; vertical-align: middle;">Table Share</h1>
             <p class="tagline">The fastest way to share a table</p>
             <p class="cta">Stop taking screenshots. Paste your data and get an instant shareable link.</p>
         </header>
@@ -144,6 +166,24 @@ Bob     25     LA"></textarea>
     </div>
     <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
     <script>
+        // Theme management
+        const themeToggle = document.getElementById('themeToggle');
+        function applyTheme(theme) {
+            document.documentElement.setAttribute('data-theme', theme);
+            localStorage.setItem('theme', theme);
+            themeToggle.textContent = theme === 'dark' ? '☀️' : '🌙';
+        }
+        function getPreferredTheme() {
+            const stored = localStorage.getItem('theme');
+            if (stored) return stored;
+            return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+        }
+        applyTheme(getPreferredTheme());
+        themeToggle.addEventListener('click', () => {
+            const current = document.documentElement.getAttribute('data-theme');
+            applyTheme(current === 'dark' ? 'light' : 'dark');
+        });
+
         const pasteBox = document.getElementById('pasteBox');
         const generateBtn = document.getElementById('generateBtn');
         const status = document.getElementById('status');
@@ -195,11 +235,23 @@ const TERMS_HTML = `<!DOCTYPE html>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Terms of Service - Table Share</title>
     <style>
-        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif; max-width: 800px; margin: 40px auto; padding: 20px; line-height: 1.6; }
+        :root {
+            --bg-color: #fff;
+            --text-color: #000;
+            --accent-color: #0066cc;
+            --muted-color: #666;
+        }
+        [data-theme="dark"] {
+            --bg-color: #1a1a1a;
+            --text-color: #fff;
+            --accent-color: #4da6ff;
+            --muted-color: #aaa;
+        }
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif; max-width: 800px; margin: 40px auto; padding: 20px; line-height: 1.6; background: var(--bg-color); color: var(--text-color); }
         h1 { margin-bottom: 10px; }
         h2 { margin-top: 30px; }
-        .updated { color: #666; margin-bottom: 30px; }
-        a { color: #0066CC; text-decoration: none; }
+        .updated { color: var(--muted-color); margin-bottom: 30px; }
+        a { color: var(--accent-color); text-decoration: none; }
         a:hover { text-decoration: underline; }
     </style>
 </head>
@@ -227,6 +279,18 @@ const TERMS_HTML = `<!DOCTYPE html>
     <h2>7. Contact</h2>
     <p>Questions? Email: <a href="mailto:markrhenz2@gmail.com">markrhenz2@gmail.com</a></p>
     <p style="margin-top: 40px;"><a href="/">&larr; Back to Table Share</a></p>
+    <script>
+        function applyTheme(theme) {
+            document.documentElement.setAttribute('data-theme', theme);
+        }
+        const storedTheme = localStorage.getItem('theme');
+        if (storedTheme) {
+            applyTheme(storedTheme);
+        } else {
+            const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+            applyTheme(prefersDark ? 'dark' : 'light');
+        }
+    </script>
 </body>
 </html>
 `;
@@ -238,11 +302,23 @@ const PRIVACY_HTML = `<!DOCTYPE html>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Privacy Policy - Table Share</title>
     <style>
-        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif; max-width: 800px; margin: 40px auto; padding: 20px; line-height: 1.6; }
+        :root {
+            --bg-color: #fff;
+            --text-color: #000;
+            --accent-color: #0066cc;
+            --muted-color: #666;
+        }
+        [data-theme="dark"] {
+            --bg-color: #1a1a1a;
+            --text-color: #fff;
+            --accent-color: #4da6ff;
+            --muted-color: #aaa;
+        }
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif; max-width: 800px; margin: 40px auto; padding: 20px; line-height: 1.6; background: var(--bg-color); color: var(--text-color); }
         h1 { margin-bottom: 10px; }
         h2 { margin-top: 30px; }
-        .updated { color: #666; margin-bottom: 30px; }
-        a { color: #0066CC; text-decoration: none; }
+        .updated { color: var(--muted-color); margin-bottom: 30px; }
+        a { color: var(--accent-color); text-decoration: none; }
         a:hover { text-decoration: underline; }
     </style>
 </head>
@@ -280,6 +356,18 @@ const PRIVACY_HTML = `<!DOCTYPE html>
     <h2>8. Contact</h2>
     <p>Email: <a href="mailto:markrhenz2@gmail.com">markrhenz2@gmail.com</a></p>
     <p style="margin-top: 40px;"><a href="/">&larr; Back to Table Share</a></p>
+    <script>
+        function applyTheme(theme) {
+            document.documentElement.setAttribute('data-theme', theme);
+        }
+        const storedTheme = localStorage.getItem('theme');
+        if (storedTheme) {
+            applyTheme(storedTheme);
+        } else {
+            const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+            applyTheme(prefersDark ? 'dark' : 'light');
+        }
+    </script>
 </body>
 </html>
 `;
@@ -299,6 +387,16 @@ export default {
 
       if (request.method === 'OPTIONS') {
         return new Response(null, { status: 204, headers: corsHeaders });
+      }
+
+      if (pathname === '/logo.png') {
+        return new Response(logoFile, {
+          headers: {
+            'Content-Type': 'image/png',
+            'Cache-Control': 'public, max-age=31536000',
+            ...corsHeaders
+          }
+        });
       }
 
       if (pathname === '/') {
