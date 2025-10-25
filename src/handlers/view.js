@@ -76,7 +76,7 @@ const VIEW_TEMPLATE = `<!DOCTYPE html>
 
   <footer>
     Created with <a href="/">Table Share</a> |
-    <a href="mailto:abuse@tableshare.com?subject=Report Table {{TABLE_ID}}">
+    <a href="mailto:markrhenz2@gmail.com?subject=Report Table {{TABLE_ID}}">
       Report Abuse
     </a>
   </footer>

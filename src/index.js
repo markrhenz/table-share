@@ -139,7 +139,7 @@ Bob     25     LA"></textarea>
             </section>
         </main>
         <footer>
-            <p>&copy; 2025 Table Share | <a href="mailto:hello@tableshare.com">Contact</a> | <a href="/terms">Terms</a> | <a href="/privacy">Privacy</a></p>
+            <p>&copy; 2025 Table Share | <a href="mailto:markrhenz2@gmail.com">Contact</a> | <a href="/terms">Terms</a> | <a href="/privacy">Privacy</a></p>
         </footer>
     </div>
     <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
@@ -160,22 +160,12 @@ Bob     25     LA"></textarea>
             status.textContent = 'Generating link...';
             generateBtn.disabled = true;
             try {
-                // Try PapaParse first (handles tabs, commas, etc.)
-                let parsed = Papa.parse(data, {
+                // PapaParse auto-detects tabs and commas
+                const parsed = Papa.parse(data, {
                     header: false,
-                    skipEmptyLines: true
+                    skipEmptyLines: true,
+                    delimitersToGuess: ['\t', ',', '|', ';']
                 });
-                
-                // If PapaParse only returns 1 column, try splitting on spaces
-                if (parsed.data.length > 0 && parsed.data[0].length === 1) {
-                    const lines = data.split('\n').filter(line => line.trim());
-                    const spaceRows = lines.map(line => line.trim().split(/\s+/));
-                    
-                    // Use space-split if it gives us more columns
-                    if (spaceRows.length > 0 && spaceRows[0].length > 1) {
-                        parsed = { data: spaceRows };
-                    }
-                }
                 
                 const response = await fetch('/api/create', {
                     method: 'POST',
@@ -235,7 +225,7 @@ const TERMS_HTML = `<!DOCTYPE html>
     <h2>6. Termination</h2>
     <p>We may remove content or block users who violate these terms.</p>
     <h2>7. Contact</h2>
-    <p>Questions? Email: <a href="mailto:legal@tableshare.com">legal@tableshare.com</a></p>
+    <p>Questions? Email: <a href="mailto:markrhenz2@gmail.com">markrhenz2@gmail.com</a></p>
     <p style="margin-top: 40px;"><a href="/">&larr; Back to Table Share</a></p>
 </body>
 </html>
@@ -274,12 +264,12 @@ const PRIVACY_HTML = `<!DOCTYPE html>
         <li>Security (XSS, malicious content detection)</li>
     </ul>
     <h2>3. Data Retention</h2>
-    <p>Tables auto-delete after 30 days. Manual deletion: email us at abuse@tableshare.com with the link.</p>
+    <p>Tables auto-delete after 30 days. Manual deletion: email us at markrhenz2@gmail.com with the link.</p>
     <h2>4. Third Parties</h2>
     <p>We use Cloudflare (hosting/CDN). They may collect standard logs. No analytics/tracking.</p>
     <h2>5. Your Rights</h2>
     <ul>
-        <li>Request deletion: email abuse@tableshare.com with link</li>
+        <li>Request deletion: email markrhenz2@gmail.com with link</li>
         <li>No data portability (no accounts)</li>
         <li>GDPR/CCPA: Data auto-expires, no PII stored</li>
     </ul>
@@ -288,7 +278,7 @@ const PRIVACY_HTML = `<!DOCTYPE html>
     <h2>7. Changes</h2>
     <p>We'll update this page. No email notifications (no accounts!).</p>
     <h2>8. Contact</h2>
-    <p>Email: <a href="mailto:privacy@tableshare.com">privacy@tableshare.com</a></p>
+    <p>Email: <a href="mailto:markrhenz2@gmail.com">markrhenz2@gmail.com</a></p>
     <p style="margin-top: 40px;"><a href="/">&larr; Back to Table Share</a></p>
 </body>
 </html>
@@ -313,7 +303,13 @@ export default {
 
       if (pathname === '/') {
         return new Response(INDEX_HTML, {
-          headers: { 'Content-Type': 'text/html', ...corsHeaders }
+          headers: { 
+            'Content-Type': 'text/html',
+            'Cache-Control': 'no-cache, no-store, must-revalidate',
+            'Pragma': 'no-cache',
+            'Expires': '0',
+            ...corsHeaders 
+          }
         });
       }
       
