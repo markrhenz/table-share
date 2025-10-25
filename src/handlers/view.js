@@ -1,6 +1,5 @@
 import { sanitizeCell } from '../utils/sanitizer.js';
 
-// Placeholder for template replacement to avoid JavaScript template literal interpolation issues
 const TABLE_ID_PLACEHOLDER = '__TABLE_ID__';
 
 const VIEW_TEMPLATE = `<!DOCTYPE html>
@@ -8,7 +7,7 @@ const VIEW_TEMPLATE = `<!DOCTYPE html>
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>{{TABLE_TITLE}} - Table Share</title>
+  <title>Table Share</title>
   <style>
     body {
       font-family: system-ui, sans-serif;
@@ -27,19 +26,16 @@ const VIEW_TEMPLATE = `<!DOCTYPE html>
     }
 
     table {
-      margin: 0 auto; /* center compact table */
+      width: auto;
+      margin: 0 auto;
       border-collapse: collapse;
-      border: 2px solid #000; /* keep border */
+      border: 2px solid #000;
     }
 
     th, td {
       padding: 8px 12px;
-      border-bottom: 1px solid #ddd;
-      white-space: nowrap; /* keep content on one line; remove if undesired */
-    }
-
-    tbody tr:last-child td {
-      border-bottom: none;
+      border: 1px solid #000;
+      text-align: left;
     }
 
     .download-link {
@@ -67,7 +63,7 @@ const VIEW_TEMPLATE = `<!DOCTYPE html>
       text-decoration: none;
     }
   </style>
-<script async defer src="https://scripts.simpleanalyticscdn.com/latest.js"></script>
+  <script async defer src="https://scripts.simpleanalyticscdn.com/latest.js"></script>
 </head>
 <body>
   <div class="table-container">
@@ -79,8 +75,7 @@ const VIEW_TEMPLATE = `<!DOCTYPE html>
   <a href="#" class="download-link" onclick="downloadCSV()">Download CSV</a>
 
   <footer>
-    Created with <a href="/">Table Share</a> -
-    The fastest way to share a table |
+    Created with <a href="/">Table Share</a> |
     <a href="mailto:abuse@tableshare.com?subject=Report Table {{TABLE_ID}}">
       Report Abuse
     </a>
@@ -101,20 +96,15 @@ const VIEW_TEMPLATE = `<!DOCTYPE html>
         const cells = row.querySelectorAll('th, td');
         const rowData = Array.from(cells).map(cell => {
           let text = cell.textContent.trim();
-
-          // Escape CSV special characters
-          if (text.includes(',') || text.includes('"') || text.includes('\n')) {
+          if (text.includes(',') || text.includes('"') || text.includes('\\n')) {
             text = '"' + text.replace(/"/g, '""') + '"';
           }
-
           return text;
         });
-
         csv.push(rowData.join(','));
       });
 
-      // Create blob and download
-      const csvContent = csv.join('\n');
+      const csvContent = csv.join('\\n');
       const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
       const url = window.URL.createObjectURL(blob);
       const link = document.createElement('a');
@@ -123,26 +113,18 @@ const VIEW_TEMPLATE = `<!DOCTYPE html>
       link.click();
       window.URL.revokeObjectURL(url);
     }
-
   </script>
 </body>
 </html>`;
 
 export async function handleView(request, env, id) {
-  console.log('handleView called with id:', id);
   try {
-    // Validate ID format
     if (!/^[a-zA-Z0-9]{8}$/.test(id)) {
-      console.log('Invalid ID format');
       return new Response('Not Found', { status: 404 });
     }
 
-    // Fetch from KV
-    console.log('Fetching from KV for id:', id);
     const dataStr = await env.TABLES.get(id);
-    console.log('KV get result:', dataStr);
     if (!dataStr) {
-      console.log('No data found in KV');
       return new Response(`
         <!DOCTYPE html>
         <html>
@@ -155,48 +137,25 @@ export async function handleView(request, env, id) {
         </html>
       `, { status: 404, headers: { 'Content-Type': 'text/html' } });
     }
-    if (!tableData) {
-      return new Response('Table not found or expired', { 
-        status: 404,
-        headers: { 'Content-Type': 'text/html' }
-      });
-    }
 
-    // Parse JSON
-    console.log('Parsing JSON');
     const tableData = JSON.parse(dataStr);
-    console.log('Parsed data:', tableData);
-    let { data, createdAt, rowCount, colCount } = tableData;
-
-    // Normalize column counts to prevent extra blank cells
+    let { data } = tableData;
 
     const maxCols = Math.max(...data.map(r => r.length));
-
     data = data.map(r => {
-
-      // Trim empty cells that cause border spilling
-
       while (r.length > 0 && r[r.length - 1] === "") r.pop();
-
-      // Ensure equal column count for all rows
-
       while (r.length < maxCols) r.push("");
-
       return r;
-
     });
 
-    // Generate HTML table
-    let tableHtml = '<table>';
+    let tableHtml = '';
     if (data.length > 0) {
-      // First row as thead
       tableHtml += '<thead><tr>';
       data[0].forEach(cell => {
         tableHtml += `<th>${sanitizeCell(cell)}</th>`;
       });
       tableHtml += '</tr></thead>';
 
-      // Rest as tbody
       tableHtml += '<tbody>';
       for (let i = 1; i < data.length; i++) {
         tableHtml += '<tr>';
@@ -207,23 +166,11 @@ export async function handleView(request, env, id) {
       }
       tableHtml += '</tbody>';
     }
-    tableHtml += '</table>';
 
-    // Calculate expiration date (30 days from createdAt)
-    const createdDate = new Date(createdAt);
-    const expiresDate = new Date(createdDate.getTime() + 30 * 24 * 60 * 60 * 1000);
-    const expiresAt = expiresDate.toISOString().split('T')[0];
-
-    // Replace placeholders
-    console.log('Replacing placeholders in template');
     let html = VIEW_TEMPLATE
-      .replace(/{{TABLE_TITLE}}/g, `Table ${id}`)
-      .replace(/{{TABLE_META}}/g, `${rowCount} rows × ${colCount} columns`)
       .replace(/{{TABLE_HTML}}/g, tableHtml)
-      .replace(/{{EXPIRES_AT}}/g, expiresAt)
       .replace(/{{TABLE_ID}}/g, id);
 
-    console.log('Generating response');
     return new Response(html, {
       status: 200,
       headers: {
@@ -233,7 +180,6 @@ export async function handleView(request, env, id) {
     });
 
   } catch (error) {
-    console.error('Error in handleView:', error);
     return new Response('Internal Server Error', { status: 500 });
   }
 }
