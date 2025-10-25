@@ -1,6 +1,5 @@
 import { handleCreate } from './handlers/create.js';
 import { handleView } from './handlers/view.js';
-import logoFile from '../public/logo.png';
 
 const INDEX_HTML = `<!DOCTYPE html>
 <html lang="en">
@@ -387,16 +386,6 @@ export default {
 
       if (request.method === 'OPTIONS') {
         return new Response(null, { status: 204, headers: corsHeaders });
-      }
-
-      if (pathname === '/logo.png') {
-        return new Response(logoFile, {
-          headers: {
-            'Content-Type': 'image/png',
-            'Cache-Control': 'public, max-age=31536000',
-            ...corsHeaders
-          }
-        });
       }
 
       if (pathname === '/') {
