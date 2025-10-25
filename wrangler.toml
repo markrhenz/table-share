@@ -1,0 +1,12 @@
+name = "table-share"
+main = "src/index.js"
+compatibility_date = "2025-10-24"
+
+ 
+workers_dev = true
+
+ 
+
+[[kv_namespaces]]
+binding = "TABLES"
+id = "a3ac01d322fa4914940675f437dafef0"

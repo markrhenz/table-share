@@ -1,0 +1,5 @@
+{
+    "code-runner.runInTerminal": true,
+    "terminal.integrated.accessibleViewFocusOnCommandExecution": false,
+    "terminal.integrated.accessibleViewPreserveCursorPosition": false
+}

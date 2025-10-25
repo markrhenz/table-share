@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{{TABLE_TITLE}} - Table Share</title>
+  <style>
+    body {
+      font-family: system-ui, sans-serif;
+      max-width: 900px;
+      margin: 40px auto;
+      padding: 20px;
+      background: #fff;
+      color: #000;
+    }
+
+    table {
+       width: 100%;
+       border: 2px solid #000;
+       border-collapse: collapse;
+       margin: 20px 0;
+       overflow-x: auto;
+       display: block;
+       box-sizing: border-box;
+     }
+
+    th {
+      background: #F5F5F5;
+      border: 1px solid #000;
+      padding: 10px;
+      text-align: left;
+      font-weight: 600;
+    }
+
+    td {
+      border: 2px solid #000;
+      padding: 10px;
+    }
+
+    .download-link {
+      display: block;
+      margin: 20px 0;
+      color: #0066CC;
+      text-decoration: none;
+    }
+
+    .download-link:hover {
+      text-decoration: underline;
+    }
+
+    footer {
+      margin-top: 40px;
+      padding-top: 20px;
+      border-top: 2px solid #000;
+      text-align: center;
+      font-size: 12px;
+      color: #666;
+    }
+
+    footer a {
+      color: #0066CC;
+      text-decoration: none;
+    }
+  </style>
+</head>
+<body>
+  <table>
+    {{TABLE_HTML}}
+  </table>
+
+  <a href="#" class="download-link" onclick="downloadCSV()">Download CSV</a>
+
+  <footer>
+    Created with <a href="/">Table Share</a> | <a href="mailto:abuse@tableshare.com?subject=Report Table {{TABLE_ID}}">Report Abuse</a>
+  </footer>
+
+  <script>
+    function downloadCSV() {
+      const table = document.querySelector('table');
+      if (!table) {
+        alert('No table found to download');
+        return;
+      }
+
+      const rows = table.querySelectorAll('tr');
+      const csv = [];
+
+      rows.forEach(row => {
+        const cells = row.querySelectorAll('th, td');
+        const rowData = Array.from(cells).map(cell => {
+          let text = cell.textContent.trim();
+
+          // Escape CSV special characters
+          if (text.includes(',') || text.includes('"') || text.includes('\n')) {
+            text = '"' + text.replace(/"/g, '""') + '"';
+          }
+
+          return text;
+        });
+
+        csv.push(rowData.join(','));
+      });
+
+      // Create blob and download
+      const csvContent = csv.join('\n');
+      const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+      const url = window.URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = 'table-{{TABLE_ID}}.csv';
+      link.click();
+      window.URL.revokeObjectURL(url);
+    }
+  </script>
+</body>
+</html>

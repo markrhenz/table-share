@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Privacy Policy - Table Share</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif;
+            max-width: 800px;
+            margin: 40px auto;
+            padding: 20px;
+            line-height: 1.6;
+        }
+        h1 { margin-bottom: 10px; }
+        h2 { margin-top: 30px; }
+        .updated { color: #666; margin-bottom: 30px; }
+    </style>
+</head>
+<body>
+    <h1>Privacy Policy</h1>
+    <p class="updated">Last updated: October 25, 2025</p>
+    
+    <h2>1. What We Collect</h2>
+    <p><strong>No accounts = minimal data:</strong></p>
+    <ul>
+        <li>Pasted table data (stored 30 days)</li>
+        <li>IP address (rate limiting only, not logged)</li>
+        <li>Browser metadata (standard HTTP headers)</li>
+    </ul>
+    <p><strong>We do NOT collect:</strong> Names, emails, passwords, payment info, tracking cookies</p>
+    
+    <h2>2. How We Use Data</h2>
+    <ul>
+        <li>Display tables to link recipients</li>
+        <li>Rate limiting (prevent abuse)</li>
+        <li>Security (XSS, malicious content detection)</li>
+    </ul>
+    
+    <h2>3. Data Retention</h2>
+    <p>Tables auto-delete after 30 days. Manual deletion: email us.</p>
+    
+    <h2>4. Third Parties</h2>
+    <p>We use Cloudflare (hosting/CDN). They may collect standard logs. No analytics/tracking.</p>
+    
+    <h2>5. Your Rights</h2>
+    <ul>
+        <li>Request deletion: email abuse@tableshare.com with link</li>
+        <li>No data portability (no accounts)</li>
+        <li>GDPR/CCPA: Data auto-expires, no PII stored</li>
+    </ul>
+    
+    <h2>6. Security</h2>
+    <p>Data encrypted in transit (HTTPS). Storage on Cloudflare infrastructure.</p>
+    
+    <h2>7. Changes</h2>
+    <p>We'll update this page. No email notifications (no accounts!).</p>
+    
+    <h2>8. Contact</h2>
+    <p>Email: <a href="mailto:privacy@tableshare.com">privacy@tableshare.com</a></p>
+</body>
+</html>
+```
+
+---
+
+# **NEXT STEPS:**
+
+## **Prompt for Kilo Code - Integrate Homepage Copy:**
+```
+SINGLE OBJECTIVE: Replace existing index.html with new homepage copy including value proposition, how-it-works, and use cases.
+
+FILE TO REPLACE:
+- src/templates/index.html
+
+STEPS:
+1. Read the new index.html content provided above
+2. Replace entire file content
+3. Verify PapaParse CDN link is correct
+4. Test paste functionality still works
+
+VERIFICATION:
+1. Run: wrangler dev
+2. Open: http://127.0.0.1:8787
+3. Check: All sections render (header, how-it-works, use cases, features, footer)
+4. Test: Paste sample data, generate link still works
+
+CONFIDENCE CHECK: Rate 1-10 before proceeding.
+```
+
+---
+
+## **Prompt for Kilo Code - Add Terms & Privacy Pages:**
+```
+SINGLE OBJECTIVE: Create terms.html and privacy.html, then add routes to serve them.
+
+FILES TO CREATE:
+1. src/templates/terms.html (provided above)
+2. src/templates/privacy.html (provided above)
+
+FILE TO MODIFY:
+- src/index.js (add routes)
+
+ADD THESE ROUTES TO index.js:
+
+// After existing routes, before 404 handler
+if (url.pathname === '/terms') {
+  return new Response(TERMS_HTML, {
+    headers: { 'Content-Type': 'text/html' }
+  });
+}
+
+if (url.pathname === '/privacy') {
+  return new Response(PRIVACY_HTML, {
+    headers: { 'Content-Type': 'text/html' }
+  });
+}
+
+// At top of file with other constants
+const TERMS_HTML = `[paste terms.html content]`;
+const PRIVACY_HTML = `[paste privacy.html content]`;
+
+VERIFICATION:
+1. Test: http://127.0.0.1:8787/terms
+2. Test: http://127.0.0.1:8787/privacy
+3. Confirm: Footer links work
