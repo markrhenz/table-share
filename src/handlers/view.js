@@ -52,16 +52,6 @@ const VIEW_TEMPLATE = `<!DOCTYPE html>
       text-align: left;
     }
 
-    .download-link {
-      display: block;
-      margin: 20px 0;
-      color: var(--accent-color);
-      text-decoration: none;
-    }
-
-    .download-link:hover {
-      text-decoration: underline;
-    }
 
     footer {
       margin-top: 40px;
@@ -76,6 +66,10 @@ const VIEW_TEMPLATE = `<!DOCTYPE html>
       color: var(--accent-color);
       text-decoration: none;
     }
+
+    button:hover {
+      opacity: 0.9;
+    }
   </style>
   <script async defer src="https://scripts.simpleanalyticscdn.com/latest.js"></script>
 </head>
@@ -86,7 +80,11 @@ const VIEW_TEMPLATE = `<!DOCTYPE html>
     </table>
   </div>
 
-  <a href="#" class="download-link" onclick="downloadCSV()">Download CSV</a>
+  <div style="text-align: center; margin: 20px 0;">
+    <button onclick="downloadCSV(); return false;" style="background: var(--accent-color); color: #fff; border: none; padding: 12px 24px; font-size: 16px; font-weight: 600; cursor: pointer; border-radius: 4px;">
+      Download CSV
+    </button>
+  </div>
 
   <footer>
     Created with <a href="/">Table Share</a> |
