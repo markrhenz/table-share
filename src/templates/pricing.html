@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pricing - Table Share</title>
+    <link rel="icon" type="image/png" href="/logo.png">
+    <style>
+        :root {
+            --bg-color: #fff;
+            --text-color: #000;
+            --secondary-bg: #f5f5f5;
+            --border-color: #000;
+            --accent-color: #0066cc;
+            --muted-color: #666;
+        }
+        [data-theme="dark"] {
+            --bg-color: #1a1a1a;
+            --text-color: #fff;
+            --secondary-bg: #2a2a2a;
+            --border-color: #fff;
+            --accent-color: #4da6ff;
+            --muted-color: #aaa;
+        }
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif; max-width: 1000px; margin: 40px auto; padding: 20px; background: var(--bg-color); color: var(--text-color); }
+        .pricing-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 40px; margin: 60px 0; }
+        .tier { border: 2px solid var(--border-color); padding: 40px; }
+        .tier.pro { background: var(--secondary-bg); }
+        .tier h2 { font-size: 32px; margin-bottom: 10px; }
+        .price { font-size: 48px; font-weight: 700; margin: 20px 0; }
+        .price small { font-size: 18px; color: var(--muted-color); }
+        .tier ul { list-style: none; margin: 30px 0; }
+        .tier li { padding: 10px 0; border-bottom: 1px solid var(--border-color); }
+        .tier li:last-child { border-bottom: none; }
+        .cta-button { display: block; width: 100%; padding: 15px; background: var(--accent-color); color: #fff; text-align: center; text-decoration: none; font-size: 18px; font-weight: 600; margin-top: 20px; }
+        .cta-button:hover { background: #0052A3; }
+        @media (max-width: 768px) { .pricing-grid { grid-template-columns: 1fr; } }
+    </style>
+</head>
+<body>
+    <div style="text-align: center; margin-bottom: 60px;">
+        <a href="/" style="text-decoration: none; color: var(--text-color); display: inline-flex; align-items: center; gap: 16px;">
+            <img src="/logo.png" width="48" height="48" alt="Table Share">
+            <h1 style="margin: 0; font-size: 48px;">Table Share Pricing</h1>
+        </a>
+        <p style="font-size: 20px; color: var(--muted-color); margin-top: 20px;">Choose the plan that fits your needs</p>
+    </div>
+    
+    <div class="pricing-grid">
+        <div class="tier">
+            <h2>Free</h2>
+            <div class="price">$0<small>/forever</small></div>
+            <ul>
+                <li>✓ 500 rows max</li>
+                <li>✓ 50 columns max</li>
+                <li>✓ 30-day expiration</li>
+                <li>✓ CSV download</li>
+                <li>✓ Dark mode</li>
+                <li>✓ No signup required</li>
+            </ul>
+            <a href="/" class="cta-button">Start Free</a>
+        </div>
+        
+        <div class="tier pro">
+            <h2>Pro</h2>
+            <div class="price">$5<small>/one-time</small></div>
+            <ul>
+                <li>✓ <strong>5,000 rows</strong> (10x increase)</li>
+                <li>✓ <strong>100 columns</strong> (2x increase)</li>
+                <li>✓ <strong>Custom expiration</strong> (1-90 days)</li>
+                <li>✓ <strong>Password protection</strong></li>
+                <li>✓ <strong>Remove branding</strong></li>
+                <li>✓ <strong>API access</strong></li>
+                <li>✓ <strong>1 year validity</strong></li>
+            </ul>
+            <a href="https://ko-fi.com/tableshare" class="cta-button">Get Pro via Ko-fi</a>
+            <p style="text-align: center; margin-top: 10px; font-size: 14px; color: var(--muted-color);">Instant API key after payment</p>
+        </div>
+    </div>
+    
+    <div style="text-align: center; margin-top: 60px;">
+        <p style="color: var(--muted-color);">Questions? <a href="mailto:markrhenz2@gmail.com" style="color: var(--accent-color);">Contact us</a></p>
+        <p style="margin-top: 20px;"><a href="/" style="color: var(--accent-color);">← Back to Table Share</a></p>
+    </div>
+</body>
+</html>

@@ -1,4 +1,5 @@
 import { sanitizeCell } from '../utils/sanitizer.js';
+import { incrementMetric } from '../utils/analytics.js';
 
 const TABLE_ID_PLACEHOLDER = '__TABLE_ID__';
 
@@ -7,7 +8,8 @@ const VIEW_TEMPLATE = `<!DOCTYPE html>
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Table Share</title>
+  <title>{{PAGE_TITLE}}</title>
+  <link rel="icon" type="image/png" href="/logo.png">
   <style>
     :root {
       --bg-color: #fff;
@@ -17,46 +19,93 @@ const VIEW_TEMPLATE = `<!DOCTYPE html>
       --muted-color: #666;
     }
     [data-theme="dark"] {
-      --bg-color: #1a1a1a;
+      --bg-color: #000;
       --text-color: #fff;
       --border-color: #fff;
       --accent-color: #4da6ff;
       --muted-color: #aaa;
     }
     body {
-      font-family: system-ui, sans-serif;
-      max-width: 900px;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif;
+      max-width: 1600px;
       margin: 40px auto;
       padding: 20px;
       background: var(--bg-color);
       color: var(--text-color);
     }
 
+    .table-wrapper {
+      width: fit-content;
+      max-width: 100%;
+      max-height: 70vh;
+      overflow-y: auto;
+      overflow-x: auto;
+      border: 2px solid var(--border-color);
+      margin: 20px auto;
+      box-sizing: border-box;
+      position: relative;
+    }
+
     .table-container {
       width: 100%;
-      overflow-x: auto;
-      margin: 20px 0;
-      box-sizing: border-box;
+      -webkit-overflow-scrolling: touch;
     }
 
     table {
       width: auto;
       margin: 0 auto;
       border-collapse: collapse;
-      border: 2px solid var(--border-color);
+      border: none;
+    }
+
+    thead tr {
+      position: sticky;
+      top: 0;
+      z-index: 1000;
     }
 
     th, td {
-      padding: 8px 12px;
-      border: 1px solid var(--border-color);
+      padding: 12px 16px;
       text-align: left;
+      vertical-align: top;
+      border: 1px solid var(--border-color);
+      font-size: 14px;
+      line-height: 1.4;
     }
 
+    th {
+      background: var(--bg-color);
+      font-weight: 700;
+      white-space: nowrap;
+      padding: 12px 16px;
+      text-align: left;
+      border: 1px solid var(--border-color);
+      border-bottom: 2px solid var(--border-color);
+      font-size: 14px;
+      line-height: 1.4;
+      box-shadow: inset 0 -2px 0 0 var(--border-color);
+      position: relative;
+    thead tr.is-sticky th,
+    thead tr[style*="position: sticky"] th {
+      border-top: 2px solid var(--border-color);
+    }
+    }
+
+    td {
+      max-width: 400px;
+      overflow-wrap: break-word;
+      white-space: normal;
+    }
+
+    td:first-child,
+    th:first-child {
+      white-space: nowrap;
+      min-width: 120px;
+    }
 
     footer {
       margin-top: 40px;
       padding-top: 20px;
-      border-top: 2px solid var(--border-color);
       text-align: center;
       font-size: 12px;
       color: var(--muted-color);
@@ -70,14 +119,150 @@ const VIEW_TEMPLATE = `<!DOCTYPE html>
     button:hover {
       opacity: 0.9;
     }
+
+    .theme-toggle {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      border: 2px solid var(--border-color);
+      background: var(--bg-color);
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    
+    .theme-toggle::after {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      background: var(--text-color);
+    }
+
+    [data-theme="dark"] img[src="/logo.png"] {
+      filter: invert(1);
+    }
+
+    @media (max-width: 600px) {
+      body {
+        padding: 10px;
+        margin: 10px auto;
+        max-width: 100vw;
+      }
+      
+      .table-container {
+        position: relative;
+      }
+      
+      .table-wrapper {
+        margin: 10px 0;
+        max-height: 60vh;
+        border-width: 1px;
+        position: relative;
+      }
+      
+      /* Scroll gradient indicators */
+      .table-wrapper::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        left: 0;
+        width: 20px;
+        background: linear-gradient(to right, rgba(0,0,0,0.1), transparent);
+        pointer-events: none;
+        z-index: 5;
+      }
+      
+      .table-wrapper::after {
+        content: '';
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        right: 0;
+        width: 20px;
+        background: linear-gradient(to left, rgba(0,0,0,0.1), transparent);
+        pointer-events: none;
+        z-index: 5;
+      }
+      
+      th, td {
+        padding: 10px 12px;
+        font-size: 14px;
+        min-width: 80px;
+        max-width: 200px;
+        line-height: 1.5;
+      }
+      
+      th:first-child {
+        position: sticky;
+        left: 0;
+        background: var(--bg-color);
+        border-right: 2px solid var(--border-color);
+        z-index: 15;
+      }
+      
+      th {
+        font-size: 13px;
+        padding: 12px;
+      }
+      
+      button {
+        width: 100%;
+        font-size: 18px;
+        padding: 16px;
+      }
+
+      h1 {
+        font-size: 20px;
+        padding: 0 10px;
+        line-height: 1.3;
+        word-break: break-word;
+        hyphens: auto;
+      }
+
+      a img {
+        width: 32px;
+        height: 32px;
+      }
+
+      a span {
+        font-size: 16px;
+        line-height: 32px;
+      }
+
+      .theme-toggle {
+        width: 36px;
+        height: 36px;
+      }
+    }
   </style>
   <script async defer src="https://scripts.simpleanalyticscdn.com/latest.js"></script>
 </head>
 <body>
-  <div class="table-container">
-    <table>
-      {{TABLE_HTML}}
-    </table>
+  <button id="themeToggle" class="theme-toggle" aria-label="Toggle dark mode"></button>
+  <div style="text-align: center; margin-bottom: 40px;">
+    <a href="/" style="text-decoration: none; color: var(--text-color); display: flex; align-items: center; justify-content: center; gap: 16px; margin-bottom: 16px;">
+      <img src="/logo.png" width="48" height="48" alt="Table Share">
+      <span style="font-size: 48px; font-weight: 700; margin: 0;">Table Share</span>
+    </a>
+  </div>
+  <div style="text-align: center; margin-bottom: 20px; padding-bottom: 20px;">
+    <h1 style="font-size: 24px; font-weight: 700; margin-bottom: 8px; word-wrap: break-word; max-width: 100%; overflow-wrap: break-word;">{{TABLE_TITLE}}</h1>
+    <p style="font-size: 14px; color: var(--muted-color);">{{EXPIRATION_TEXT}}</p>
+  </div>
+  <div class="table-wrapper">
+    <div class="table-container">
+      <table>
+        {{TABLE_HTML}}
+      </table>
+    </div>
   </div>
 
   <div style="text-align: center; margin: 20px 0;">
@@ -86,24 +271,32 @@ const VIEW_TEMPLATE = `<!DOCTYPE html>
     </button>
   </div>
 
+  {{#NO_BRANDING}}
+  {{else}}
   <footer>
     Created with <a href="/">Table Share</a> |
     <a href="mailto:markrhenz2@gmail.com?subject=Report Table {{TABLE_ID}}">
       Report Abuse
     </a>
   </footer>
+  {{/NO_BRANDING}}
 
   <script>
+    const themeToggle = document.getElementById('themeToggle');
     function applyTheme(theme) {
       document.documentElement.setAttribute('data-theme', theme);
+      localStorage.setItem('theme', theme);
     }
-    const storedTheme = localStorage.getItem('theme');
-    if (storedTheme) {
-      applyTheme(storedTheme);
-    } else {
-      const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-      applyTheme(prefersDark ? 'dark' : 'light');
+    function getPreferredTheme() {
+      const stored = localStorage.getItem('theme');
+      if (stored) return stored;
+      return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
     }
+    applyTheme(getPreferredTheme());
+    themeToggle.addEventListener('click', () => {
+      const current = document.documentElement.getAttribute('data-theme');
+      applyTheme(current === 'dark' ? 'light' : 'dark');
+    });
 
     function downloadCSV() {
       const table = document.querySelector('table');
@@ -162,7 +355,174 @@ export async function handleView(request, env, id) {
     }
 
     const tableData = JSON.parse(dataStr);
-    let { data } = tableData;
+    let { data, title, createdAt, passwordHash, noBranding } = tableData;
+
+    // Check if password protected
+    if (passwordHash) {
+      // Check if password was submitted via POST to /t/{id}/unlock
+      if (request.method === 'POST' && request.headers.get('content-type')?.includes('application/x-www-form-urlencoded')) {
+        const formData = await request.formData();
+        const submittedPassword = formData.get('password');
+
+        if (submittedPassword) {
+          // Hash the submitted password
+          const encoder = new TextEncoder();
+          const data = encoder.encode(submittedPassword);
+          const hashBuffer = await crypto.subtle.digest('SHA-256', data);
+          const hashArray = Array.from(new Uint8Array(hashBuffer));
+          const submittedHash = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+
+          if (submittedHash === passwordHash) {
+            // Password correct, proceed to show table
+          } else {
+            // Password incorrect, show form again with error
+            return new Response(`
+              <!DOCTYPE html>
+              <html lang="en">
+              <head>
+                <meta charset="UTF-8">
+                <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                <title>Password Required - Table Share</title>
+                <link rel="icon" type="image/png" href="/logo.png">
+                <style>
+                  body {
+                    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif;
+                    max-width: 400px;
+                    margin: 100px auto;
+                    padding: 20px;
+                    text-align: center;
+                    background: #fff;
+                    color: #000;
+                  }
+                  .logo {
+                    width: 64px;
+                    height: 64px;
+                    margin-bottom: 20px;
+                  }
+                  form {
+                    margin: 20px 0;
+                  }
+                  input[type="password"] {
+                    width: 100%;
+                    padding: 12px;
+                    border: 2px solid #000;
+                    font-size: 16px;
+                    margin-bottom: 10px;
+                  }
+                  button {
+                    background: #0066cc;
+                    color: #fff;
+                    border: none;
+                    padding: 12px 24px;
+                    font-size: 16px;
+                    cursor: pointer;
+                    width: 100%;
+                  }
+                  .error {
+                    color: #d00;
+                    margin-bottom: 10px;
+                  }
+                </style>
+              </head>
+              <body>
+                <img src="/logo.png" alt="Table Share" class="logo">
+                <h1>Password Required</h1>
+                <p>This table is password protected.</p>
+                <form method="POST" action="/t/${id}/unlock">
+                  <div class="error">Incorrect password. Please try again.</div>
+                  <input type="password" name="password" placeholder="Enter password" required>
+                  <button type="submit">Unlock Table</button>
+                </form>
+              </body>
+              </html>
+            `, {
+              status: 200,
+              headers: { 'Content-Type': 'text/html' }
+            });
+          }
+        }
+      } else {
+        // Show password form
+        return new Response(`
+          <!DOCTYPE html>
+          <html lang="en">
+          <head>
+            <meta charset="UTF-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+            <title>Password Required - Table Share</title>
+            <link rel="icon" type="image/png" href="/logo.png">
+            <style>
+              body {
+                font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif;
+                max-width: 400px;
+                margin: 100px auto;
+                padding: 20px;
+                text-align: center;
+                background: #fff;
+                color: #000;
+              }
+              .logo {
+                width: 64px;
+                height: 64px;
+                margin-bottom: 20px;
+              }
+              form {
+                margin: 20px 0;
+              }
+              input[type="password"] {
+                width: 100%;
+                padding: 12px;
+                border: 2px solid #000;
+                font-size: 16px;
+                margin-bottom: 10px;
+              }
+              button {
+                background: #0066cc;
+                color: #fff;
+                border: none;
+                padding: 12px 24px;
+                font-size: 16px;
+                cursor: pointer;
+                width: 100%;
+              }
+            </style>
+          </head>
+          <body>
+            <img src="/logo.png" alt="Table Share" class="logo">
+            <h1>Password Required</h1>
+            <p>This table is password protected.</p>
+            <form method="POST" action="/t/${id}/unlock">
+              <input type="password" name="password" placeholder="Enter password" required>
+              <button type="submit">Unlock Table</button>
+            </form>
+          </body>
+          </html>
+        `, {
+          status: 200,
+          headers: { 'Content-Type': 'text/html' }
+        });
+      }
+    }
+
+    // Track view analytics (fail silently)
+    try {
+      await incrementMetric(env.TABLES, 'table_views');
+    } catch (error) {
+      console.error('Analytics tracking failed:', error);
+    }
+
+    // Calculate expiration (use actual TTL from KV if available, fallback to 30 days)
+    const created = new Date(createdAt);
+    // Note: We can't get the actual TTL from KV, so we estimate based on tier
+    // This is a limitation of Cloudflare KV - TTL is not exposed in get operations
+    const estimatedExpiryDays = tableData.passwordHash ? 90 : 30; // Rough estimate
+    const expiresAt = new Date(created.getTime() + estimatedExpiryDays * 24 * 60 * 60 * 1000);
+    const now = new Date();
+    const daysLeft = Math.ceil((expiresAt - now) / (1000 * 60 * 60 * 24));
+    
+    const pageTitle = title ? `${title} - Table Share` : 'Table - Table Share';
+    const tableTitle = title || 'Table';
+    const expirationText = daysLeft > 1 ? `Expires in ${daysLeft} days` : 'Expires soon';
 
     const maxCols = Math.max(...data.map(r => r.length));
     data = data.map(r => {
@@ -191,8 +551,18 @@ export async function handleView(request, env, id) {
     }
 
     let html = VIEW_TEMPLATE
+      .replace(/{{PAGE_TITLE}}/g, pageTitle)
+      .replace(/{{TABLE_TITLE}}/g, tableTitle)
+      .replace(/{{EXPIRATION_TEXT}}/g, expirationText)
       .replace(/{{TABLE_HTML}}/g, tableHtml)
       .replace(/{{TABLE_ID}}/g, id);
+
+    // Handle conditional footer based on noBranding flag
+    if (noBranding) {
+      html = html.replace(/{{#NO_BRANDING}}([\s\S]*?){{\/NO_BRANDING}}/g, '');
+    } else {
+      html = html.replace(/{{#NO_BRANDING}}([\s\S]*?){{\/NO_BRANDING}}/g, '$1');
+    }
 
     return new Response(html, {
       status: 200,
