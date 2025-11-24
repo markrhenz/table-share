@@ -10,5 +10,8 @@ directory = "./public"
 [[kv_namespaces]]
 binding = "TABLES"
 id = "a3ac01d322fa4914940675f437dafef0"
-[vars]
-KOFI_TOKEN = "afc57c71-49ae-4562-8f02-803630defef2"
+
+# Environment variables are now stored as Cloudflare Workers secrets
+# Use: wrangler secret put ADMIN_KEY
+# Use: wrangler secret put SENDGRID_API_KEY
+# Use: wrangler secret put KOFI_TOKEN

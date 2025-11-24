@@ -27,81 +27,25 @@ const INDEX_HTML = `<!DOCTYPE html>
     <meta name="twitter:description" content="Stop taking screenshots. Paste your data and get an instant shareable link. No signup required.">
     <meta name="twitter:image" content="https://table-share.org/logo.png">
     <link rel="icon" type="image/png" href="/logo.png">
-    <style>
-        :root {
-            --bg-color: #fff;
-            --text-color: #000;
-            --secondary-bg: #f5f5f5;
-            --border-color: #000;
-            --accent-color: #0066cc;
-            --muted-color: #666;
-            --tagline-color: #333;
-        }
-        [data-theme="dark"] {
-            --bg-color: #000;
-            --text-color: #fff;
-            --secondary-bg: #2a2a2a;
-            --border-color: #fff;
-            --accent-color: #4da6ff;
-            --muted-color: #aaa;
-            --tagline-color: #ccc;
-            .logo {
-                filter: invert(1);
-            }
-        }
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif; background: var(--bg-color); color: var(--text-color); line-height: 1.6; padding: 20px; }
-        .container { max-width: 800px; margin: 0 auto; }
-        header { text-align: center; margin-bottom: 60px; padding-top: 40px; }
-        h1 { font-size: 48px; font-weight: 700; margin-bottom: 20px; }
-        .tagline { font-size: 24px; color: var(--tagline-color); margin-bottom: 40px; }
-        .cta { font-size: 18px; color: var(--muted-color); margin-bottom: 60px; }
-        .paste-box { width: 100%; border: 2px solid var(--border-color); padding: 20px; font-size: 16px; font-family: monospace; resize: vertical; min-height: 200px; margin-bottom: 20px; background: var(--bg-color); color: var(--text-color); }
-        .button { display: none; width: 100%; background: var(--accent-color); color: #fff; border: none; padding: 15px; font-size: 18px; font-weight: 600; cursor: pointer; margin-bottom: 20px; }
-        .button:hover { background: #0052A3; }
-        .status { text-align: center; font-size: 16px; color: var(--muted-color); min-height: 24px; }
-        .how-it-works { margin: 80px 0; padding: 40px; background: var(--secondary-bg); }
-        .how-it-works h2 { font-size: 32px; margin-bottom: 30px; text-align: center; }
-        .steps { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 30px; }
-        .step { text-align: center; }
-        .step-number { font-size: 48px; font-weight: 700; color: var(--accent-color); margin-bottom: 10px; }
-        .step h3 { font-size: 20px; margin-bottom: 10px; }
-        .step p { color: var(--muted-color); }
-        .use-cases { margin: 80px 0; }
-        .use-cases h2 { font-size: 32px; margin-bottom: 30px; text-align: center; }
-        .case-list { display: grid; gap: 20px; }
-        .case { padding: 20px; border: 2px solid var(--border-color); }
-        .case h3 { font-size: 20px; margin-bottom: 10px; }
-        .case p { color: var(--muted-color); }
-        .features { margin: 80px 0; padding: 40px; background: var(--secondary-bg); }
-        .features h2 { font-size: 32px; margin-bottom: 30px; text-align: center; }
-        .feature-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 30px; }
-        .feature { text-align: center; }
-        .feature-icon { font-size: 36px; margin-bottom: 10px; }
-        .feature h3 { font-size: 18px; margin-bottom: 10px; }
-        .feature p { color: var(--muted-color); font-size: 14px; }
-        footer { margin-top: 80px; padding-top: 40px; border-top: 2px solid var(--border-color); text-align: center; color: var(--muted-color); }
-        footer a { color: var(--accent-color); text-decoration: none; }
-        footer a:hover { text-decoration: underline; }
-        .theme-toggle { position: absolute; top: 20px; right: 20px; width: 40px; height: 40px; border-radius: 50%; border: 2px solid var(--border-color); background: var(--bg-color); cursor: pointer; transition: all 0.2s; }
-        .theme-toggle::after { content: ''; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 20px; height: 20px; border-radius: 50%; background: var(--text-color); }
-        [data-theme="dark"] img[src="/logo.png"] { filter: invert(1); }
-        [data-theme="dark"] img[src="/logo.png"] { filter: invert(1); }
-        @media (max-width: 600px) { h1 { font-size: 32px; } .tagline { font-size: 18px; } .how-it-works, .features { padding: 20px; } }
-    </style>
+    <link rel="stylesheet" href="/styles.css">
 </head>
 <body>
-    <button id="themeToggle" class="theme-toggle" aria-label="Toggle dark mode"></button>
-    <div class="container">
-        <header>
-            <div style="display: flex; align-items: center; justify-content: center; gap: 16px; margin-bottom: 20px;">
-                <img src="/logo.png" width="48" height="48" alt="Table Share" class="logo">
-                <h1 style="font-size: 48px; font-weight: 700; margin: 0;">Table Share</h1>
-            </div>
-            <p class="tagline">The fastest way to share a table</p>
-            <p class="cta">Stop taking screenshots. Paste your data and get an instant shareable link.</p>
-        </header>
-        <main>
+    <header class="site-header">
+        <div class="header-container">
+            <a href="/" class="logo-link">
+                <img src="/logo.png" alt="Table Share" class="logo" width="48" height="48">
+                <span class="site-title">Table Share</span>
+            </a>
+            <button id="themeToggle" class="theme-toggle" aria-label="Toggle dark mode">
+                <span class="theme-icon">○</span>
+            </button>
+        </div>
+    </header>
+    <main class="container">
+        <section class="section-header text-center">
+            <h1 class="section-title">The fastest way to share a table</h1>
+            <p class="section-subtitle">Stop taking screenshots. Paste your data and get an instant shareable link.</p>
+        </section>
             <div style="margin-bottom: 12px;">
                 <label for="titleInput" style="display: block; font-size: 14px; color: var(--muted-color); margin-bottom: 6px;">
                     Title (optional)
@@ -148,7 +92,7 @@ const INDEX_HTML = `<!DOCTYPE html>
                     </p>
                 </details>
             </div>
-            <textarea id="pasteBox" class="paste-box" placeholder="Paste your table data here (from Excel, Google Sheets, CSV, or anywhere)...
+            <textarea id="pasteBox" class="form-textarea" placeholder="Paste your table data here (from Excel, Google Sheets, CSV, or anywhere)...
 
 Example:
 Name    Age    City
@@ -256,29 +200,22 @@ Bob     25     LA"></textarea>
                 </div>
             </section>
         </main>
-        <footer>
-            <p>&copy; 2025 Table Share | <a href="mailto:markrhenz2@gmail.com">Contact</a> | <a href="/terms">Terms</a> | <a href="/privacy">Privacy</a></p>
+        <footer class="site-footer">
+            <div class="footer-container">
+                <div class="footer-links">
+                    <a href="/pricing">Pricing</a>
+                    <a href="/terms">Terms</a>
+                    <a href="/privacy">Privacy</a>
+                    <a href="mailto:abuse@table-share.org">Report Abuse</a>
+                </div>
+                <div class="footer-credit">
+                    <p>© 2025 Table Share</p>
+                </div>
+            </div>
         </footer>
-    </div>
     <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
+    <script src="/shared-theme.js"></script>
     <script>
-        // Theme management
-        const themeToggle = document.getElementById('themeToggle');
-        function applyTheme(theme) {
-            document.documentElement.setAttribute('data-theme', theme);
-            localStorage.setItem('theme', theme);
-            themeToggle.setAttribute('aria-label', theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode');
-        }
-        function getPreferredTheme() {
-            const stored = localStorage.getItem('theme');
-            if (stored) return stored;
-            return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
-        }
-        applyTheme(getPreferredTheme());
-        themeToggle.addEventListener('click', () => {
-            const current = document.documentElement.getAttribute('data-theme');
-            applyTheme(current === 'dark' ? 'light' : 'dark');
-        });
         
         // Pro Mode validation with localStorage persistence
         const apiKeyInput = document.getElementById('apiKeyInput');
@@ -721,52 +658,130 @@ const PRICING_HTML = `<!DOCTYPE html>
     <meta name="description" content="Table Share pricing: Free forever plan with 500 rows. Pro plan at $5 one-time for 5,000 rows, custom expiration, and API access.">
     <meta property="og:title" content="Table Share Pricing - Free Forever or Pro for $5">
     <link rel="icon" type="image/png" href="/logo.png">
+    <link rel="stylesheet" href="/styles.css">
     <style>
-        :root {
-            --bg-color: #fff;
-            --text-color: #000;
-            --secondary-bg: #f5f5f5;
-            --border-color: #000;
-            --accent-color: #0066cc;
-            --muted-color: #666;
+        /* Pricing page specific styles */
+        .pricing-grid { 
+            display: grid; 
+            grid-template-columns: 1fr 1fr; 
+            gap: var(--space-5xl); 
+            margin: var(--space-6xl) 0; 
         }
-        [data-theme="dark"] {
-            --bg-color: #000;
-            --text-color: #fff;
-            --secondary-bg: #2a2a2a;
-            --border-color: #fff;
-            --accent-color: #4da6ff;
-            --muted-color: #aaa;
-            .logo {
-                filter: invert(1);
+        .tier { 
+            border: var(--border-width) solid var(--border-color); 
+            padding: var(--space-5xl); 
+            background: var(--bg-color);
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+        .tier:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+        }
+        [data-theme="dark"] .tier:hover {
+            box-shadow: 0 8px 25px rgba(255, 255, 255, 0.1);
+        }
+        .tier.pro { 
+            background: var(--secondary-bg); 
+            border-color: var(--accent-color);
+            position: relative;
+        }
+        .tier.pro::before {
+            content: "Most Popular";
+            position: absolute;
+            top: -12px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: var(--accent-color);
+            color: white;
+            padding: var(--space-sm) var(--space-lg);
+            border-radius: var(--border-radius);
+            font-size: var(--font-size-sm);
+            font-weight: var(--font-weight-semibold);
+        }
+        .tier h2 { 
+            font-size: var(--font-size-3xl); 
+            margin-bottom: var(--space-md); 
+            text-align: center;
+        }
+        .price { 
+            font-size: var(--font-size-4xl); 
+            font-weight: var(--font-weight-bold); 
+            margin: var(--space-xl) 0; 
+            text-align: center;
+        }
+        .price small { 
+            font-size: var(--font-size-lg); 
+            color: var(--muted-color); 
+            font-weight: var(--font-weight-normal);
+        }
+        .tier ul { 
+            list-style: none; 
+            margin: var(--space-4xl) 0; 
+        }
+        .tier li { 
+            padding: var(--space-md) 0; 
+            border-bottom: 1px solid var(--border-color); 
+            display: flex;
+            align-items: center;
+            gap: var(--space-sm);
+        }
+        .tier li:last-child { 
+            border-bottom: none; 
+        }
+        .tier li::before {
+            content: "✓";
+            color: var(--success-color);
+            font-weight: var(--font-weight-bold);
+            font-size: var(--font-size-lg);
+        }
+        .cta-button { 
+            display: block; 
+            width: 100%; 
+            padding: var(--space-xl) var(--space-lg); 
+            background: var(--accent-color); 
+            color: #fff; 
+            text-align: center; 
+            text-decoration: none; 
+            font-size: var(--font-size-lg); 
+            font-weight: var(--font-weight-semibold); 
+            margin-top: var(--space-xl); 
+            border-radius: var(--border-radius);
+            transition: background-color 0.2s ease, transform 0.2s ease;
+        }
+        .cta-button:hover { 
+            background: var(--accent-hover); 
+            text-decoration: none;
+            color: #fff;
+            transform: translateY(-2px);
+        }
+        @media (max-width: 768px) { 
+            .pricing-grid { 
+                grid-template-columns: 1fr; 
+                gap: var(--space-3xl);
+            }
+            .tier {
+                padding: var(--space-xl);
             }
         }
-        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif; max-width: 1000px; margin: 40px auto; padding: 20px; background: var(--bg-color); color: var(--text-color); }
-        .pricing-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 40px; margin: 60px 0; }
-        .tier { border: 2px solid var(--border-color); padding: 40px; }
-        .tier.pro { background: var(--secondary-bg); }
-        .tier h2 { font-size: 32px; margin-bottom: 10px; }
-        .price { font-size: 48px; font-weight: 700; margin: 20px 0; }
-        .price small { font-size: 18px; color: var(--muted-color); }
-        .tier ul { list-style: none; margin: 30px 0; }
-        .tier li { padding: 10px 0; border-bottom: 1px solid var(--border-color); }
-        .tier li:last-child { border-bottom: none; }
-        .cta-button { display: block; width: 100%; padding: 15px; background: var(--accent-color); color: #fff; text-align: center; text-decoration: none; font-size: 18px; font-weight: 600; margin-top: 20px; }
-        .cta-button:hover { background: #0052A3; }
-        @media (max-width: 768px) { .pricing-grid { grid-template-columns: 1fr; } }
-        .theme-toggle { position: absolute; top: 20px; right: 20px; width: 40px; height: 40px; border-radius: 50%; border: 2px solid var(--border-color); background: var(--bg-color); cursor: pointer; transition: all 0.2s; }
-        .theme-toggle::after { content: ''; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 20px; height: 20px; border-radius: 50%; background: var(--text-color); }
     </style>
 </head>
 <body>
-    <button id="themeToggle" class="theme-toggle" aria-label="Toggle dark mode"></button>
-    <div style="text-align: center; margin-bottom: 60px;">
-        <a href="/" style="text-decoration: none; color: var(--text-color); display: inline-flex; align-items: center; gap: 16px;">
-            <img src="/logo.png" width="48" height="48" alt="Table Share" class="logo">
-            <h1 style="margin: 0; font-size: 48px;">Table Share Pricing</h1>
-        </a>
-        <p style="font-size: 20px; color: var(--muted-color); margin-top: 20px;">Choose the plan that fits your needs</p>
-    </div>
+    <header class="site-header">
+        <div class="header-container">
+            <a href="/" class="logo-link">
+                <img src="/logo.png" alt="Table Share" class="logo" width="48" height="48">
+                <span class="site-title">Table Share</span>
+            </a>
+            <button id="themeToggle" class="theme-toggle" aria-label="Toggle dark mode">
+                <span class="theme-icon">○</span>
+            </button>
+        </div>
+    </header>
+    <main class="container">
+        <section class="section-header text-center">
+            <h1 class="section-title">Pricing</h1>
+            <p class="section-subtitle">Choose the plan that fits your needs</p>
+        </section>
     
     <div class="pricing-grid">
         <div class="tier">
@@ -802,26 +817,25 @@ const PRICING_HTML = `<!DOCTYPE html>
     
     <div style="text-align: center; margin-top: 60px;">
         <p style="color: var(--muted-color);">Questions? <a href="mailto:markrhenz2@gmail.com" style="color: var(--accent-color);">Contact us</a></p>
-        <p style="margin-top: 20px;"><a href="/" style="color: var(--accent-color);">← Back to Table Share</a></p>
-    </div>
-    <script>
-        const themeToggle = document.getElementById('themeToggle');
-        function applyTheme(theme) {
-            document.documentElement.setAttribute('data-theme', theme);
-            localStorage.setItem('theme', theme);
-            themeToggle.setAttribute('aria-label', theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode');
-        }
-        function getPreferredTheme() {
-            const stored = localStorage.getItem('theme');
-            if (stored) return stored;
-            return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
-        }
-        applyTheme(getPreferredTheme());
-        themeToggle.addEventListener('click', () => {
-            const current = document.documentElement.getAttribute('data-theme');
-            applyTheme(current === 'dark' ? 'light' : 'dark');
-        });
-    </script>
+        <div class="text-center" style="margin-top: var(--space-3xl);">
+            <p><a href="/" class="button" style="display: inline-block; padding: var(--space-md) var(--space-xl); font-size: var(--font-size-base);">← Back to Table Share</a></p>
+        </div>
+    </main>
+
+    <footer class="site-footer">
+        <div class="footer-container">
+            <div class="footer-links">
+                <a href="/pricing">Pricing</a>
+                <a href="/terms">Terms</a>
+                <a href="/privacy">Privacy</a>
+                <a href="mailto:abuse@table-share.org">Report Abuse</a>
+            </div>
+            <div class="footer-credit">
+                <p>© 2025 Table Share</p>
+            </div>
+        </div>
+    </footer>
+    <script src="/shared-theme.js"></script>
 </body>
 </html>
 `;
@@ -914,9 +928,15 @@ export default {
       // Analytics Dashboard (admin only)
       if (pathname === '/analytics' && request.method === 'GET') {
         const adminKey = url.searchParams.get('key');
-        const ADMIN_KEY = 'MARK_ANALYTICS_2025'; // Change this to your secret key
 
-        if (adminKey !== ADMIN_KEY) {
+        if (!env.ADMIN_KEY) {
+          return new Response('Analytics dashboard not configured', {
+            status: 503,
+            headers: { 'Content-Type': 'text/plain' }
+          });
+        }
+
+        if (adminKey !== env.ADMIN_KEY) {
           return new Response('Unauthorized', {
             status: 401,
             headers: { 'Content-Type': 'text/plain' }
