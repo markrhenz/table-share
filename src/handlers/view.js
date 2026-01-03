@@ -3,6 +3,16 @@ import { incrementMetric } from '../utils/analytics.js';
 
 const TABLE_ID_PLACEHOLDER = '__TABLE_ID__';
 
+// Constant-time comparison to prevent timing attacks
+function timingSafeEqual(a, b) {
+  if (a.length !== b.length) return false;
+  let result = 0;
+  for (let i = 0; i < a.length; i++) {
+    result |= a.charCodeAt(i) ^ b.charCodeAt(i);
+  }
+  return result === 0;
+}
+
 const VIEW_TEMPLATE = `<!DOCTYPE html>
 <html lang="en">
 <head>
@@ -10,239 +20,7 @@ const VIEW_TEMPLATE = `<!DOCTYPE html>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>{{PAGE_TITLE}}</title>
   <link rel="icon" type="image/png" href="/logo.png">
-  <style>
-    :root {
-      --bg-color: #fff;
-      --text-color: #000;
-      --border-color: #000;
-      --accent-color: #0066cc;
-      --muted-color: #666;
-    }
-    [data-theme="dark"] {
-      --bg-color: #000;
-      --text-color: #fff;
-      --border-color: #fff;
-      --accent-color: #4da6ff;
-      --muted-color: #aaa;
-    }
-    body {
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif;
-      max-width: 1600px;
-      margin: 40px auto;
-      padding: 20px;
-      background: var(--bg-color);
-      color: var(--text-color);
-    }
-
-    .table-wrapper {
-      width: fit-content;
-      max-width: 100%;
-      max-height: 70vh;
-      overflow-y: auto;
-      overflow-x: auto;
-      border: 2px solid var(--border-color);
-      margin: 20px auto;
-      box-sizing: border-box;
-      position: relative;
-    }
-
-    .table-container {
-      width: 100%;
-      -webkit-overflow-scrolling: touch;
-    }
-
-    table {
-      width: auto;
-      margin: 0 auto;
-      border-collapse: collapse;
-      border: none;
-    }
-
-    thead tr {
-      position: sticky;
-      top: 0;
-      z-index: 1000;
-    }
-
-    th, td {
-      padding: 12px 16px;
-      text-align: left;
-      vertical-align: top;
-      border: 1px solid var(--border-color);
-      font-size: 14px;
-      line-height: 1.4;
-    }
-
-    th {
-      background: var(--bg-color);
-      font-weight: 700;
-      white-space: nowrap;
-      padding: 12px 16px;
-      text-align: left;
-      border: 1px solid var(--border-color);
-      border-bottom: 2px solid var(--border-color);
-      font-size: 14px;
-      line-height: 1.4;
-      box-shadow: inset 0 -2px 0 0 var(--border-color);
-      position: relative;
-    thead tr.is-sticky th,
-    thead tr[style*="position: sticky"] th {
-      border-top: 2px solid var(--border-color);
-    }
-    }
-
-    td {
-      max-width: 400px;
-      overflow-wrap: break-word;
-      white-space: normal;
-    }
-
-    td:first-child,
-    th:first-child {
-      white-space: nowrap;
-      min-width: 120px;
-    }
-
-    footer {
-      margin-top: 40px;
-      padding-top: 20px;
-      text-align: center;
-      font-size: 12px;
-      color: var(--muted-color);
-    }
-
-    footer a {
-      color: var(--accent-color);
-      text-decoration: none;
-    }
-
-    button:hover {
-      opacity: 0.9;
-    }
-
-    .theme-toggle {
-      position: absolute;
-      top: 20px;
-      right: 20px;
-      width: 40px;
-      height: 40px;
-      border-radius: 50%;
-      border: 2px solid var(--border-color);
-      background: var(--bg-color);
-      cursor: pointer;
-      transition: all 0.2s;
-    }
-    
-    .theme-toggle::after {
-      content: '';
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      width: 20px;
-      height: 20px;
-      border-radius: 50%;
-      background: var(--text-color);
-    }
-
-    [data-theme="dark"] img[src="/logo.png"] {
-      filter: invert(1);
-    }
-
-    @media (max-width: 600px) {
-      body {
-        padding: 10px;
-        margin: 10px auto;
-        max-width: 100vw;
-      }
-      
-      .table-container {
-        position: relative;
-      }
-      
-      .table-wrapper {
-        margin: 10px 0;
-        max-height: 60vh;
-        border-width: 1px;
-        position: relative;
-      }
-      
-      /* Scroll gradient indicators */
-      .table-wrapper::before {
-        content: '';
-        position: absolute;
-        top: 0;
-        bottom: 0;
-        left: 0;
-        width: 20px;
-        background: linear-gradient(to right, rgba(0,0,0,0.1), transparent);
-        pointer-events: none;
-        z-index: 5;
-      }
-      
-      .table-wrapper::after {
-        content: '';
-        position: absolute;
-        top: 0;
-        bottom: 0;
-        right: 0;
-        width: 20px;
-        background: linear-gradient(to left, rgba(0,0,0,0.1), transparent);
-        pointer-events: none;
-        z-index: 5;
-      }
-      
-      th, td {
-        padding: 10px 12px;
-        font-size: 14px;
-        min-width: 80px;
-        max-width: 200px;
-        line-height: 1.5;
-      }
-      
-      th:first-child {
-        position: sticky;
-        left: 0;
-        background: var(--bg-color);
-        border-right: 2px solid var(--border-color);
-        z-index: 15;
-      }
-      
-      th {
-        font-size: 13px;
-        padding: 12px;
-      }
-      
-      button {
-        width: 100%;
-        font-size: 18px;
-        padding: 16px;
-      }
-
-      h1 {
-        font-size: 20px;
-        padding: 0 10px;
-        line-height: 1.3;
-        word-break: break-word;
-        hyphens: auto;
-      }
-
-      a img {
-        width: 32px;
-        height: 32px;
-      }
-
-      a span {
-        font-size: 16px;
-        line-height: 32px;
-      }
-
-      .theme-toggle {
-        width: 36px;
-        height: 36px;
-      }
-    }
-  </style>
+  <link rel="stylesheet" href="/view.css">
   <script async defer src="https://scripts.simpleanalyticscdn.com/latest.js"></script>
 </head>
 <body>
@@ -421,6 +199,57 @@ export async function handleView(request, env, id) {
 
     // Check if password protected
     if (passwordHash) {
+      // Rate limit password attempts (3 per minute per IP per table)
+      const ip = request.headers.get('CF-Connecting-IP') || '127.0.0.1';
+      const pwRateLimitKey = `pw-rate:${id}:${ip}:${Math.floor(Date.now() / 60000)}`;
+
+      if (request.method === 'POST') {
+        try {
+          const attempts = await env.TABLES.get(pwRateLimitKey);
+          const attemptCount = attempts ? parseInt(attempts) : 0;
+
+          if (attemptCount >= 3) {
+            return new Response(`
+              <!DOCTYPE html>
+              <html lang="en">
+              <head>
+                <meta charset="UTF-8">
+                <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                <title>Too Many Attempts - Table Share</title>
+                <link rel="icon" type="image/png" href="/logo.png">
+                <style>
+                  body {
+                    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif;
+                    max-width: 400px;
+                    margin: 100px auto;
+                    padding: 20px;
+                    text-align: center;
+                  }
+                  .error { color: #d00; font-size: 18px; }
+                  a { color: #0066cc; }
+                </style>
+              </head>
+              <body>
+                <img src="/logo.png" alt="Table Share" width="64" height="64">
+                <h1>Too Many Attempts</h1>
+                <p class="error">Please wait 1 minute before trying again.</p>
+                <p><a href="/t/${id}">Try again</a></p>
+              </body>
+              </html>
+            `, {
+              status: 429,
+              headers: { 'Content-Type': 'text/html' }
+            });
+          }
+
+          // Increment attempt counter
+          await env.TABLES.put(pwRateLimitKey, String(attemptCount + 1), { expirationTtl: 60 });
+        } catch (error) {
+          console.error('Password rate limit check failed:', error);
+          // Fail open - don't block if KV fails
+        }
+      }
+
       // Check if password was submitted via POST to /t/{id}/unlock
       if (request.method === 'POST' && request.headers.get('content-type')?.includes('application/x-www-form-urlencoded')) {
         const formData = await request.formData();
@@ -434,7 +263,7 @@ export async function handleView(request, env, id) {
           const hashArray = Array.from(new Uint8Array(hashBuffer));
           const submittedHash = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
 
-          if (submittedHash === passwordHash) {
+          if (timingSafeEqual(submittedHash, passwordHash)) {
             // Password correct - set session cookie
             const cookieName = `ts_unlock_${id}`;
             const cookieValue = submittedHash.substring(0, 16); // First 16 chars of hash as token

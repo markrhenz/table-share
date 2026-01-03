@@ -2,6 +2,31 @@ import { handleCreate } from './handlers/create.js';
 import { handleView } from './handlers/view.js';
 import { handleKofiWebhook } from './handlers/kofi-webhook.js';
 
+function addSecurityHeaders(response) {
+  const headers = new Headers(response.headers);
+
+  // Content Security Policy
+  headers.set('Content-Security-Policy',
+    "default-src 'self'; " +
+    "script-src 'self' 'unsafe-inline' https://scripts.simpleanalyticscdn.com; " +
+    "style-src 'self' 'unsafe-inline'; " +
+    "img-src 'self' data:; " +
+    "connect-src 'self' https://api.simpleanalytics.com; " +
+    "frame-ancestors 'none';"
+  );
+
+  // Prevent clickjacking
+  headers.set('X-Frame-Options', 'DENY');
+
+  // Prevent MIME sniffing
+  headers.set('X-Content-Type-Options', 'nosniff');
+
+  return new Response(response.body, {
+    status: response.status,
+    headers
+  });
+}
+
 const INDEX_HTML = `<!DOCTYPE html>
 <html lang="en">
 <head>
@@ -162,8 +187,8 @@ const INDEX_HTML = `<!DOCTYPE html>
                         </label>
                         <select id="expirySelect" style="width: 100%; border: 2px solid var(--border-color); padding: 8px; font-size: 14px; background: var(--bg-color); color: var(--text-color);">
                             <option value="3600">1 hour</option>
-                            <option value="604800">7 days</option>
-                            <option value="2592000" selected>30 days</option>
+                            <option value="604800" selected>7 days</option>
+                            <option value="2592000">30 days</option>
                             <option value="7776000">90 days (Pro)</option>
                         </select>
                         <div style="margin-top: 8px;">
@@ -2533,69 +2558,69 @@ export default {
       }
 
       if (pathname === '/') {
-        return new Response(INDEX_HTML, {
-          headers: { 
+        return addSecurityHeaders(new Response(INDEX_HTML, {
+          headers: {
             'Content-Type': 'text/html',
             'Cache-Control': 'no-cache, no-store, must-revalidate',
             'Pragma': 'no-cache',
             'Expires': '0',
-            ...corsHeaders 
+            ...corsHeaders
           }
-        });
+        }));
       }
       
       if (pathname === '/terms') {
-        return new Response(TERMS_HTML, {
+        return addSecurityHeaders(new Response(TERMS_HTML, {
           headers: { 'Content-Type': 'text/html', ...corsHeaders }
-        });
+        }));
       }
       
       if (pathname === '/privacy') {
-        return new Response(PRIVACY_HTML, {
+        return addSecurityHeaders(new Response(PRIVACY_HTML, {
           headers: { 'Content-Type': 'text/html', ...corsHeaders }
-        });
+        }));
       }
       
       if (pathname === '/pricing') {
-        return new Response(PRICING_HTML, {
+        return addSecurityHeaders(new Response(PRICING_HTML, {
           headers: { 'Content-Type': 'text/html', ...corsHeaders }
-        });
+        }));
       }
 
       if (pathname === '/blog') {
-        return new Response(BLOG_INDEX_HTML, {
+        return addSecurityHeaders(new Response(BLOG_INDEX_HTML, {
           headers: { 'Content-Type': 'text/html', ...corsHeaders }
-        });
+        }));
       }
 
       if (pathname === '/blog/share-excel-without-login') {
-        return new Response(BLOG_EXCEL_HTML, {
+        return addSecurityHeaders(new Response(BLOG_EXCEL_HTML, {
           headers: { 'Content-Type': 'text/html', ...corsHeaders }
-        });
+        }));
       }
 
       if (pathname === '/blog/sql-results-sharing') {
-        return new Response(BLOG_SQL_HTML, {
+        return addSecurityHeaders(new Response(BLOG_SQL_HTML, {
           headers: { 'Content-Type': 'text/html', ...corsHeaders }
-        });
+        }));
       }
 
       if (pathname === '/blog/google-sheets-alternatives') {
-        return new Response(BLOG_SHEETS_HTML, {
+        return addSecurityHeaders(new Response(BLOG_SHEETS_HTML, {
           headers: { 'Content-Type': 'text/html', ...corsHeaders }
-        });
+        }));
       }
 
       if (pathname === '/blog/share-csv-online') {
-        return new Response(BLOG_CSV_HTML, {
+        return addSecurityHeaders(new Response(BLOG_CSV_HTML, {
           headers: { 'Content-Type': 'text/html', ...corsHeaders }
-        });
+        }));
       }
 
       if (pathname === '/blog/pastebin-for-tables') {
-        return new Response(BLOG_PASTEBIN_HTML, {
+        return addSecurityHeaders(new Response(BLOG_PASTEBIN_HTML, {
           headers: { 'Content-Type': 'text/html', ...corsHeaders }
-        });
+        }));
       }
 
       if (pathname === '/sitemap.xml') {
@@ -2620,11 +2645,12 @@ export default {
 
       // Analytics Dashboard (admin only)
       if (pathname === '/analytics' && request.method === 'GET') {
-        const adminKey = url.searchParams.get('key');
+        // Check header first (preferred), then query param (legacy)
+        const adminKey = request.headers.get('X-Admin-Key') || url.searchParams.get('key');
         const ADMIN_KEY = env.ADMIN_KEY;
 
-        if (adminKey !== ADMIN_KEY) {
-          return new Response('Unauthorized', {
+        if (!adminKey || adminKey !== ADMIN_KEY) {
+          return new Response('Unauthorized. Provide X-Admin-Key header or ?key= parameter.', {
             status: 401,
             headers: { 'Content-Type': 'text/plain' }
           });
@@ -2798,9 +2824,9 @@ export default {
 </body>
 </html>`;
 
-          return new Response(html, {
+          return addSecurityHeaders(new Response(html, {
             headers: { 'Content-Type': 'text/html' }
-          });
+          }));
         } catch (error) {
           return new Response('Analytics error: ' + error.message, {
             status: 500,
@@ -2825,20 +2851,20 @@ export default {
 
       if (pathname === '/api/create' && request.method === 'POST') {
         const response = await handleCreate(request, env);
-        return new Response(response.body, {
+        return addSecurityHeaders(new Response(response.body, {
           ...response,
           headers: { ...response.headers, ...corsHeaders }
-        });
+        }));
       }
 
       if (pathname.startsWith('/t/') && pathname.length === 11) {
         const id = pathname.slice(3);
         if (/^[a-zA-Z0-9]{8}$/.test(id)) {
           const response = await handleView(request, env, id);
-          return new Response(response.body, {
+          return addSecurityHeaders(new Response(response.body, {
             ...response,
             headers: { ...response.headers, ...corsHeaders }
-          });
+          }));
         }
       }
 
@@ -2846,17 +2872,17 @@ export default {
       if (pathname.match(/^\/t\/[a-zA-Z0-9]{8}\/unlock$/) && request.method === 'POST') {
         const id = pathname.split('/')[2];
         const response = await handleView(request, env, id);
-        return new Response(response.body, {
+        return addSecurityHeaders(new Response(response.body, {
           ...response,
           headers: { ...response.headers, ...corsHeaders }
-        });
+        }));
       }
 
       if (pathname === '/api/kofi-webhook' && request.method === 'POST') {
         const response = await handleKofiWebhook(request, env);
         return new Response(response.body, {
           ...response,
-          headers: { ...response.headers, ...corsHeaders }
+          headers: { ...response.headers, 'Content-Type': 'text/plain' }
         });
       }
 

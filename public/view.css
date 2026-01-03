@@ -1,13 +1,14 @@
-/* ========================================
-   Table view page-specific styles for Table Share
-   ======================================== */
-
 :root {
+  --bg-color: #fff;
+  --text-color: #000;
+  --border-color: #000;
   --accent-color: #0066cc;
   --muted-color: #666;
 }
-
 [data-theme="dark"] {
+  --bg-color: #000;
+  --text-color: #fff;
+  --border-color: #fff;
   --accent-color: #4da6ff;
   --muted-color: #aaa;
 }
