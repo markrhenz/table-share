@@ -145,7 +145,7 @@ const INDEX_HTML = `<!DOCTYPE html>
                 >
             </div>
             <div style="margin-bottom: 12px;">
-                <details>
+                <details id="proDetails">
                     <summary style="cursor: pointer; color: var(--muted-color); font-size: 14px;">
                         🔑 Pro Mode (Optional)
                     </summary>
@@ -433,11 +433,12 @@ Bob     25     LA"></textarea>
         
                 const apiKeyValue = document.getElementById('apiKeyInput').value.trim();
                 const isProUser = apiKeyValue && apiKeyValue.startsWith('ts_live_') && apiKeyValue.length >= 28;
-        
+                const proDetails = document.getElementById('proDetails');
+
                 // Check if free user trying to use >7 day expiry
                 const expirySelect = document.getElementById('expirySelect');
                 const selectedExpiry = expirySelect ? parseInt(expirySelect.value) : 604800;
-                if (selectedExpiry > 604800 && !isProUser) {
+                if (selectedExpiry > 604800 && !isProUser && proDetails && proDetails.open) {
                     const modal = document.getElementById('upgradeModal');
                     modal.querySelector('h2').textContent = 'Extended Expiry is Pro';
                     modal.querySelector('p').innerHTML = 'Free tables expire in <strong>7 days</strong>.';
@@ -452,7 +453,7 @@ Bob     25     LA"></textarea>
                 // Check if free user trying to remove branding
                 const noBrandingCheck = document.getElementById('noBranding');
                 const wantsBrandingRemoved = noBrandingCheck ? noBrandingCheck.checked : false;
-                if (wantsBrandingRemoved && !isProUser) {
+                if (wantsBrandingRemoved && !isProUser && proDetails && proDetails.open) {
                     const modal = document.getElementById('upgradeModal');
                     modal.querySelector('h2').textContent = 'Remove Branding is Pro';
                     modal.querySelector('p').innerHTML = 'Free tables include a small <strong>"Created with Table Share"</strong> footer.';
@@ -488,7 +489,7 @@ Bob     25     LA"></textarea>
                         title: document.getElementById('titleInput').value.trim() || null,
                         apiKey: document.getElementById('apiKeyInput').value.trim() || null,
                         password: document.getElementById('passwordInputMain') ? document.getElementById('passwordInputMain').value.trim() : null,
-                        expiry: document.getElementById('expirySelect') ? parseInt(document.getElementById('expirySelect').value) : 2592000,
+                        expiry: isProUser && document.getElementById('expirySelect') ? parseInt(document.getElementById('expirySelect').value) : 604800,
                         noBranding: document.getElementById('noBranding') ? document.getElementById('noBranding').checked : false,
                         honeypot: ''
                     })
