@@ -7,26 +7,44 @@ const INDEX_HTML = `<!DOCTYPE html>
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Table Share</title>
+    <title>Table Share - Share Tables Instantly | No Signup, Free CSV & Spreadsheet Sharing</title>
     <!-- SEO Meta Tags -->
-    <meta name="description" content="The fastest way to share tables. Paste your data, get an instant shareable link. No signup required. Auto-expires in 30 days. Perfect for developers, freelancers, and teams.">
-    <meta name="keywords" content="table sharing, CSV sharing, spreadsheet sharing, data sharing, no signup, ephemeral data, free table tool">
+    <meta name="description" content="Share tables online in 5 seconds. Paste CSV, Excel, or spreadsheet data - get instant shareable link. No signup required. Free up to 500 rows. The fastest pastebin for tables.">
+    <meta name="keywords" content="share table online, share csv online, pastebin for tables, spreadsheet sharing no login, share excel without account, csv to link, ephemeral table sharing">
     <meta name="author" content="Table Share">
     <link rel="canonical" href="https://table-share.org">
     <!-- Open Graph Tags for Social Sharing -->
     <meta property="og:type" content="website">
     <meta property="og:url" content="https://table-share.org">
-    <meta property="og:title" content="Table Share - The Fastest Way to Share a Table">
-    <meta property="og:description" content="Stop taking screenshots. Paste your data and get an instant shareable link. No signup required, auto-expires in 30 days.">
+    <meta property="og:title" content="Table Share - Share Tables Instantly | No Signup Required">
+    <meta property="og:description" content="Paste CSV or spreadsheet data, get shareable link in 5 seconds. No signup for you or recipients. Free pastebin for tables.">
     <meta property="og:image" content="https://table-share.org/logo.png">
     <meta property="og:site_name" content="Table Share">
     <!-- Twitter Card Tags -->
     <meta name="twitter:card" content="summary">
     <meta name="twitter:url" content="https://table-share.org">
-    <meta name="twitter:title" content="Table Share - The Fastest Way to Share a Table">
-    <meta name="twitter:description" content="Stop taking screenshots. Paste your data and get an instant shareable link. No signup required.">
+    <meta name="twitter:title" content="Table Share - Share Tables Instantly | No Signup Required">
+    <meta name="twitter:description" content="Paste CSV or spreadsheet data, get shareable link in 5 seconds. No signup for you or recipients. Free pastebin for tables.">
     <meta name="twitter:image" content="https://table-share.org/logo.png">
     <link rel="icon" type="image/png" href="/logo.png">
+    
+    <!-- Schema.org structured data for Google rich snippets -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "WebSite",
+      "name": "Table Share",
+      "url": "https://table-share.org",
+      "description": "Share tables online in 5 seconds. Paste CSV, Excel, or spreadsheet data - get instant shareable link. No signup required. Free pastebin for tables.",
+      "logo": "https://table-share.org/logo.png",
+      "potentialAction": {
+        "@type": "SearchAction",
+        "target": "https://table-share.org/?q={search_term_string}",
+        "query-input": "required name=search_term_string"
+      }
+    }
+    </script>
+    
     <style>
         :root {
             --bg-color: #fff;
@@ -89,8 +107,10 @@ const INDEX_HTML = `<!DOCTYPE html>
         [data-theme="dark"] img[src="/logo.png"] { filter: invert(1); }
         @media (max-width: 600px) { h1 { font-size: 32px; } .tagline { font-size: 18px; } .how-it-works, .features { padding: 20px; } }
     </style>
+    <script async defer src="https://scripts.simpleanalyticscdn.com/latest.js"></script>
 </head>
 <body>
+    <a href="#main" class="sr-only" style="position: absolute; left: -9999px; top: auto; width: 1px; height: 1px; overflow: hidden;">Skip to content</a>
     <button id="themeToggle" class="theme-toggle" aria-label="Toggle dark mode"></button>
     <div class="container">
         <header>
@@ -98,10 +118,20 @@ const INDEX_HTML = `<!DOCTYPE html>
                 <img src="/logo.png" width="48" height="48" alt="Table Share" class="logo">
                 <h1 style="font-size: 48px; font-weight: 700; margin: 0;">Table Share</h1>
             </div>
-            <p class="tagline">The fastest way to share a table</p>
-            <p class="cta">Stop taking screenshots. Paste your data and get an instant shareable link.</p>
+            <p class="tagline">Stop emailing CSVs.</p>
+            <p class="cta">Paste your data. Share a link that expires. No signup for anyone.</p>
+            <p style="font-size: 14px; color: var(--muted-color); margin-top: 12px;" id="statsLine">
+                <span id="tableCount">Loading...</span> tables shared
+            </p>
         </header>
-        <main>
+        <main id="main">
+            <div style="background: var(--secondary-bg); border: 2px solid var(--border-color); padding: 16px 20px; margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px;">
+                <div>
+                    <strong style="font-size: 14px;">Need password protection or longer expiry?</strong>
+                    <span style="font-size: 13px; color: var(--muted-color); margin-left: 8px;">Pro unlocks everything for $5 one-time.</span>
+                </div>
+                <a href="/pricing" style="background: var(--accent-color); color: #fff; padding: 8px 16px; text-decoration: none; font-size: 13px; font-weight: 600; white-space: nowrap;">See Pro Features →</a>
+            </div>
             <div style="margin-bottom: 12px;">
                 <label for="titleInput" style="display: block; font-size: 14px; color: var(--muted-color); margin-bottom: 6px;">
                     Title (optional)
@@ -141,7 +171,20 @@ const INDEX_HTML = `<!DOCTYPE html>
                                 <input type="checkbox" id="noBranding" style="margin-right: 6px;">
                                 Remove Table Share branding
                             </label>
+        <script src="/js/history.js" defer></script>
                         </div>
+                    </div>
+                    <div id="passwordContainer" style="margin-top: 8px; display: none;">
+                        <label for="passwordInput" style="display: block; font-size: 12px; color: var(--muted-color); margin-bottom: 4px;">
+                            🔒 Password protect this table (Pro only):
+                        </label>
+                        <input
+                            type="password"
+                            id="passwordInput"
+                            placeholder="Enter password for recipients"
+                            style="width: 100%; border: 2px solid var(--border-color); padding: 8px; font-size: 14px; background: var(--bg-color); color: var(--text-color);"
+                        >
+                        <p style="font-size: 11px; color: var(--muted-color); margin-top: 4px;">Recipients will need this password to view the table.</p>
                     </div>
                     <p style="font-size: 12px; color: var(--muted-color); margin-top: 4px;">
                         Need Pro? <a href="/pricing" style="color: var(--accent-color);">View pricing →</a>
@@ -155,10 +198,22 @@ Name    Age    City
 Alice   30     NYC
 Bob     25     LA"></textarea>
             <div style="font-size: 13px; color: var(--muted-color); margin-top: 8px; margin-bottom: 12px;">
-                💡 Tip: Use tabs or commas to separate columns. Paste directly from Excel, Sheets, or CSV.
+                ⚡ Paste data from Excel, Sheets, or CSV. Link generated in under 3 seconds.
+            </div>
+            <div style="margin-bottom: 12px;">
+                <label for="passwordInputMain" style="display: flex; align-items: center; gap: 8px; font-size: 14px; color: var(--muted-color); margin-bottom: 6px;">
+                    🔒 Password protect
+                    <span style="background: var(--accent-color); color: #fff; font-size: 10px; padding: 2px 6px; border-radius: 3px; font-weight: 600;">PRO</span>
+                </label>
+                <input
+                    type="password"
+                    id="passwordInputMain"
+                    placeholder="Optional - recipients will need this password"
+                    style="width: 100%; border: 2px solid var(--border-color); padding: 10px; font-size: 14px; background: var(--bg-color); color: var(--text-color);"
+                >
             </div>
              <button id="generateBtn" class="button">Generate Link</button>
-            <div id="status" class="status"></div>
+             <div id="status" class="status" aria-live="polite" aria-atomic="true"></div>
             <!-- History Section -->
             <div id="history-section" style="margin-top: 30px; display: none;">
               <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
@@ -185,17 +240,17 @@ Bob     25     LA"></textarea>
                     <div class="step">
                         <div class="step-number">1</div>
                         <h3>Paste</h3>
-                        <p>Copy data from Excel, Sheets, CSV, or any table</p>
+                        <p>Copy from Excel, Sheets, database output, anywhere</p>
                     </div>
                     <div class="step">
                         <div class="step-number">2</div>
-                        <h3>Generate</h3>
-                        <p>Get an instant shareable link (auto-copied)</p>
+                        <h3>Get Link</h3>
+                        <p>Instant URL, auto-copied to clipboard</p>
                     </div>
                     <div class="step">
                         <div class="step-number">3</div>
-                        <h3>Share</h3>
-                        <p>Send link anywhere. Recipients need no account.</p>
+                        <h3>Done</h3>
+                        <p>No permissions. No accounts. Link auto-expires.</p>
                     </div>
                 </div>
             </section>
@@ -221,43 +276,61 @@ Bob     25     LA"></textarea>
                 </div>
             </section>
             <section class="features">
-                <h2>Why Table Share?</h2>
+                <h2>Why Not Just Use Google Sheets?</h2>
                 <div class="feature-grid">
                     <div class="feature">
                         <div class="feature-icon">⚡</div>
-                        <h3>5-Second Workflow</h3>
-                        <p>From paste to shareable link in under 5 seconds</p>
+                        <h3>3 Seconds, Not 3 Minutes</h3>
+                        <p>No file creation. No permission dialogs. No waiting.</p>
                     </div>
                     <div class="feature">
                         <div class="feature-icon">🚫</div>
-                        <h3>No Accounts</h3>
-                        <p>Zero signup for you or recipients. Forever.</p>
+                        <h3>No "Request Access" Emails</h3>
+                        <p>Recipients click link and see data. That's it.</p>
+                    </div>
+                    <div class="feature">
+                        <div class="feature-icon">⏰</div>
+                        <h3>Data Doesn't Live Forever</h3>
+                        <p>Links auto-expire. No orphaned files cluttering your Drive.</p>
+                    </div>
+                    <div class="feature">
+                        <div class="feature-icon">🔒</div>
+                        <h3>Password Protect</h3>
+                        <p>Add a password for sensitive data. <a href="/pricing" style="color: var(--accent-color);">Pro feature</a></p>
                     </div>
                     <div class="feature">
                         <div class="feature-icon">📱</div>
                         <h3>Mobile-Perfect</h3>
-                        <p>Clean, readable tables on any device</p>
-                    </div>
-                    <div class="feature">
-                        <div class="feature-icon">🔒</div>
-                        <h3>Auto-Expires</h3>
-                        <p>Links expire in 30 days (privacy by default)</p>
+                        <p>Clean tables that actually work on phones.</p>
                     </div>
                     <div class="feature">
                         <div class="feature-icon">💾</div>
                         <h3>CSV Download</h3>
-                        <p>Recipients can export to spreadsheet</p>
-                    </div>
-                    <div class="feature">
-                        <div class="feature-icon">🛡️</div>
-                        <h3>Security Built-In</h3>
-                        <p>XSS prevention, rate limiting, content filtering</p>
+                        <p>Recipients can export if they need to.</p>
                     </div>
                 </div>
             </section>
+            <section class="use-cases" style="margin-top: 80px;">
+                <h2>From the Blog</h2>
+                <div class="case-list">
+                    <div class="case">
+                        <h3><a href="/blog/share-csv-online" style="color: var(--accent-color); text-decoration: none;">How to Share CSV Files Online</a></h3>
+                        <p>Stop emailing CSV attachments. Turn any CSV into a shareable link with instant preview.</p>
+                    </div>
+                    <div class="case">
+                        <h3><a href="/blog/share-excel-without-login" style="color: var(--accent-color); text-decoration: none;">Share Excel Without Login</a></h3>
+                        <p>The fastest way to share spreadsheet data in 2025. No signup required.</p>
+                    </div>
+                    <div class="case">
+                        <h3><a href="/blog/google-sheets-alternatives" style="color: var(--accent-color); text-decoration: none;">Google Sheets Alternatives</a></h3>
+                        <p>10 lightweight tools when you need speed over collaboration features.</p>
+                    </div>
+                </div>
+                <p style="text-align: center; margin-top: 20px;"><a href="/blog" style="color: var(--accent-color);">View all articles →</a></p>
+            </section>
         </main>
         <footer>
-            <p>&copy; 2025 Table Share | <a href="mailto:markrhenz2@gmail.com">Contact</a> | <a href="/terms">Terms</a> | <a href="/privacy">Privacy</a></p>
+            <p>&copy; 2025 Table Share | <a href="/blog">Blog</a> | <a href="/pricing">Pricing</a> | <a href="mailto:markrhenz@table-share.org">Contact</a> | <a href="/terms">Terms</a> | <a href="/privacy">Privacy</a></p>
         </footer>
     </div>
     <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
@@ -302,6 +375,7 @@ Bob     25     LA"></textarea>
             if (!key) {
                 proStatus.style.display = 'none';
                 expiryContainer.style.display = 'none';
+                document.getElementById('passwordContainer').style.display = 'none';
                 localStorage.removeItem('proApiKey');
                 return;
             }
@@ -311,12 +385,14 @@ Bob     25     LA"></textarea>
                 proStatus.style.color = '#00cc66';
                 proStatus.style.display = 'block';
                 expiryContainer.style.display = 'block';
+                document.getElementById('passwordContainer').style.display = 'block';
                 localStorage.setItem('proApiKey', key);
             } else {
                 proStatus.textContent = '✗ Invalid API key format';
                 proStatus.style.color = '#ff4444';
                 proStatus.style.display = 'block';
                 expiryContainer.style.display = 'none';
+                document.getElementById('passwordContainer').style.display = 'none';
                 localStorage.removeItem('proApiKey');
             }
         });
@@ -354,7 +430,56 @@ Bob     25     LA"></textarea>
                     skipEmptyLines: true,
                     delimitersToGuess: ['\t', ',', '|', ';']
                 });
-                
+        
+                const apiKeyValue = document.getElementById('apiKeyInput').value.trim();
+                const isProUser = apiKeyValue && apiKeyValue.startsWith('ts_live_') && apiKeyValue.length >= 28;
+        
+                // Check if free user trying to use >7 day expiry
+                const expirySelect = document.getElementById('expirySelect');
+                const selectedExpiry = expirySelect ? parseInt(expirySelect.value) : 604800;
+                if (selectedExpiry > 604800 && !isProUser) {
+                    const modal = document.getElementById('upgradeModal');
+                    modal.querySelector('h2').textContent = 'Extended Expiry is Pro';
+                    modal.querySelector('p').innerHTML = 'Free tables expire in <strong>7 days</strong>.';
+                    modal.querySelector('p:nth-of-type(2)').innerHTML = 'Upgrade once for <strong>$5</strong> to keep tables for up to <strong>90 days</strong>.';
+                    modal.style.display = 'flex';
+                    if (typeof sa_event === 'function') sa_event('upgrade_modal_shown');
+                    generateBtn.disabled = false;
+                    status.textContent = '';
+                    return;
+                }
+        
+                // Check if free user trying to remove branding
+                const noBrandingCheck = document.getElementById('noBranding');
+                const wantsBrandingRemoved = noBrandingCheck ? noBrandingCheck.checked : false;
+                if (wantsBrandingRemoved && !isProUser) {
+                    const modal = document.getElementById('upgradeModal');
+                    modal.querySelector('h2').textContent = 'Remove Branding is Pro';
+                    modal.querySelector('p').innerHTML = 'Free tables include a small <strong>"Created with Table Share"</strong> footer.';
+                    modal.querySelector('p:nth-of-type(2)').innerHTML = 'Upgrade once for <strong>$5</strong> for clean, unbranded tables.';
+                    modal.style.display = 'flex';
+                    if (typeof sa_event === 'function') sa_event('upgrade_modal_shown');
+                    generateBtn.disabled = false;
+                    status.textContent = '';
+                    return;
+                }
+        
+                // Check if free user trying to use password
+                const passwordValue = document.getElementById('passwordInputMain') ? document.getElementById('passwordInputMain').value.trim() : '';
+
+                if (passwordValue && !isProUser) {
+                    // Show upgrade modal for password feature
+                    const modal = document.getElementById('upgradeModal');
+                    modal.querySelector('h2').textContent = 'Pro Feature';
+                    modal.querySelector('p').innerHTML = 'Password protection requires <strong>Pro</strong>.';
+                    modal.querySelector('p:nth-of-type(2)').innerHTML = 'Upgrade once for <strong>$5</strong> to protect your tables with passwords.';
+                    modal.style.display = 'flex';
+                    if (typeof sa_event === 'function') sa_event('upgrade_modal_shown');
+                    generateBtn.disabled = false;
+                    status.textContent = '';
+                    return;
+                }
+
                 const response = await fetch('/api/create', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
@@ -362,6 +487,7 @@ Bob     25     LA"></textarea>
                         data: parsed.data,
                         title: document.getElementById('titleInput').value.trim() || null,
                         apiKey: document.getElementById('apiKeyInput').value.trim() || null,
+                        password: document.getElementById('passwordInputMain') ? document.getElementById('passwordInputMain').value.trim() : null,
                         expiry: document.getElementById('expirySelect') ? parseInt(document.getElementById('expirySelect').value) : 2592000,
                         noBranding: document.getElementById('noBranding') ? document.getElementById('noBranding').checked : false,
                         honeypot: ''
@@ -381,7 +507,12 @@ Bob     25     LA"></textarea>
                     throw new Error(result.error || 'Failed to generate link');
                 }
             } catch (error) {
-                status.innerHTML = '✗ Error: ' + error.message;
+                if (error.message.includes('Too many rows')) {
+                    document.getElementById('upgradeModal').style.display = 'flex';
+                    if (typeof sa_event === 'function') sa_event('upgrade_modal_shown');
+                } else {
+                    status.innerHTML = '✗ Error: ' + error.message;
+                }
                 generateBtn.disabled = false;
             }
         });
@@ -519,7 +650,31 @@ Bob     25     LA"></textarea>
 
         // Initial render
         renderHistory();
+
+        // Fetch and display stats
+        (async function() {
+            try {
+                const response = await fetch('/api/stats');
+                if (response.ok) {
+                    const data = await response.json();
+                    document.getElementById('tableCount').textContent = data.total.toLocaleString();
+                } else {
+                    document.getElementById('statsLine').style.display = 'none';
+                }
+            } catch (e) {
+                document.getElementById('statsLine').style.display = 'none';
+            }
+        })();
     </script>
+<div id="upgradeModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 9999; justify-content: center; align-items: center;">
+  <div style="background: var(--bg-color); border: 2px solid var(--border-color); padding: 40px; max-width: 500px; text-align: center;">
+    <h2 style="margin-bottom: 20px;">Table Too Large</h2>
+    <p style="margin-bottom: 20px; color: var(--muted-color);">Free tables are limited to <strong>500 rows</strong>.</p>
+    <p style="margin-bottom: 30px;">Upgrade once for <strong>$5</strong> to share tables up to <strong>5,000 rows</strong>.</p>
+    <a href="/pricing" style="display: inline-block; background: var(--accent-color); color: #fff; padding: 15px 30px; text-decoration: none; font-weight: 600; margin-right: 10px;">Get Pro - $5</a>
+    <button onclick="document.getElementById('upgradeModal').style.display='none'" style="background: transparent; border: 2px solid var(--border-color); padding: 15px 30px; cursor: pointer; color: var(--text-color);">Cancel</button>
+  </div>
+</div>
 </body>
 </html>
 `;
@@ -532,6 +687,24 @@ const TERMS_HTML = `<!DOCTYPE html>
     <title>Terms of Service - Table Share</title>
     <meta name="description" content="Table Share Terms of Service. No accounts, auto-expiring links, acceptable use policy.">
     <link rel="icon" type="image/png" href="/logo.png">
+    
+    <!-- Schema.org structured data for Google rich snippets -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "WebSite",
+      "name": "Table Share",
+      "url": "https://table-share.org",
+      "description": "Share tables online in 5 seconds. Paste CSV, Excel, or spreadsheet data - get instant shareable link. No signup required. Free pastebin for tables.",
+      "logo": "https://table-share.org/logo.png",
+      "potentialAction": {
+        "@type": "SearchAction",
+        "target": "https://table-share.org/?q={search_term_string}",
+        "query-input": "required name=search_term_string"
+      }
+    }
+    </script>
+    
     <style>
         :root {
             --bg-color: #fff;
@@ -573,7 +746,7 @@ const TERMS_HTML = `<!DOCTYPE html>
     <h2>1. Acceptance of Terms</h2>
     <p>By using Table Share, you agree to these terms. If you don't agree, don't use the service.</p>
     <h2>2. Service Description</h2>
-    <p>Table Share allows you to paste tabular data and generate shareable links. Links expire after 30 days by default.</p>
+    <p>Table Share allows you to paste tabular data and generate shareable links. Free links expire after 7 days. Pro links can last up to 90 days.</p>
     <h2>3. Acceptable Use</h2>
     <p>You may NOT use Table Share to:</p>
     <ul>
@@ -589,8 +762,8 @@ const TERMS_HTML = `<!DOCTYPE html>
     <h2>6. Termination</h2>
     <p>We may remove content or block users who violate these terms.</p>
     <h2>7. Contact</h2>
-    <p>Questions? Email: <a href="mailto:markrhenz2@gmail.com">markrhenz2@gmail.com</a></p>
-    <p style="margin-top: 40px;"><a href="/">&larr; Back to Table Share</a></p>
+    <p>Questions? Email: <a href="mailto:markrhenz@table-share.org">markrhenz@table-share.org</a></p>
+    <p style="margin-top: 40px;"><a href="/">&larr; Back to Table Share</a> | <a href="/blog">Blog</a> | <a href="/pricing">Pricing</a></p>
     <script>
         const themeToggle = document.getElementById('themeToggle');
         function applyTheme(theme) {
@@ -609,7 +782,7 @@ const TERMS_HTML = `<!DOCTYPE html>
             applyTheme(current === 'dark' ? 'light' : 'dark');
         });
     </script>
-</body>
+    </body>
 </html>
 `;
 
@@ -621,6 +794,24 @@ const PRIVACY_HTML = `<!DOCTYPE html>
     <title>Privacy Policy - Table Share</title>
     <meta name="description" content="Table Share Privacy Policy. Minimal data collection, no tracking, 30-day auto-deletion.">
     <link rel="icon" type="image/png" href="/logo.png">
+    
+    <!-- Schema.org structured data for Google rich snippets -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "WebSite",
+      "name": "Table Share",
+      "url": "https://table-share.org",
+      "description": "Share tables online in 5 seconds. Paste CSV, Excel, or spreadsheet data - get instant shareable link. No signup required. Free pastebin for tables.",
+      "logo": "https://table-share.org/logo.png",
+      "potentialAction": {
+        "@type": "SearchAction",
+        "target": "https://table-share.org/?q={search_term_string}",
+        "query-input": "required name=search_term_string"
+      }
+    }
+    </script>
+    
     <style>
         :root {
             --bg-color: #fff;
@@ -662,7 +853,7 @@ const PRIVACY_HTML = `<!DOCTYPE html>
     <h2>1. What We Collect</h2>
     <p><strong>No accounts = minimal data:</strong></p>
     <ul>
-        <li>Pasted table data (stored 30 days)</li>
+        <li>Pasted table data (stored 7-90 days depending on tier)</li>
         <li>IP address (rate limiting only, not logged)</li>
         <li>Browser metadata (standard HTTP headers)</li>
     </ul>
@@ -674,12 +865,12 @@ const PRIVACY_HTML = `<!DOCTYPE html>
         <li>Security (XSS, malicious content detection)</li>
     </ul>
     <h2>3. Data Retention</h2>
-    <p>Tables auto-delete after 30 days. Manual deletion: email us at markrhenz2@gmail.com with the link.</p>
+    <p>Free tables auto-delete after 7 days. Pro tables after 90 days. Manual deletion: email markrhenz@table-share.org with the link.</p>
     <h2>4. Third Parties</h2>
     <p>We use Cloudflare (hosting/CDN). They may collect standard logs. No analytics/tracking.</p>
     <h2>5. Your Rights</h2>
     <ul>
-        <li>Request deletion: email markrhenz2@gmail.com with link</li>
+        <li>Request deletion: email markrhenz@table-share.org with link</li>
         <li>No data portability (no accounts)</li>
         <li>GDPR/CCPA: Data auto-expires, no PII stored</li>
     </ul>
@@ -688,8 +879,8 @@ const PRIVACY_HTML = `<!DOCTYPE html>
     <h2>7. Changes</h2>
     <p>We'll update this page. No email notifications (no accounts!).</p>
     <h2>8. Contact</h2>
-    <p>Email: <a href="mailto:markrhenz2@gmail.com">markrhenz2@gmail.com</a></p>
-    <p style="margin-top: 40px;"><a href="/">&larr; Back to Table Share</a></p>
+    <p>Email: <a href="mailto:markrhenz@table-share.org">markrhenz@table-share.org</a></p>
+    <p style="margin-top: 40px;"><a href="/">&larr; Back to Table Share</a> | <a href="/blog">Blog</a> | <a href="/pricing">Pricing</a></p>
     <script>
         const themeToggle = document.getElementById('themeToggle');
         function applyTheme(theme) {
@@ -708,7 +899,7 @@ const PRIVACY_HTML = `<!DOCTYPE html>
             applyTheme(current === 'dark' ? 'light' : 'dark');
         });
     </script>
-</body>
+    </body>
 </html>
 `;
 
@@ -721,6 +912,24 @@ const PRICING_HTML = `<!DOCTYPE html>
     <meta name="description" content="Table Share pricing: Free forever plan with 500 rows. Pro plan at $5 one-time for 5,000 rows, custom expiration, and API access.">
     <meta property="og:title" content="Table Share Pricing - Free Forever or Pro for $5">
     <link rel="icon" type="image/png" href="/logo.png">
+    
+    <!-- Schema.org structured data for Google rich snippets -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "WebSite",
+      "name": "Table Share",
+      "url": "https://table-share.org",
+      "description": "Share tables online in 5 seconds. Paste CSV, Excel, or spreadsheet data - get instant shareable link. No signup required. Free pastebin for tables.",
+      "logo": "https://table-share.org/logo.png",
+      "potentialAction": {
+        "@type": "SearchAction",
+        "target": "https://table-share.org/?q={search_term_string}",
+        "query-input": "required name=search_term_string"
+      }
+    }
+    </script>
+    
     <style>
         :root {
             --bg-color: #fff;
@@ -775,7 +984,7 @@ const PRICING_HTML = `<!DOCTYPE html>
             <ul>
                 <li>✓ 500 rows max</li>
                 <li>✓ 50 columns max</li>
-                <li>✓ 30-day expiration</li>
+                <li>✓ 7-day expiration</li>
                 <li>✓ CSV download</li>
                 <li>✓ Dark mode</li>
                 <li>✓ No signup required</li>
@@ -783,25 +992,26 @@ const PRICING_HTML = `<!DOCTYPE html>
             <a href="/" class="cta-button">Start Free</a>
         </div>
         
-        <div class="tier pro">
+        <div class="tier pro" style="position: relative;">
+            <div style="position: absolute; top: -12px; left: 50%; transform: translateX(-50%); background: var(--accent-color); color: #fff; padding: 4px 16px; font-size: 12px; font-weight: 600;">RECOMMENDED</div>
             <h2>Pro</h2>
             <div class="price">$5<small>/one-time</small></div>
+            <p style="font-size: 14px; color: var(--muted-color); margin-bottom: 20px; text-align: center;">Pay once, use forever. No subscription.</p>
             <ul>
-                <li>✓ <strong>5,000 rows</strong> (10x increase)</li>
-                <li>✓ <strong>100 columns</strong> (2x increase)</li>
-                <li>✓ <strong>Custom expiration</strong> (1-90 days)</li>
-                <li>✓ <strong>Password protection</strong></li>
-                <li>✓ <strong>Remove branding</strong></li>
-                <li>✓ <strong>API access</strong></li>
-                <li>✓ <strong>1 year validity</strong></li>
+                <li>✓ <strong>Password protection</strong> - secure sensitive data</li>
+                <li>✓ <strong>90-day expiry</strong> - vs 7 days free</li>
+                <li>✓ <strong>Remove branding</strong> - clean, professional</li>
+                <li>✓ <strong>5,000 rows</strong> - 10x free tier</li>
+                <li>✓ <strong>100 columns</strong> - 2x free tier</li>
+                <li>✓ <strong>API access</strong> - automate workflows</li>
             </ul>
-            <a href="https://ko-fi.com/s/0a371a6316" class="cta-button">Get Pro via Ko-fi</a>
-            <p style="text-align: center; margin-top: 10px; font-size: 14px; color: var(--muted-color);">Instant API key after payment</p>
+            <a href="https://ko-fi.com/s/0a371a6316" class="cta-button">Get Pro - $5</a>
+            <p style="text-align: center; margin-top: 15px; font-size: 13px; color: var(--muted-color);">Instant API key via email. No account needed.</p>
         </div>
     </div>
     
     <div style="text-align: center; margin-top: 60px;">
-        <p style="color: var(--muted-color);">Questions? <a href="mailto:markrhenz2@gmail.com" style="color: var(--accent-color);">Contact us</a></p>
+        <p style="color: var(--muted-color);">Questions? <a href="mailto:markrhenz@table-share.org" style="color: var(--accent-color);">Contact us</a></p>
         <p style="margin-top: 20px;"><a href="/" style="color: var(--accent-color);">← Back to Table Share</a></p>
     </div>
     <script>
@@ -822,7 +1032,7 @@ const PRICING_HTML = `<!DOCTYPE html>
             applyTheme(current === 'dark' ? 'light' : 'dark');
         });
     </script>
-</body>
+    </body>
 </html>
 `;
 
@@ -883,6 +1093,18 @@ const SITEMAP_XML = `<?xml version="1.0" encoding="UTF-8"?>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
+  <url>
+    <loc>https://table-share.org/blog/share-csv-online</loc>
+    <lastmod>${new Date().toISOString().split('T')[0]}</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://table-share.org/blog/pastebin-for-tables</loc>
+    <lastmod>${new Date().toISOString().split('T')[0]}</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
 </urlset>`;
 
 const ROBOTS_TXT = `User-agent: *
@@ -933,6 +1155,23 @@ const BLOG_INDEX_HTML = `<!DOCTYPE html>
 
             <article class="blog-article">
                 <h3>
+                    <a href="/blog/pastebin-for-tables">
+                        Pastebin for Tables: Share Data Like Developers Share Code
+                    </a>
+                </h3>
+                <p class="blog-meta">
+                    <time datetime="2026-01-03">January 3, 2026</time> • 4 min read
+                </p>
+                <p>
+                    Developers have Pastebin for code. Now there's an equivalent for tabular data. Paste CSV or spreadsheet data, get a formatted table link.
+                </p>
+                <a href="/blog/pastebin-for-tables" class="blog-article-link">
+                    Read full article →
+                </a>
+            </article>
+
+            <article class="blog-article">
+                <h3>
                     <a href="/blog/share-excel-without-login">
                         How to Share Excel Tables Without Login or Signup (2025)
                     </a>
@@ -978,6 +1217,23 @@ const BLOG_INDEX_HTML = `<!DOCTYPE html>
                     Google Sheets is overkill for simple table sharing. Compare lightweight alternatives that prioritize speed over collaboration features.
                 </p>
                 <a href="/blog/google-sheets-alternatives" class="blog-article-link">
+                    Read full article →
+                </a>
+            </article>
+
+            <article class="blog-article">
+                <h3>
+                    <a href="/blog/share-csv-online">
+                        How to Share CSV Files Online (No Email, No Signup)
+                    </a>
+                </h3>
+                <p class="blog-meta">
+                    <time datetime="2025-01-03">January 3, 2025</time> • 4 min read
+                </p>
+                <p>
+                    Stop emailing CSV attachments. Turn any CSV into an instant shareable link with preview. No download required for recipients.
+                </p>
+                <a href="/blog/share-csv-online" class="blog-article-link">
                     Read full article →
                 </a>
             </article>
@@ -1870,6 +2126,401 @@ const BLOG_SHEETS_HTML = `<!DOCTYPE html>
 </html>
 `;
 
+const BLOG_CSV_HTML = `<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>How to Share CSV Files Online (No Email, No Signup) | Table Share</title>
+    <meta name="description" content="Share CSV files instantly without email attachments or signups. Convert CSV to shareable link in 5 seconds. Free, fast, no account required.">
+    <meta name="keywords" content="share csv online, send csv file, csv sharing tool, share csv without email, csv to link">
+    
+    <meta property="og:title" content="Share CSV Files Online - No Email, No Signup">
+    <meta property="og:description" content="Convert any CSV file to a shareable link in 5 seconds. No email attachments, no accounts.">
+    <meta property="og:url" content="https://table-share.org/blog/share-csv-online">
+    <meta property="og:type" content="article">
+    
+    <link rel="canonical" href="https://table-share.org/blog/share-csv-online">
+    <link rel="stylesheet" href="/styles.css">
+    <link rel="stylesheet" href="/blog.css">
+    <link rel="icon" href="/logo.png" type="image/png">
+    
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "Article",
+      "headline": "How to Share CSV Files Online (No Email, No Signup)",
+      "datePublished": "2025-01-03",
+      "author": {
+        "@type": "Organization",
+        "name": "Table Share"
+      },
+      "publisher": {
+        "@type": "Organization",
+        "name": "Table Share",
+        "logo": {
+          "@type": "ImageObject",
+          "url": "https://table-share.org/logo.png"
+        }
+      }
+    }
+    </script>
+</head>
+<body>
+    <header class="blog-header">
+        <a href="/">
+            <img src="/logo.png" alt="Table Share Logo" class="blog-header-logo">
+            <strong>Table Share</strong>
+        </a>
+        <div>
+            <button id="themeToggle" class="blog-theme-toggle" aria-label="Toggle dark mode">🌙</button>
+        </div>
+    </header>
+
+    <nav class="blog-nav">
+        <a href="/blog" class="blog-back-link">← Back to Blog</a>
+    </nav>
+
+    <article class="blog-container blog-content">
+        <h1 class="blog-title">
+            How to Share CSV Files Online (No Email, No Signup)
+        </h1>
+
+        <p class="blog-meta">
+            <time datetime="2025-01-03">January 3, 2025</time> • 4 min read
+        </p>
+
+        <section class="blog-section">
+            <h2>The Problem with Sharing CSV Files</h2>
+            <p>
+                You have a CSV file. You need to share it with someone. What are your options?
+            </p>
+            <ul>
+                <li><strong>Email attachment:</strong> File size limits, gets buried in inbox, version confusion</li>
+                <li><strong>Google Drive:</strong> Requires login, permission hassles, overkill for one file</li>
+                <li><strong>WeTransfer:</strong> Recipient downloads raw file, can't preview content</li>
+                <li><strong>Slack/Teams:</strong> File gets lost in chat history</li>
+            </ul>
+            <p>
+                All these methods share the same problem: the recipient has to download the file and open it in a spreadsheet app just to see what's inside.
+            </p>
+        </section>
+
+        <section class="blog-card-highlight">
+            <h2>The Better Way: CSV to Shareable Link</h2>
+            <p>
+                What if you could turn your CSV into an instant preview link?
+            </p>
+
+            <div class="blog-card">
+                <h3>Step 1: Open Your CSV</h3>
+                <p>
+                    Open your CSV file in any text editor, Excel, or Google Sheets. Select all the data and copy it (<code class="blog-code">Ctrl+C</code>).
+                </p>
+            </div>
+
+            <div class="blog-card">
+                <h3>Step 2: Paste on Table Share</h3>
+                <p>
+                    Go to <a href="https://table-share.org">table-share.org</a> and paste (<code class="blog-code">Ctrl+V</code>).
+                </p>
+                <p>
+                    Your shareable link is generated instantly and copied to clipboard.
+                </p>
+            </div>
+
+            <div class="blog-card">
+                <h3>Step 3: Share the Link</h3>
+                <p>
+                    Send the link via email, Slack, text - anywhere. Recipients click and instantly see a clean, formatted table.
+                </p>
+                <p>
+                    <strong>No download required. No login. No spreadsheet app needed.</strong>
+                </p>
+            </div>
+        </section>
+
+        <section class="blog-section">
+            <h2>Why This Beats Email Attachments</h2>
+
+            <div class="blog-table-wrapper">
+                <table class="blog-table">
+                    <thead>
+                        <tr>
+                            <th>Feature</th>
+                            <th>Email Attachment</th>
+                            <th>Table Share Link</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Instant preview</td>
+                            <td>❌ Must download & open</td>
+                            <td>✅ View in browser</td>
+                        </tr>
+                        <tr>
+                            <td>File size limits</td>
+                            <td>⚠️ 25MB typical limit</td>
+                            <td>✅ 5,000 rows supported</td>
+                        </tr>
+                        <tr>
+                            <td>Mobile friendly</td>
+                            <td>❌ Needs spreadsheet app</td>
+                            <td>✅ Works on any device</td>
+                        </tr>
+                        <tr>
+                            <td>Recipient needs account</td>
+                            <td>❌ Sometimes</td>
+                            <td>✅ Never</td>
+                        </tr>
+                        <tr>
+                            <td>Auto-expires</td>
+                            <td>❌ Lives forever in inbox</td>
+                            <td>✅ 7-90 days (privacy)</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <section class="blog-section">
+            <h2>Perfect Use Cases</h2>
+
+            <div class="blog-card">
+                <h3>Sharing Reports with Clients</h3>
+                <p>
+                    Send a weekly metrics report without forcing clients to download files or log into platforms.
+                </p>
+            </div>
+
+            <div class="blog-card">
+                <h3>Data Exports for Colleagues</h3>
+                <p>
+                    Export from your CRM, database, or analytics tool and share instantly. No file management.
+                </p>
+            </div>
+
+            <div class="blog-card">
+                <h3>Quick Data Handoffs</h3>
+                <p>
+                    Contractor needs a list? Teammate needs reference data? Share a link instead of attaching files.
+                </p>
+            </div>
+
+            <div class="blog-card">
+                <h3>Temporary Sharing</h3>
+                <p>
+                    Links auto-expire in 7 days (free) or 90 days (Pro). Perfect for data that shouldn't live forever.
+                </p>
+            </div>
+        </section>
+
+        <section class="blog-cta">
+            <h2>Try It Now</h2>
+            <p>
+                Turn any CSV into a shareable link in 5 seconds. Free forever, no signup.
+            </p>
+            <a href="/" class="blog-cta-button">
+                Share a CSV →
+            </a>
+        </section>
+
+        <section class="blog-section">
+            <h2>FAQ</h2>
+
+            <div class="blog-card">
+                <h3>What CSV formats are supported?</h3>
+                <p>
+                    Any standard CSV (comma-separated) or TSV (tab-separated) works. Just copy the content and paste.
+                </p>
+            </div>
+
+            <div class="blog-card">
+                <h3>Is there a file size limit?</h3>
+                <p>
+                    Free tier: 500 rows, 50 columns. Pro tier: 5,000 rows, 100 columns. Most CSV exports fit easily.
+                </p>
+            </div>
+
+            <div class="blog-card">
+                <h3>Can recipients download the data?</h3>
+                <p>
+                    Yes! Every shared table has a "Download CSV" button so recipients can export if needed.
+                </p>
+            </div>
+
+            <div class="blog-card">
+                <h3>Is my data secure?</h3>
+                <p>
+                    Links use unguessable random IDs. Data auto-deletes after expiry. For sensitive data, Pro tier offers password protection.
+                </p>
+            </div>
+        </section>
+    </article>
+
+    <footer class="blog-footer">
+        <p class="blog-footer-links">
+            <a href="/">Home</a> •
+            <a href="/pricing">Pricing</a> •
+            <a href="/blog">Blog</a> •
+            <a href="/terms">Terms</a> •
+            <a href="/privacy">Privacy</a>
+        </p>
+        <p class="blog-footer-text">© 2025 Table Share</p>
+    </footer>
+    
+    <script src="/shared-theme.js"></script>
+    <script>
+        function initThemeToggle() {
+            const themeToggle = document.getElementById('themeToggle');
+            if (themeToggle && window.SharedTheme) {
+                themeToggle.addEventListener('click', () => {
+                    const current = document.documentElement.getAttribute('data-theme');
+                    window.SharedTheme.applyTheme(current === 'dark' ? 'light' : 'dark');
+                });
+                return true;
+            }
+            return false;
+        }
+        
+        if (!initThemeToggle()) {
+            document.addEventListener('DOMContentLoaded', () => {
+                if (!initThemeToggle()) {
+                    setTimeout(initThemeToggle, 100);
+                }
+            });
+        }
+    </script>
+</body>
+</html>
+`;
+
+const BLOG_PASTEBIN_HTML = `<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pastebin for Tables: Share Data Like Code | Table Share</title>
+    <meta name="description" content="A pastebin designed for tabular data. Paste CSV, spreadsheet, or SQL results - get a clean shareable table link. No signup, auto-expires.">
+    <meta name="keywords" content="pastebin for tables, pastebin spreadsheet, share table data, csv pastebin, data sharing tool">
+
+    <meta property="og:title" content="Pastebin for Tables - Share Data Like Developers Share Code">
+    <meta property="og:description" content="Finally, a pastebin that understands tables. Paste data, get formatted table link.">
+    <meta property="og:url" content="https://table-share.org/blog/pastebin-for-tables">
+    <meta property="og:type" content="article">
+
+    <link rel="canonical" href="https://table-share.org/blog/pastebin-for-tables">
+    <link rel="stylesheet" href="/styles.css">
+    <link rel="stylesheet" href="/blog.css">
+    <link rel="icon" href="/logo.png" type="image/png">
+
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "Article",
+      "headline": "Pastebin for Tables: Share Data Like Developers Share Code",
+      "datePublished": "2026-01-03",
+      "author": {"@type": "Organization", "name": "Table Share"},
+      "publisher": {"@type": "Organization", "name": "Table Share", "logo": {"@type": "ImageObject", "url": "https://table-share.org/logo.png"}}
+    }
+    </script>
+</head>
+<body>
+    <header class="blog-header">
+        <a href="/"><img src="/logo.png" alt="Table Share Logo" class="blog-header-logo"><strong>Table Share</strong></a>
+        <div><button id="themeToggle" class="blog-theme-toggle" aria-label="Toggle dark mode">🌙</button></div>
+    </header>
+
+    <nav class="blog-nav"><a href="/blog" class="blog-back-link">← Back to Blog</a></nav>
+
+    <article class="blog-container blog-content">
+        <h1 class="blog-title">Pastebin for Tables: Share Data Like Developers Share Code</h1>
+        <p class="blog-meta"><time datetime="2026-01-03">January 3, 2026</time> • 4 min read</p>
+
+        <section class="blog-section">
+            <h2>Developers Have Pastebin. Where's the Equivalent for Data?</h2>
+            <p>Developers solved code sharing years ago. Need to share a snippet? Paste it on Pastebin, Gist, or Hastebin. Get a link. Done.</p>
+            <p>But what about tabular data? SQL query results, CSV exports, spreadsheet ranges - they all get mangled when you paste them into chat. The formatting disappears. Columns misalign. It becomes unreadable.</p>
+            <p><strong>Table Share is pastebin for tables.</strong> Same workflow, but designed for structured data.</p>
+        </section>
+
+        <section class="blog-card-highlight">
+            <h2>How It Works</h2>
+            <div class="blog-card">
+                <h3>1. Copy Your Data</h3>
+                <p>Select data from any source: Excel, Google Sheets, database output, CSV file, terminal output.</p>
+            </div>
+            <div class="blog-card">
+                <h3>2. Paste on Table Share</h3>
+                <p>Go to <a href="https://table-share.org">table-share.org</a> and paste. That's it.</p>
+            </div>
+            <div class="blog-card">
+                <h3>3. Share the Link</h3>
+                <p>Link is auto-copied to clipboard. Recipients see a clean, formatted HTML table.</p>
+            </div>
+        </section>
+
+        <section class="blog-section">
+            <h2>Pastebin vs Table Share</h2>
+            <div class="blog-table-wrapper">
+                <table class="blog-table">
+                    <thead><tr><th>Feature</th><th>Pastebin</th><th>Table Share</th></tr></thead>
+                    <tbody>
+                        <tr><td>Best for</td><td>Code snippets</td><td>Tabular data</td></tr>
+                        <tr><td>Formatting</td><td>Syntax highlighting</td><td>HTML table rendering</td></tr>
+                        <tr><td>CSV support</td><td>Raw text only</td><td>Auto-parsed into columns</td></tr>
+                        <tr><td>Mobile view</td><td>Monospace text</td><td>Responsive table</td></tr>
+                        <tr><td>Export</td><td>Copy text</td><td>Download as CSV</td></tr>
+                        <tr><td>Signup required</td><td>No</td><td>No</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <section class="blog-section">
+            <h2>Perfect For</h2>
+            <ul>
+                <li><strong>Database developers:</strong> Share query results without screenshots</li>
+                <li><strong>Data analysts:</strong> Quick previews of pandas/R dataframes</li>
+                <li><strong>DevOps:</strong> Share log tables, metrics, server lists</li>
+                <li><strong>Anyone:</strong> Who needs to share structured data fast</li>
+            </ul>
+        </section>
+
+        <section class="blog-cta">
+            <h2>Try the Pastebin for Tables</h2>
+            <p>No signup. No download. Just paste and share.</p>
+            <a href="/" class="blog-cta-button">Paste Your Data →</a>
+        </section>
+    </article>
+
+    <footer class="blog-footer">
+        <p class="blog-footer-links"><a href="/">Home</a> • <a href="/pricing">Pricing</a> • <a href="/blog">Blog</a> • <a href="/terms">Terms</a> • <a href="/privacy">Privacy</a></p>
+        <p class="blog-footer-text">© 2026 Table Share</p>
+    </footer>
+
+    <script src="/shared-theme.js"></script>
+    <script>
+        function initThemeToggle() {
+            const themeToggle = document.getElementById('themeToggle');
+            if (themeToggle && window.SharedTheme) {
+                themeToggle.addEventListener('click', () => {
+                    const current = document.documentElement.getAttribute('data-theme');
+                    window.SharedTheme.applyTheme(current === 'dark' ? 'light' : 'dark');
+                });
+                return true;
+            }
+            return false;
+        }
+        if (!initThemeToggle()) {
+            document.addEventListener('DOMContentLoaded', () => {
+                if (!initThemeToggle()) setTimeout(initThemeToggle, 100);
+            });
+        }
+    </script>
+</body>
+</html>`;
+
 export default {
   async fetch(request, env, ctx) {
     try {
@@ -1930,6 +2581,18 @@ export default {
 
       if (pathname === '/blog/google-sheets-alternatives') {
         return new Response(BLOG_SHEETS_HTML, {
+          headers: { 'Content-Type': 'text/html', ...corsHeaders }
+        });
+      }
+
+      if (pathname === '/blog/share-csv-online') {
+        return new Response(BLOG_CSV_HTML, {
+          headers: { 'Content-Type': 'text/html', ...corsHeaders }
+        });
+      }
+
+      if (pathname === '/blog/pastebin-for-tables') {
+        return new Response(BLOG_PASTEBIN_HTML, {
           headers: { 'Content-Type': 'text/html', ...corsHeaders }
         });
       }
@@ -2141,6 +2804,20 @@ export default {
           return new Response('Analytics error: ' + error.message, {
             status: 500,
             headers: { 'Content-Type': 'text/plain' }
+          });
+        }
+      }
+
+      if (pathname === '/api/stats' && request.method === 'GET') {
+        try {
+          const { getTotalMetric } = await import('./utils/analytics.js');
+          const total = await getTotalMetric(env.TABLES, 'tables_created', 30);
+          return new Response(JSON.stringify({ total: total || 0 }), {
+            headers: { 'Content-Type': 'application/json', 'Cache-Control': 'public, max-age=300', ...corsHeaders }
+          });
+        } catch (error) {
+          return new Response(JSON.stringify({ total: 0 }), {
+            headers: { 'Content-Type': 'application/json', ...corsHeaders }
           });
         }
       }

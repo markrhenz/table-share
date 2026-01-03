@@ -1,0 +1,259 @@
+/* ========================================
+   Pricing page-specific styles for Table Share
+   ======================================== */
+
+.pricing-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 2rem;
+  margin: 3rem 0;
+}
+
+.tier {
+  border: 2px solid var(--border-color);
+  padding: 2rem;
+  text-align: center;
+  background: var(--bg-color);
+}
+
+.tier.pro {
+  border: 3px solid var(--link-color);
+  position: relative;
+}
+
+.tier h2 {
+  font-size: 2rem;
+  margin-bottom: 1rem;
+  color: var(--text-color);
+}
+
+.price {
+  font-size: 3rem;
+  font-weight: 700;
+  margin: 1rem 0;
+  color: var(--text-color);
+}
+
+.price small {
+  font-size: 1rem;
+  color: var(--muted-color);
+}
+
+.tier ul {
+  list-style: none;
+  text-align: left;
+  margin: 2rem 0;
+}
+
+.tier li {
+  padding: 0.5rem 0;
+  color: var(--text-color);
+}
+
+.cta-button {
+  display: inline-block;
+  background: var(--text-color);
+  color: var(--bg-color);
+  border: 2px solid var(--text-color);
+  padding: 1rem 2rem;
+  font-size: 1rem;
+  font-weight: 600;
+  text-decoration: none;
+  cursor: pointer;
+  margin-top: 1rem;
+}
+
+.cta-button:hover {
+  background: var(--bg-color);
+  color: var(--text-color);
+}
+
+.tier.pro .cta-button {
+  background: var(--link-color);
+  border-color: var(--link-color);
+  color: white;
+}
+
+.tier.pro .cta-button:hover {
+  background: var(--bg-color);
+  color: var(--link-color);
+}
+
+[data-theme="dark"] .tier {
+  background: var(--bg-color);
+}
+
+[data-theme="dark"] .tier.pro {
+  border-color: var(--link-color);
+}
+
+/* Page Header */
+.pricing-header {
+  text-align: center;
+  margin-bottom: 60px;
+}
+
+.pricing-title {
+  font-size: 48px;
+  margin: 0;
+  color: var(--text-color);
+}
+
+.pricing-subtitle {
+  font-size: 20px;
+  color: var(--muted-color);
+  margin-top: 20px;
+}
+
+/* Social Proof */
+.social-proof {
+  margin-top: 40px;
+  padding: 20px;
+  border: 2px solid var(--border-color);
+  background: rgba(0, 0, 0, 0.02);
+}
+
+[data-theme="dark"] .social-proof {
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.social-proof-text {
+  font-size: 24px;
+  font-weight: bold;
+  margin: 0;
+  color: var(--text-color);
+}
+
+/* Tier Badges */
+.tier-badge {
+  padding: 10px;
+  margin: 20px 0;
+  font-weight: bold;
+  color: white;
+}
+
+.tier-badge-free {
+  background: #4CAF50;
+}
+
+.tier-badge-pro {
+  background: #FF6B6B;
+}
+
+.launch-special {
+  background: #FFE135;
+  color: black;
+  padding: 15px;
+  margin: 20px 0;
+  font-weight: bold;
+  border: 2px solid var(--border-color);
+}
+
+.pro-disclaimer {
+  text-align: center;
+  margin-top: 10px;
+  font-size: 14px;
+  color: var(--muted-color);
+}
+
+/* Comparison Table */
+.comparison-section {
+  margin: 60px 0;
+  border: 2px solid var(--border-color);
+}
+
+.comparison-header {
+  background: rgba(0, 0, 0, 0.02);
+  padding: 20px;
+  text-align: center;
+  border-bottom: 2px solid var(--border-color);
+}
+
+[data-theme="dark"] .comparison-header {
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.comparison-title {
+  margin: 0;
+  font-size: 32px;
+  color: var(--text-color);
+}
+
+.comparison-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.comparison-table thead tr {
+  background: rgba(0, 0, 0, 0.02);
+}
+
+[data-theme="dark"] .comparison-table thead tr {
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.comparison-table th {
+  padding: 15px;
+  border-bottom: 2px solid var(--border-color);
+  font-size: 18px;
+  color: var(--text-color);
+}
+
+.comparison-table th:first-child {
+  text-align: left;
+}
+
+.comparison-table th:not(:first-child) {
+  text-align: center;
+}
+
+.comparison-table td {
+  padding: 15px;
+  border-bottom: 1px solid var(--border-color);
+  color: var(--text-color);
+}
+
+.comparison-table td:first-child {
+  font-weight: bold;
+}
+
+.comparison-table td:not(:first-child) {
+  text-align: center;
+}
+
+.comparison-table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.comparison-table .highlight {
+  font-weight: bold;
+}
+
+/* Footer Section */
+.pricing-footer {
+  text-align: center;
+  margin-top: 60px;
+}
+
+.pricing-footer p {
+  color: var(--muted-color);
+}
+
+.pricing-footer .back-link {
+  margin-top: 20px;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .pricing-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .pricing-title {
+    font-size: 36px;
+  }
+
+  .comparison-title {
+    font-size: 24px;
+  }
+}

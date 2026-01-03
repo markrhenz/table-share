@@ -1,162 +1,184 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Table Share - The Fastest Way to Share a Table</title>
-    <link rel="stylesheet" href="/styles.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Table Share</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: system-ui, -apple-system, sans-serif;
+      max-width: 700px;
+      margin: 40px auto;
+      padding: 20px;
+      background: #fff;
+      color: #000;
+      line-height: 1.5;
+    }
+
+    h1 {
+      font-size: 24px;
+      font-weight: normal;
+      margin-bottom: 8px;
+    }
+
+    .tagline {
+      font-size: 14px;
+      color: #666;
+      margin-bottom: 20px;
+    }
+
+    #dataInput {
+      width: 100%;
+      height: 300px;
+      font-family: Consolas, Monaco, monospace;
+      font-size: 14px;
+      border: 2px solid #000;
+      padding: 10px;
+      margin-bottom: 10px;
+    }
+
+    #generateBtn {
+      background: #0066CC;
+      color: #fff;
+      border: none;
+      padding: 12px 24px;
+      font-size: 16px;
+      cursor: pointer;
+      display: none;
+    }
+
+    #status {
+      color: #228B22;
+      margin-top: 10px;
+      display: none;
+    }
+
+    #status.show { display: block; }
+
+    footer {
+      margin-top: 40px;
+      padding-top: 20px;
+      border-top: 2px solid #000;
+      text-align: center;
+      font-size: 12px;
+      color: #666;
+    }
+
+    footer a {
+      color: #0066CC;
+      text-decoration: none;
+    }
+  </style>
 </head>
 <body>
-    <header>
-        <img src="/logo.png" width="48" height="48" alt="Table Share" class="logo">
-        <h1 class="logo-text">Table Share</h1>
-        <p class="tagline">The fastest way to share a table</p>
-        <p class="cta">Stop taking screenshots. Paste your data and get an instant shareable link.</p>
-    </header>
-    <main>
-        <textarea id="pasteBox" class="paste-box" placeholder="Paste your table data here (from Excel, Google Sheets, CSV, or anywhere)...
+  <h1>Table Share</h1>
+  <p class="tagline">Paste your table. Get a link.</p>
 
-Example:
-Name    Age    City
-Alice   30     NYC
-Bob     25     LA"></textarea>
-        <button id="generateBtn" class="button">Generate Link</button>
-        <div id="status" class="status"></div>
-        <section class="how-it-works">
-            <h2>How It Works</h2>
-            <div class="steps">
-                <div class="step">
-                    <div class="step-number">1</div>
-                    <h3>Paste</h3>
-                    <p>Copy data from Excel, Sheets, CSV, or any table</p>
-                </div>
-                <div class="step">
-                    <div class="step-number">2</div>
-                    <h3>Generate</h3>
-                    <p>Get an instant shareable link (auto-copied)</p>
-                </div>
-                <div class="step">
-                    <div class="step-number">3</div>
-                    <h3>Share</h3>
-                    <p>Send link anywhere. Recipients need no account.</p>
-                </div>
-            </div>
-        </section>
-        <section class="use-cases">
-            <h2>Perfect For</h2>
-            <div class="case-list">
-                <div class="case">
-                    <h3>🔧 Developers</h3>
-                    <p>Share SQL query results, API responses, or log data with teammates or clients instantly</p>
-                </div>
-                <div class="case">
-                    <h3>💼 Freelancers</h3>
-                    <p>Send pricing tables, project timelines, or deliverables without formatting nightmares</p>
-                </div>
-                <div class="case">
-                    <h3>👥 Teams</h3>
-                    <p>Quick data snapshots for meetings, action items, or temporary lists</p>
-                </div>
-                <div class="case">
-                    <h3>📊 Data Analysts</h3>
-                    <p>Share analysis results, pandas DataFrame outputs, or R data tables</p>
-                </div>
-            </div>
-        </section>
-        <section class="features">
-            <h2>Why Table Share?</h2>
-            <div class="feature-grid">
-                <div class="feature">
-                    <div class="feature-icon">⚡</div>
-                    <h3>5-Second Workflow</h3>
-                    <p>From paste to shareable link in under 5 seconds</p>
-                </div>
-                <div class="feature">
-                    <div class="feature-icon">🚫</div>
-                    <h3>No Accounts</h3>
-                    <p>Zero signup for you or recipients. Forever.</p>
-                </div>
-                <div class="feature">
-                    <div class="feature-icon">📱</div>
-                    <h3>Mobile-Perfect</h3>
-                    <p>Clean, readable tables on any device</p>
-                </div>
-                <div class="feature">
-                    <div class="feature-icon">🔒</div>
-                    <h3>Auto-Expires</h3>
-                    <p>Links expire in 30 days (privacy by default)</p>
-                </div>
-                <div class="feature">
-                    <div class="feature-icon">💾</div>
-                    <h3>CSV Download</h3>
-                    <p>Recipients can export to spreadsheet</p>
-                </div>
-                <div class="feature">
-                    <div class="feature-icon">🛡️</div>
-                    <h3>Security Built-In</h3>
-                    <p>XSS prevention, rate limiting, content filtering</p>
-                </div>
-            </div>
-        </section>
-    </main>
-    <footer>
-        <p>&copy; 2025 Table Share | <a href="mailto:markrhenz2@gmail.com">Contact</a> | <a href="/terms">Terms</a> | <a href="/privacy">Privacy</a></p>
-    </footer>
-    <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
-    <script>
-        const pasteBox = document.getElementById('pasteBox');
-        const generateBtn = document.getElementById('generateBtn');
-        const status = document.getElementById('status');
-        pasteBox.addEventListener('paste', () => {
-            setTimeout(() => {
-                if (pasteBox.value.trim()) {
-                    generateBtn.style.display = 'block';
-                }
-            }, 100);
+  <textarea id="dataInput" placeholder="Paste your table here (from Excel, Sheets, or CSV)"></textarea>
+
+  <button id="generateBtn">Generate Link</button>
+
+  <div id="status"></div>
+
+  <footer>
+    Created with <a href="/">Table Share</a>
+  </footer>
+
+  <!-- Honeypot for bot detection -->
+  <input type="text" name="website" id="website" style="position:absolute;left:-9999px;" tabindex="-1" autocomplete="off" aria-hidden="true">
+
+
+  <script>
+    const dataInput = document.getElementById('dataInput');
+    const generateBtn = document.getElementById('generateBtn');
+    const status = document.getElementById('status');
+
+    // Show button on paste
+    dataInput.addEventListener('paste', () => {
+      setTimeout(() => {
+        if (dataInput.value.trim()) {
+          generateBtn.style.display = 'block';
+        }
+      }, 100);
+    });
+
+    // Process on button click
+    generateBtn.addEventListener('click', processData);
+
+    async function processData() {
+      const rawData = dataInput.value.trim();
+
+      if (!rawData) return;
+
+      // Check honeypot
+      if (document.getElementById('website').value) {
+        showError('Invalid submission detected');
+        return;
+      }
+
+      // Show loading
+      status.textContent = 'Generating your link...';
+      status.classList.add('show');
+      generateBtn.style.display = 'none';
+
+      // Parse manually
+      const rows = rawData
+        .trim()
+        .split(/\r?\n/)
+        .map(row => row.trim().split(/\t|,/));
+
+      if (rows.length === 0) {
+        showError('No data found to share.');
+        return;
+      }
+
+      // Send to API
+      try {
+        const response = await fetch('/api/create', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            data: rows,
+            honeypot: document.getElementById('website').value
+          })
         });
-        pasteBox.addEventListener('input', () => {
-            if (pasteBox.value.trim()) {
-                generateBtn.style.display = 'block';
-            } else {
-                generateBtn.style.display = 'none';
-            }
-        });
-        generateBtn.addEventListener('click', async () => {
-            const data = pasteBox.value.trim();
-            if (!data) return;
-            status.textContent = 'Generating link...';
-            generateBtn.disabled = true;
-            try {
-                const parsed = Papa.parse(data, {
-                    quoteChar: '"',
-                    escapeChar: '"',
-                    header: false,
-                    dynamicTyping: false,
-                    skipEmptyLines: true
-                });
-                const response = await fetch('/api/create', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        data: parsed.data,
-                        honeypot: ''
-                    })
-                });
-                const result = await response.json();
-                if (result.url) {
-                    await navigator.clipboard.writeText(result.url);
-                    status.textContent = '✓ Link copied to clipboard!';
-                    setTimeout(() => {
-                        globalThis.location.href = result.url;
-                    }, 1000);
-                } else {
-                    throw new Error('Failed to generate link');
-                }
-            } catch (error) {
-                status.textContent = '✗ Error: ' + error.message;
-                generateBtn.disabled = false;
-            }
-        });
-    </script>
+
+        const result = await response.json();
+
+        if (!response.ok) {
+          throw new Error(result.error || 'Failed to create table');
+        }
+
+        // Copy to clipboard
+        await navigator.clipboard.writeText(result.url);
+
+        // Show success
+        showSuccess('✓ Link copied!');
+
+        // Clear after 3 seconds
+        setTimeout(() => {
+          status.classList.remove('show');
+        }, 3000);
+
+      } catch (error) {
+        showError(error.message);
+      }
+    }
+
+    function showSuccess(message) {
+      status.textContent = message;
+      status.classList.add('show');
+    }
+
+    function showError(message) {
+      status.textContent = message;
+      status.classList.add('show');
+      generateBtn.style.display = 'block';
+    }
+  </script>
 </body>
 </html>

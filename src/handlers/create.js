@@ -22,11 +22,11 @@ export async function handleCreate(request, env) {
     // 3. Parse body
     const { data, title, honeypot, apiKey, password, expiry, noBranding } = await request.json();
     
-    // Validate API key and determine tier
+    // 4. Validate API key
     const { valid: isProUser, tier } = await validateApiKey(apiKey, env.TABLES);
 
-    // 4. Validate and set expiry
-    let finalExpiry = 2592000; // Default 30 days
+    // 5. Validate and set expiry
+    let finalExpiry = 604800; // Default 7 days (FREE tier)
     if (expiry) {
       const requestedExpiry = parseInt(expiry);
       if (tier === 'pro') {
@@ -35,12 +35,12 @@ export async function handleCreate(request, env) {
           finalExpiry = requestedExpiry;
         }
       } else {
-        // Free users forced to 30 days max
-        finalExpiry = Math.min(requestedExpiry, 2592000);
+        // Free users forced to 7 days max
+        finalExpiry = Math.min(requestedExpiry, 604800);
       }
     }
 
-    // 5. Honeypot check
+    // 6. Honeypot check
     if (honeypot) {
       return new Response(JSON.stringify({ error: 'Invalid submission' }), {
         status: 400,
@@ -48,7 +48,7 @@ export async function handleCreate(request, env) {
       });
     }
 
-    // 6. Validate input
+    // 7. Validate input
     const validation = validateInput(data, tier);
     if (!validation.valid) {
       return new Response(JSON.stringify({ error: validation.error }), {
@@ -57,16 +57,16 @@ export async function handleCreate(request, env) {
       });
     }
 
-    // 7. Sanitize all cells
+    // 8. Sanitize all cells
     const sanitizedData = data.map(row => row.map(cell => sanitizeCell(cell)));
 
-    // 8. Normalize rows to uniform length
+    // 9. Normalize rows to uniform length
     const maxCols = Math.max(...sanitizedData.map(row => row.length));
     sanitizedData.forEach(row => {
       while (row.length < maxCols) row.push("");
     });
 
-    // 9. Check malicious content in all cells
+    // 10. Check malicious content
     for (const row of sanitizedData) {
       for (const cell of row) {
         if (detectMaliciousContent(cell)) {
@@ -78,7 +78,7 @@ export async function handleCreate(request, env) {
       }
     }
 
-    // 8. Hash password if provided
+    // 11. Hash password if provided
     let passwordHash = null;
     if (password && password.trim()) {
       const encoder = new TextEncoder();
@@ -88,21 +88,24 @@ export async function handleCreate(request, env) {
       passwordHash = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
     }
 
-    // 10. Generate ID
+    // 12. Generate ID
     const id = await generateUniqueId(env.TABLES);
 
-    // 11. Store in KV
+    // 13. Store in KV
     const tableData = {
        data: sanitizedData,
        title: title || null,
        createdAt: new Date().toISOString(),
+       expiresAt: new Date(Date.now() + finalExpiry * 1000).toISOString(),
        rowCount: sanitizedData.length,
        colCount: maxCols,
        passwordHash: passwordHash,
-       noBranding: noBranding || false
+       noBranding: noBranding || false,
+       tier: tier
      };
     await env.TABLES.put(id, JSON.stringify(tableData), { expirationTtl: finalExpiry });
 
+    // 14. Track analytics
     // Track analytics (fail silently, don't block user)
     try {
       await incrementMetric(env.TABLES, 'tables_created');
@@ -114,7 +117,7 @@ export async function handleCreate(request, env) {
       // Don't throw - analytics failure shouldn't break table creation
     }
 
-    // 11. Return success
+    // 15. Return success
     const url = `${new URL(request.url).origin}/t/${id}`;
     return new Response(JSON.stringify({
       id,

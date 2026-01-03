@@ -9,7 +9,7 @@ The fastest way to share a table. Paste your data, get an instant shareable link
 - 📱 **Mobile-friendly**: Works on any device
 - 💾 **CSV Export**: Recipients can download data
 - 🌓 **Dark Mode**: Built-in theme support
-- ⏰ **Auto-expires**: Links expire after 30 days (or custom)
+- ⏰ **Auto-expires**: Links expire after 7 days (or custom up to 30 days for Pro)
 
 ## Deployment
 

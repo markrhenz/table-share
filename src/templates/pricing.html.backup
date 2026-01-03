@@ -1,0 +1,402 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pricing - Table Share</title>
+    <link rel="icon" type="image/png" href="/logo.png">
+    <style>
+        :root {
+            --bg-color: #fff;
+            --text-color: #000;
+            --secondary-bg: #f5f5f5;
+            --border-color: #000;
+            --accent-color: #0066cc;
+            --muted-color: #666;
+        }
+        [data-theme="dark"] {
+            --bg-color: #1a1a1a;
+            --text-color: #fff;
+            --secondary-bg: #2a2a2a;
+            --border-color: #fff;
+            --accent-color: #4da6ff;
+            --muted-color: #aaa;
+        }
+/* Header - Bulletproof Responsive Layout */
+header {
+  position: sticky;
+  top: 0;
+  background: #fff;
+  border-bottom: 2px solid #000;
+  padding: 10px 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+  z-index: 1000;
+  min-height: 52px; /* Consistent height */
+}
+
+[data-theme="dark"] header {
+  background: #000;
+  border-bottom-color: #fff;
+}
+
+/* Left side: Logo + Title */
+.header-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex: 1;
+  min-width: 0; /* Allow flex shrinking */
+  overflow: hidden; /* Prevent overflow */
+}
+
+.header-logo {
+  height: 32px;
+  width: auto;
+  flex-shrink: 0; /* Logo never shrinks */
+  display: block;
+}
+
+[data-theme="dark"] .header-logo {
+  filter: invert(1);
+}
+
+.header-title {
+  margin: 0;
+  font-size: 20px;
+  font-weight: bold;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis; /* Add ... if too long */
+  flex: 1;
+  min-width: 0;
+}
+
+/* Theme Toggle Button */
+#themeToggle {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  border: 2px solid #000;
+  background: #fff;
+  cursor: pointer;
+  font-size: 13px;
+  white-space: nowrap;
+  transition: all 0.2s ease;
+  touch-action: manipulation;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+  flex-shrink: 0; /* Button never shrinks */
+}
+
+[data-theme="dark"] #themeToggle {
+  background: #000;
+  color: #fff;
+  border-color: #fff;
+}
+
+#themeToggle:hover {
+  opacity: 0.8;
+}
+
+#themeToggle:active {
+  transform: scale(0.95);
+}
+
+.theme-icon {
+  font-size: 14px;
+  line-height: 1;
+}
+
+.theme-text {
+  font-size: 13px;
+}
+
+/* Tablet (768px and below) */
+@media (max-width: 768px) {
+  header {
+    padding: 8px 15px;
+    min-height: 44px;
+  }
+
+  .header-left {
+    gap: 10px;
+  }
+
+  .header-logo {
+    height: 26px;
+  }
+
+  .header-title {
+    font-size: 16px;
+  }
+
+  #themeToggle {
+    padding: 5px 10px;
+    gap: 5px;
+  }
+
+  .theme-icon {
+    font-size: 13px;
+  }
+
+  .theme-text {
+    font-size: 12px;
+  }
+}
+
+/* Small Mobile (480px and below) */
+@media (max-width: 480px) {
+  header {
+    padding: 6px 12px;
+    min-height: 40px;
+  }
+
+  .header-left {
+    gap: 8px;
+  }
+
+  .header-logo {
+    height: 22px;
+  }
+
+  .header-title {
+    font-size: 14px;
+    max-width: 120px; /* Prevent pushing button off */
+  }
+
+  #themeToggle {
+    padding: 4px 8px;
+    gap: 4px;
+    border-width: 1px;
+  }
+
+  .theme-icon {
+    font-size: 12px;
+  }
+
+  .theme-text {
+    font-size: 11px;
+  }
+}
+
+/* Tiny Mobile (360px and below) */
+@media (max-width: 360px) {
+  header {
+    padding: 5px 10px;
+    min-height: 36px;
+  }
+
+  .header-logo {
+    height: 20px;
+  }
+
+  .header-title {
+    font-size: 12px;
+    max-width: 80px; /* Force truncation */
+  }
+
+  #themeToggle {
+    padding: 3px 6px;
+    gap: 3px;
+  }
+
+  .theme-icon {
+    font-size: 11px;
+  }
+
+  .theme-text {
+    display: none; /* Hide "Dark"/"Light" text, icon only */
+  }
+}
+
+        /* Main Content Spacing */
+        body {
+          font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif;
+          max-width: 1000px;
+          margin: 0 auto;
+          padding: 20px;
+          background: var(--bg-color);
+          color: var(--text-color);
+          padding-top: 80px; /* Space below sticky header */
+        }
+        .pricing-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 40px; margin: 60px 0; }
+        .tier { border: 2px solid var(--border-color); padding: 40px; }
+        .tier.pro { background: var(--secondary-bg); }
+        .tier h2 { font-size: 32px; margin-bottom: 10px; }
+        .price { font-size: 48px; font-weight: 700; margin: 20px 0; }
+        .price small { font-size: 18px; color: var(--muted-color); }
+        .tier ul { list-style: none; margin: 30px 0; }
+        .tier li { padding: 10px 0; border-bottom: 1px solid var(--border-color); }
+        .tier li:last-child { border-bottom: none; }
+        .cta-button { display: block; width: 100%; padding: 15px; background: var(--accent-color); color: #fff; text-align: center; text-decoration: none; font-size: 18px; font-weight: 600; margin-top: 20px; }
+        .cta-button:hover { background: #0052A3; }
+
+[data-theme="dark"] body > div:first-child {
+  background: #000 !important;
+  border-bottom-color: #fff !important;
+  color: #fff;
+}
+
+[data-theme="dark"] #themeToggle {
+  background: #000 !important;
+  color: #fff !important;
+  border-color: #fff !important;
+}
+
+[data-theme="dark"] img {
+  filter: invert(1);
+}
+@media (max-width: 600px) {
+  body > div:first-child {
+    padding: 8px 15px !important;
+  }
+  body > div:first-child img {
+    height: 20px !important;
+  }
+  body > div:first-child span {
+    font-size: 14px !important;
+  }
+  #themeToggle {
+    padding: 3px 8px !important;
+    font-size: 11px !important;
+  }
+}
+        @media (max-width: 768px) { .pricing-grid { grid-template-columns: 1fr; } }
+    </style>
+</head>
+<body>
+<div style="position: fixed; top: 0; left: 0; right: 0; width: 100%; background: #fff; border-bottom: 2px solid #000; padding: 10px 20px; display: flex; justify-content: space-between; align-items: center; z-index: 9999; box-sizing: border-box;">
+  <div style="display: flex; align-items: center; gap: 10px;">
+    <img src="/logo.png" alt="" style="height: 24px;">
+    <span style="font-size: 16px; font-weight: bold;">Table Share</span>
+  </div>
+  <div class="controls" style="display: flex; align-items: center; gap: 16px; flex-shrink: 0;">
+    <button id="themeToggle" class="theme-toggle" style="width: 40px; height: 40px; border-radius: 50%; border: 2px solid #000; background: #fff; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.2s; font-size: 16px;" aria-label="Toggle dark mode">🌙</button>
+  </div>
+</div>
+
+<!-- Add spacer so content doesn't hide under fixed header -->
+<div style="height: 60px;"></div>
+    <div style="text-align: center; margin-bottom: 60px;">
+        <h1 style="font-size: 48px; margin: 0;">Pricing</h1>
+        <p style="font-size: 20px; color: var(--muted-color); margin-top: 20px;">Choose the plan that fits your needs</p>
+        
+        <!-- Social Proof Section -->
+        <div style="margin-top: 40px; padding: 20px; border: 2px solid var(--border-color); background: var(--secondary-bg);">
+            <p style="font-size: 24px; font-weight: bold; margin: 0;">Used by 500+ developers and analysts</p>
+        </div>
+    </div>
+    
+    <div class="pricing-grid">
+        <div class="tier">
+            <h2>Free</h2>
+            <div style="background: #4CAF50; color: white; padding: 10px; margin: 20px 0; font-weight: bold;">
+                Perfect for ad-hoc sharing
+            </div>
+            <div class="price">$0<small>/forever</small></div>
+            <ul>
+                <li>✓ 500 rows max</li>
+                <li>✓ 50 columns max</li>
+                <li>✓ 7-day expiration</li>
+                <li>✓ CSV download</li>
+                <li>✓ Dark mode</li>
+                <li>✓ No signup required</li>
+            </ul>
+            <a href="/" class="cta-button">Start Free</a>
+        </div>
+        
+        <div class="tier pro">
+            <h2>Pro</h2>
+            <div style="background: #FF6B6B; color: white; padding: 10px; margin: 20px 0; font-weight: bold;">
+                For power users who share daily
+            </div>
+            <div style="background: #FFE135; color: black; padding: 15px; margin: 20px 0; font-weight: bold; border: 2px solid #000;">
+                🚀 Launch Special: $5 (normally $10)
+            </div>
+            <div class="price">$5<small>/one-time</small></div>
+            <ul>
+                <li>✓ <strong>5,000 rows</strong> (10x increase)</li>
+                <li>✓ <strong>100 columns</strong> (2x increase)</li>
+                <li>✓ <strong>Custom expiration</strong> (1-90 days)</li>
+                <li>✓ <strong>Password protection</strong></li>
+                <li>✓ <strong>Remove branding</strong></li>
+                <li>✓ <strong>API access</strong></li>
+                <li>✓ <strong>1 year validity</strong></li>
+            </ul>
+            <a href="https://ko-fi.com/s/0a371a6316" class="cta-button">Get Pro Access</a>
+            <p style="text-align: center; margin-top: 10px; font-size: 14px; color: var(--muted-color);">One-time payment. No subscription.</p>
+        </div>
+    </div>
+    
+    <!-- Comparison Table -->
+    <div style="margin: 60px 0; border: 2px solid var(--border-color);">
+        <div style="background: var(--secondary-bg); padding: 20px; text-align: center; border-bottom: 2px solid var(--border-color);">
+            <h2 style="margin: 0; font-size: 32px;">Feature Comparison</h2>
+        </div>
+        <table style="width: 100%; border-collapse: collapse;">
+            <thead>
+                <tr style="background: var(--secondary-bg);">
+                    <th style="padding: 15px; text-align: left; border-bottom: 2px solid var(--border-color); font-size: 18px;">Feature</th>
+                    <th style="padding: 15px; text-align: center; border-bottom: 2px solid var(--border-color); font-size: 18px;">Free</th>
+                    <th style="padding: 15px; text-align: center; border-bottom: 2px solid var(--border-color); font-size: 18px;">Pro ($5)</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td style="padding: 15px; border-bottom: 1px solid var(--border-color); font-weight: bold;">Tables per day</td>
+                    <td style="padding: 15px; text-align: center; border-bottom: 1px solid var(--border-color);">10</td>
+                    <td style="padding: 15px; text-align: center; border-bottom: 1px solid var(--border-color); font-weight: bold;">Unlimited</td>
+                </tr>
+                <tr>
+                    <td style="padding: 15px; border-bottom: 1px solid var(--border-color); font-weight: bold;">Expiry</td>
+                    <td style="padding: 15px; text-align: center; border-bottom: 1px solid var(--border-color);">7 days</td>
+                    <td style="padding: 15px; text-align: center; border-bottom: 1px solid var(--border-color); font-weight: bold;">90 days</td>
+                </tr>
+                <tr>
+                    <td style="padding: 15px; border-bottom: 1px solid var(--border-color); font-weight: bold;">Password protect</td>
+                    <td style="padding: 15px; text-align: center; border-bottom: 1px solid var(--border-color);">❌</td>
+                    <td style="padding: 15px; text-align: center; border-bottom: 1px solid var(--border-color); font-weight: bold;">✅</td>
+                </tr>
+                <tr>
+                    <td style="padding: 15px; font-weight: bold;">Custom branding</td>
+                    <td style="padding: 15px; text-align: center;">❌</td>
+                    <td style="padding: 15px; text-align: center; font-weight: bold;">✅</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+    
+    <div style="text-align: center; margin-top: 60px;">
+        <p style="color: var(--muted-color);">Questions? <a href="mailto:markrhenz@table-share.org" style="color: var(--accent-color);">Contact us</a></p>
+        <p style="margin-top: 20px;"><a href="/" style="color: var(--accent-color);">← Back to Table Share</a></p>
+    </div>
+    <script src="/shared-theme.js"></script>
+    <script>
+        // Initialize theme toggle using shared script
+        function initThemeToggle() {
+            const themeToggle = document.getElementById('themeToggle');
+            if (themeToggle && window.SharedTheme) {
+                themeToggle.addEventListener('click', () => {
+                    const current = document.documentElement.getAttribute('data-theme');
+                    window.SharedTheme.applyTheme(current === 'dark' ? 'light' : 'dark');
+                });
+                return true;
+            }
+            return false;
+        }
+        
+        // Try immediate initialization, fall back to DOMContentLoaded
+        if (!initThemeToggle()) {
+            document.addEventListener('DOMContentLoaded', () => {
+                if (!initThemeToggle()) {
+                    setTimeout(initThemeToggle, 100);
+                }
+            });
+        }
+    </script>
+</body>
+</html>

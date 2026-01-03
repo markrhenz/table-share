@@ -275,7 +275,7 @@ const VIEW_TEMPLATE = `<!DOCTYPE html>
   {{else}}
   <footer>
     Created with <a href="/">Table Share</a> |
-    <a href="mailto:markrhenz2@gmail.com?subject=Report Table {{TABLE_ID}}">
+    <a href="mailto:markrhenz@table-share.org?subject=Report Table {{TABLE_ID}}">
       Report Abuse
     </a>
   </footer>
@@ -355,7 +355,25 @@ export async function handleView(request, env, id) {
     }
 
     const tableData = JSON.parse(dataStr);
-    let { data, title, createdAt, passwordHash, noBranding } = tableData;
+    let { data, title, createdAt, expiresAt, passwordHash, noBranding } = tableData;
+
+    // Check for existing unlock cookie
+    if (passwordHash) {
+      const cookieHeader = request.headers.get('Cookie') || '';
+      const cookieName = `ts_unlock_${id}`;
+      const cookieMatch = cookieHeader.match(new RegExp(`${cookieName}=([^;]+)`));
+      
+      if (cookieMatch) {
+        const cookieValue = cookieMatch[1];
+        // Verify cookie matches password hash prefix
+        if (cookieValue === passwordHash.substring(0, 16)) {
+          // Valid cookie - skip password form, proceed to show table
+          // (fall through to table rendering)
+        } else {
+          // Invalid cookie - continue to password check
+        }
+      }
+    }
 
     // Check if password protected
     if (passwordHash) {
@@ -373,7 +391,17 @@ export async function handleView(request, env, id) {
           const submittedHash = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
 
           if (submittedHash === passwordHash) {
-            // Password correct, proceed to show table
+            // Password correct - set session cookie
+            const cookieName = `ts_unlock_${id}`;
+            const cookieValue = submittedHash.substring(0, 16); // First 16 chars of hash as token
+            const maxAge = 3600; // 1 hour
+            
+            // Create response with cookie header
+            // Continue to render table below, but we'll add Set-Cookie to final response
+            const unlockCookie = `${cookieName}=${cookieValue}; Max-Age=${maxAge}; HttpOnly; SameSite=Strict; Path=/t/${id}`;
+            
+            // Store cookie value to add to response headers later
+            request.unlockCookie = unlockCookie;
           } else {
             // Password incorrect, show form again with error
             return new Response(`
@@ -511,14 +539,10 @@ export async function handleView(request, env, id) {
       console.error('Analytics tracking failed:', error);
     }
 
-    // Calculate expiration (use actual TTL from KV if available, fallback to 30 days)
-    const created = new Date(createdAt);
-    // Note: We can't get the actual TTL from KV, so we estimate based on tier
-    // This is a limitation of Cloudflare KV - TTL is not exposed in get operations
-    const estimatedExpiryDays = tableData.passwordHash ? 90 : 30; // Rough estimate
-    const expiresAt = new Date(created.getTime() + estimatedExpiryDays * 24 * 60 * 60 * 1000);
+    // Calculate expiration using stored timestamp
     const now = new Date();
-    const daysLeft = Math.ceil((expiresAt - now) / (1000 * 60 * 60 * 24));
+    const expiryDate = expiresAt ? new Date(expiresAt) : new Date(new Date(createdAt).getTime() + 7 * 24 * 60 * 60 * 1000); // Fallback to 7 days for old tables
+    const daysLeft = Math.ceil((expiryDate - now) / (1000 * 60 * 60 * 24));
     
     const pageTitle = title ? `${title} - Table Share` : 'Table - Table Share';
     const tableTitle = title || 'Table';
@@ -559,17 +583,23 @@ export async function handleView(request, env, id) {
 
     // Handle conditional footer based on noBranding flag
     if (noBranding) {
-      html = html.replace(/{{#NO_BRANDING}}([\s\S]*?){{\/NO_BRANDING}}/g, '');
+      html = html.replace(/{{#NO_BRANDING}}[\s\S]*?{{else}}[\s\S]*?{{\/NO_BRANDING}}/g, '');
     } else {
-      html = html.replace(/{{#NO_BRANDING}}([\s\S]*?){{\/NO_BRANDING}}/g, '$1');
+      html = html.replace(/{{#NO_BRANDING}}[\s\S]*?{{else}}/g, '').replace(/{{\/NO_BRANDING}}/g, '');
+    }
+
+    const headers = {
+      'Content-Type': 'text/html',
+      'Cache-Control': 'public, max-age=3600'
+    };
+
+    if (request.unlockCookie) {
+      headers['Set-Cookie'] = request.unlockCookie;
     }
 
     return new Response(html, {
       status: 200,
-      headers: {
-        'Content-Type': 'text/html',
-        'Cache-Control': 'public, max-age=3600'
-      }
+      headers
     });
 
   } catch (error) {

@@ -1,0 +1,419 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{{TABLE_TITLE}} - Table Share</title>
+  <style>
+    :root {
+      --bg-color: #fff;
+      --text-color: #000;
+      --border-color: #000;
+      --accent-color: #0066cc;
+      --muted-color: #666;
+    }
+    [data-theme="dark"] {
+      --bg-color: #000;
+      --text-color: #fff;
+      --border-color: #fff;
+      --accent-color: #4da6ff;
+      --muted-color: #aaa;
+    }
+    body {
+      font-family: system-ui, sans-serif;
+      max-width: 900px;
+      margin: 40px auto;
+      padding: 20px;
+      background: var(--bg-color);
+      color: var(--text-color);
+    }
+
+    table {
+       width: 100%;
+       border: 2px solid var(--border-color);
+       border-collapse: collapse;
+       margin: 20px 0;
+       overflow-x: auto;
+       display: block;
+       box-sizing: border-box;
+     }
+
+    th {
+      background: var(--bg-color);
+      border: 1px solid var(--border-color);
+      padding: 10px;
+      text-align: left;
+      font-weight: 600;
+      color: var(--text-color);
+    }
+
+    td {
+      border: 2px solid var(--border-color);
+      padding: 10px;
+      color: var(--text-color);
+    }
+
+    .download-link {
+      display: block;
+      margin: 20px 0;
+      color: var(--accent-color);
+      text-decoration: none;
+    }
+
+    .download-link:hover {
+      text-decoration: underline;
+    }
+
+    footer {
+      margin-top: 40px;
+      padding-top: 20px;
+      border-top: 2px solid var(--border-color);
+      text-align: center;
+      font-size: 12px;
+      color: var(--muted-color);
+    }
+
+    footer a {
+      color: var(--accent-color);
+      text-decoration: none;
+    }
+
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 40px;
+    }
+
+    .header .logo-section {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .header .controls {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+/* Header - Bulletproof Responsive Layout */
+header {
+  position: sticky;
+  top: 0;
+  background: #fff;
+  border-bottom: 2px solid #000;
+  padding: 10px 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+  z-index: 1000;
+  min-height: 52px; /* Consistent height */
+}
+
+[data-theme="dark"] header {
+  background: #000;
+  border-bottom-color: #fff;
+}
+
+/* Left side: Logo + Title */
+.header-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex: 1;
+  min-width: 0; /* Allow flex shrinking */
+  overflow: hidden; /* Prevent overflow */
+}
+
+.header-logo {
+  height: 32px;
+  width: auto;
+  flex-shrink: 0; /* Logo never shrinks */
+  display: block;
+}
+
+[data-theme="dark"] .header-logo {
+  filter: invert(1);
+}
+
+.header-title {
+  margin: 0;
+  font-size: 20px;
+  font-weight: bold;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis; /* Add ... if too long */
+  flex: 1;
+  min-width: 0;
+}
+
+/* Theme Toggle Button */
+#themeToggle {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  border: 2px solid #000;
+  background: #fff;
+  cursor: pointer;
+  font-size: 13px;
+  white-space: nowrap;
+  transition: all 0.2s ease;
+  touch-action: manipulation;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+  flex-shrink: 0; /* Button never shrinks */
+}
+
+[data-theme="dark"] #themeToggle {
+  background: #000;
+  color: #fff;
+  border-color: #fff;
+}
+
+#themeToggle:hover {
+  opacity: 0.8;
+}
+
+#themeToggle:active {
+  transform: scale(0.95);
+}
+
+.theme-icon {
+  font-size: 14px;
+  line-height: 1;
+}
+
+.theme-text {
+  font-size: 13px;
+}
+
+/* Tablet (768px and below) */
+@media (max-width: 768px) {
+  header {
+    padding: 8px 15px;
+    min-height: 44px;
+  }
+
+  .header-left {
+    gap: 10px;
+  }
+
+  .header-logo {
+    height: 26px;
+  }
+
+  .header-title {
+    font-size: 16px;
+  }
+
+  #themeToggle {
+    padding: 5px 10px;
+    gap: 5px;
+  }
+
+  .theme-icon {
+    font-size: 13px;
+  }
+
+  .theme-text {
+    font-size: 12px;
+  }
+}
+
+/* Small Mobile (480px and below) */
+@media (max-width: 480px) {
+  header {
+    padding: 6px 12px;
+    min-height: 40px;
+  }
+
+  .header-left {
+    gap: 8px;
+  }
+
+  .header-logo {
+    height: 22px;
+  }
+
+  .header-title {
+    font-size: 14px;
+    max-width: 120px; /* Prevent pushing button off */
+  }
+
+  #themeToggle {
+    padding: 4px 8px;
+    gap: 4px;
+    border-width: 1px;
+  }
+
+  .theme-icon {
+    font-size: 12px;
+  }
+
+  .theme-text {
+    font-size: 11px;
+  }
+}
+
+/* Tiny Mobile (360px and below) */
+@media (max-width: 360px) {
+  header {
+    padding: 5px 10px;
+    min-height: 36px;
+  }
+
+  .header-logo {
+    height: 20px;
+  }
+
+  .header-title {
+    font-size: 12px;
+    max-width: 80px; /* Force truncation */
+  }
+
+  #themeToggle {
+    padding: 3px 6px;
+    gap: 3px;
+  }
+
+  .theme-icon {
+    font-size: 11px;
+  }
+
+  .theme-text {
+    display: none; /* Hide "Dark"/"Light" text, icon only */
+  }
+}
+
+    /* Main Content Spacing */
+    body {
+      margin: 0;
+      padding: 0;
+    }
+
+    table {
+      margin-top: 20px; /* Space below sticky header */
+    }
+
+[data-theme="dark"] body > div:first-child {
+  background: #000 !important;
+  border-bottom-color: #fff !important;
+  color: #fff;
+}
+
+[data-theme="dark"] #themeToggle {
+  background: #000 !important;
+  color: #fff !important;
+  border-color: #fff !important;
+}
+
+[data-theme="dark"] img {
+  filter: invert(1);
+}
+@media (max-width: 600px) {
+  body > div:first-child {
+    padding: 8px 15px !important;
+  }
+  body > div:first-child img {
+    height: 20px !important;
+  }
+  body > div:first-child span {
+    font-size: 14px !important;
+  }
+  #themeToggle {
+    padding: 3px 8px !important;
+    font-size: 11px !important;
+  }
+}
+  </style>
+</head>
+<body>
+<div style="position: fixed; top: 0; left: 0; right: 0; width: 100%; background: #fff; border-bottom: 2px solid #000; padding: 10px 20px; display: flex; justify-content: space-between; align-items: center; z-index: 9999; box-sizing: border-box;">
+  <div style="display: flex; align-items: center; gap: 10px;">
+    <img src="/logo.png" alt="" style="height: 24px;">
+    <span style="font-size: 16px; font-weight: bold;">Table Share</span>
+  </div>
+  <button id="themeToggle" style="padding: 4px 10px; border: 1px solid #000; background: #fff; cursor: pointer; font-size: 12px;">🌙</button>
+</div>
+
+<!-- Add spacer so content doesn't hide under fixed header -->
+<div style="height: 60px;"></div>
+  <table>
+    {{TABLE_HTML}}
+  </table>
+
+  <a href="#" class="download-link" onclick="downloadCSV()">Download CSV</a>
+
+  <footer>
+    Created with <a href="/">Table Share</a> | <a href="mailto:markrhenz@table-share.org?subject=Report Table {{TABLE_ID}}">Report Abuse</a>
+  </footer>
+
+  <script>
+    // Theme management
+    const themeToggle = document.getElementById('themeToggle');
+    function applyTheme(theme) {
+      document.documentElement.setAttribute('data-theme', theme);
+      localStorage.setItem('theme', theme);
+      updateButtonContent(theme);
+    }
+    function getPreferredTheme() {
+      const stored = localStorage.getItem('theme');
+      if (stored) return stored;
+      return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+    }
+    // Update button content (icon + text or icon only)
+    const updateButtonContent = function(theme) {
+      const icon = themeToggle.querySelector('.theme-icon');
+      const text = themeToggle.querySelector('.theme-text');
+
+      if (icon) icon.textContent = theme === 'dark' ? '☀️' : '🌙';
+      if (text) text.textContent = theme === 'dark' ? 'Light' : 'Dark';
+    };
+    applyTheme(getPreferredTheme());
+    themeToggle.addEventListener('click', () => {
+      const current = document.documentElement.getAttribute('data-theme');
+      applyTheme(current === 'dark' ? 'light' : 'dark');
+    });
+
+    function downloadCSV() {
+      const table = document.querySelector('table');
+      if (!table) {
+        alert('No table found to download');
+        return;
+      }
+
+      const rows = table.querySelectorAll('tr');
+      const csv = [];
+
+      rows.forEach(row => {
+        const cells = row.querySelectorAll('th, td');
+        const rowData = Array.from(cells).map(cell => {
+          let text = cell.textContent.trim();
+
+          // Escape CSV special characters
+          if (text.includes(',') || text.includes('"') || text.includes('\n')) {
+            text = '"' + text.replace(/"/g, '""') + '"';
+          }
+
+          return text;
+        });
+
+        csv.push(rowData.join(','));
+      });
+
+      // Create blob and download
+      const csvContent = csv.join('\n');
+      const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+      const url = window.URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = 'table-{{TABLE_ID}}.csv';
+      link.click();
+      window.URL.revokeObjectURL(url);
+    }
+  </script>
+</body>
+</html>

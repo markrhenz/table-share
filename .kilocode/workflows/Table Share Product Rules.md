@@ -5,7 +5,7 @@
 2. **Zero Friction**: No accounts, no signups, no complexity. Free tier must be fully functional.
 3. **Speed Target**: <5 second workflow from paste to shareable link.
 4. **Free Tier Limits**: 500 rows, 50 cols, 7-day expiry, 1MB size.
-5. **Pro Tier Limits**: 5000 rows, 100 cols, 90-day expiry, 5MB size.
+5. **Pro Tier Limits**: 5000 rows, 100 cols, 30-day expiry, 5MB size.
 
 ## TECHNICAL CONSTRAINTS
 1. **Platform**: Cloudflare Workers only. No Node.js-specific APIs.
@@ -42,12 +42,17 @@ src/
 5. ❌ localStorage (causes GDPR issues)
 6. ❌ External APIs except payment processors
 
+## CODE PRESERVATION GUIDELINES
+DO NOT remove unused constants, templates, handlers, or functions unless explicitly instructed.
+This project contains intentional scaffolding for unimplemented Pro features.
+"Unused" does NOT mean "safe to delete."
+
 ## REQUIRED PATTERNS
 1. ✅ All HTML in template literals inside index.js
 2. ✅ All routes inside `export default { async fetch() {}}` block
 3. ✅ Error handling in all async functions
 4. ✅ CORS headers on all responses
-5. ✅ TTL on all KV writes (7 days free, 90 days pro)
+5. ✅ TTL on all KV writes (7 days free, 30 days pro)
 
 ## WHEN ASKED TO ADD FEATURES
 Ask these questions BEFORE implementing:

@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Share SQL Query Results Instantly (Without Screenshots) | Table Share</title>
+    <meta name="description" content="Stop taking screenshots of SQL results. Share query output as clean HTML tables in seconds. Perfect for developers sharing data in Slack, Teams, or email.">
+    <meta name="keywords" content="sql results sharing, share query results, database output sharing, sql to html table, developer tools">
+    
+    <!-- Open Graph -->
+    <meta property="og:title" content="Share SQL Query Results Instantly">
+    <meta property="og:description" content="For developers: paste SQL results directly into shareable HTML tables. No more ugly screenshots.">
+    <meta property="og:url" content="https://table-share.org/blog/sql-results-sharing">
+    <meta property="og:type" content="article">
+    
+    <link rel="canonical" href="https://table-share.org/blog/sql-results-sharing">
+    <link rel="stylesheet" href="/styles.css">
+    <link rel="stylesheet" href="/blog.css">
+    <link rel="icon" href="/logo.png" type="image/png">
+    
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "Article",
+      "headline": "Share SQL Query Results Instantly (Without Screenshots)",
+      "datePublished": "2025-11-21",
+      "author": {
+        "@type": "Organization",
+        "name": "Table Share"
+      },
+      "publisher": {
+        "@type": "Organization",
+        "name": "Table Share",
+        "logo": {
+          "@type": "ImageObject",
+          "url": "https://table-share.org/logo.png"
+        }
+      }
+    }
+    </script>
+</head>
+<body>
+    <header class="blog-header">
+        <a href="/">
+            <img src="/logo.png" alt="Table Share Logo" class="blog-header-logo">
+            <strong>Table Share</strong>
+        </a>
+        <div>
+            <button id="themeToggle" class="blog-theme-toggle" aria-label="Toggle dark mode">🌙</button>
+        </div>
+    </header>
+
+    <nav class="blog-nav">
+        <a href="/blog" class="blog-back-link">← Back to Blog</a>
+    </nav>
+
+    <article class="blog-container blog-content">
+        <h1 class="blog-title">
+            Share SQL Query Results Instantly (Without Screenshots)
+        </h1>
+
+        <p class="blog-meta">
+            <time datetime="2025-11-21">November 21, 2025</time> • 4 min read
+        </p>
+
+        <section class="blog-section">
+            <h2>The Developer's Dilemma</h2>
+            <p>
+                You run a SQL query. The results look perfect. Now you need to share them with your team in Slack.
+            </p>
+            <p>
+                Your options:
+            </p>
+            <ul>
+                <li><strong>Screenshot:</strong> Blurry, not searchable, can't copy values</li>
+                <li><strong>Paste raw text:</strong> Formatting destroyed, unreadable mess</li>
+                <li><strong>Export to CSV:</strong> Extra steps, requires download, loses context</li>
+                <li><strong>Copy to Google Sheets:</strong> Overkill, requires login, too slow</li>
+            </ul>
+            <p>
+                There's a faster way that takes 5 seconds.
+            </p>
+        </section>
+
+        <section class="blog-section">
+            <h2>The 5-Second Solution</h2>
+
+            <div class="blog-card-highlight">
+                <h3>Step 1: Copy Query Results</h3>
+                <p>
+                    In your SQL client (MySQL Workbench, pgAdmin, DBeaver, etc.), select your query results and copy them.
+                </p>
+                <div class="blog-code-block">
+                    SELECT * FROM users LIMIT 10;
+                </div>
+            </div>
+
+            <div class="blog-card-highlight">
+                <h3>Step 2: Paste on Table Share</h3>
+                <p>
+                    Go to <a href="https://table-share.org">table-share.org</a> and paste (Ctrl+V).
+                </p>
+                <p>
+                    Your shareable link is instantly generated.
+                </p>
+            </div>
+
+            <div class="blog-card-highlight">
+                <h3>Step 3: Share in Slack/Teams</h3>
+                <p>
+                    Paste the link. Your team sees a clean, formatted HTML table. No screenshots, no formatting issues.
+                </p>
+            </div>
+        </section>
+
+        <section class="blog-section">
+            <h2>Why Developers Love This</h2>
+            <ul>
+                <li><strong>Fast:</strong> 5 seconds from query to shareable link</li>
+                <li><strong>Clean:</strong> Proper HTML table formatting</li>
+                <li><strong>Searchable:</strong> Recipients can Ctrl+F to find values</li>
+                <li><strong>Copyable:</strong> Easy to copy individual cells or rows</li>
+                <li><strong>No login:</strong> Neither you nor recipients need accounts</li>
+                <li><strong>Privacy:</strong> Links auto-expire in 7 days</li>
+            </ul>
+        </section>
+
+        <section class="blog-section">
+            <h2>Perfect Use Cases</h2>
+
+            <div class="blog-card">
+                <h3>Debug Sessions</h3>
+                <p>
+                    "Here's what the database returned" - share query results instantly during debugging.
+                </p>
+            </div>
+
+            <div class="blog-card">
+                <h3>Code Reviews</h3>
+                <p>
+                    Show before/after data when reviewing database migrations or data transformations.
+                </p>
+            </div>
+
+            <div class="blog-card">
+                <h3>Quick Reports</h3>
+                <p>
+                    Share analytics queries with non-technical stakeholders without building dashboards.
+                </p>
+            </div>
+
+            <div class="blog-card">
+                <h3>Documentation</h3>
+                <p>
+                    Include example query results in technical documentation or tickets.
+                </p>
+            </div>
+        </section>
+
+        <section class="blog-cta">
+            <h2>Try It Now (Free Forever)</h2>
+            <p>
+                No signup required. Works with any SQL database.
+            </p>
+            <a href="/" class="blog-cta-button">
+                Share SQL Results →
+            </a>
+        </section>
+
+        <section class="blog-section">
+            <h2>FAQ</h2>
+
+            <div class="blog-card">
+                <h3>Does it work with all SQL databases?</h3>
+                <p>
+                    Yes! Works with MySQL, PostgreSQL, SQL Server, Oracle, SQLite - any database. Just copy the results from your SQL client.
+                </p>
+            </div>
+
+            <div class="blog-card">
+                <h3>How many rows can I share?</h3>
+                <p>
+                    Free tier: 500 rows. Pro tier: 5,000 rows. Perfect for most query results.
+                </p>
+            </div>
+
+            <div class="blog-card">
+                <h3>Is my data secure?</h3>
+                <p>
+                    Links are unguessable random IDs. Data auto-expires in 7 days. For sensitive data, use password protection (Pro feature).
+                </p>
+            </div>
+
+            <div class="blog-card">
+                <h3>Can I share query results from command line?</h3>
+                <p>
+                    Yes! Pipe your query output through our CLI tool (coming soon) or copy from terminal and paste on the website.
+                </p>
+            </div>
+        </section>
+    </article>
+
+    <footer class="blog-footer">
+        <p class="blog-footer-links">
+            <a href="/">Home</a> •
+            <a href="/pricing">Pricing</a> •
+            <a href="/blog">Blog</a> •
+            <a href="/terms">Terms</a> •
+            <a href="/privacy">Privacy</a>
+        </p>
+        <p class="blog-footer-text">© 2025 Table Share</p>
+    </footer>
+    
+    <script src="/shared-theme.js"></script>
+    <script>
+        // Initialize theme toggle using shared script
+        function initThemeToggle() {
+            const themeToggle = document.getElementById('themeToggle');
+            if (themeToggle && window.SharedTheme) {
+                themeToggle.addEventListener('click', () => {
+                    const current = document.documentElement.getAttribute('data-theme');
+                    window.SharedTheme.applyTheme(current === 'dark' ? 'light' : 'dark');
+                });
+                return true;
+            }
+            return false;
+        }
+        
+        // Try immediate initialization, fall back to DOMContentLoaded
+        if (!initThemeToggle()) {
+            document.addEventListener('DOMContentLoaded', () => {
+                if (!initThemeToggle()) {
+                    setTimeout(initThemeToggle, 100);
+                }
+            });
+        }
+    </script>
+</body>
+</html>

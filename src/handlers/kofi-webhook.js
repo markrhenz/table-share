@@ -2,11 +2,48 @@
 
 export async function handleKofiWebhook(request, env) {
   try {
-    const formData = await request.formData();
-    const data = JSON.parse(formData.get('data'));
+    console.log('=== Ko-fi Webhook Request Received ===');
+    console.log('Method:', request.method);
+    console.log('Content-Type:', request.headers.get('content-type'));
+    
+    let data;
+    const contentType = request.headers.get('content-type')?.toLowerCase();
+    
+    try {
+      if (contentType?.includes('application/json')) {
+        // Handle JSON requests (some API clients send this instead of form data)
+        console.log('📝 Processing as JSON request');
+        const requestBody = await request.json();
+        data = requestBody;
+      } else {
+        // Handle form data requests (standard Ko-fi format)
+        console.log('📄 Processing as form data request');
+        const formData = await request.formData();
+        console.log('Form data fields:', Array.from(formData.keys()));
+        
+        const dataField = formData.get('data');
+        console.log('Raw data field:', dataField);
+        
+        if (!dataField) {
+          console.error('❌ Missing required "data" field in form data request');
+          return new Response('Missing data field', { status: 400 });
+        }
+        
+        try {
+          data = JSON.parse(dataField);
+        } catch (parseError) {
+          console.error('❌ Failed to parse JSON from form data:', parseError.message);
+          console.error('Raw data that failed to parse:', dataField);
+          return new Response('Invalid JSON data in form field', { status: 400 });
+        }
+      }
+    } catch (bodyError) {
+      console.error('❌ Failed to parse request body:', bodyError.message);
+      return new Response('Invalid request body', { status: 400 });
+    }
     
     // DEBUG: Log what Ko-fi sends
-    console.log('Ko-fi webhook received:', JSON.stringify(data, null, 2));
+    console.log('✅ Parsed Ko-fi webhook data:', JSON.stringify(data, null, 2));
     
     // Verify webhook (get token from Ko-fi dashboard)
     const KOFI_VERIFICATION_TOKEN = env.KOFI_TOKEN; // Store in wrangler.toml
@@ -48,11 +85,11 @@ export async function handleKofiWebhook(request, env) {
               subject: 'Your Table Share Pro API Key 🎉'
             }],
             from: {
-              email: 'markrhenz2@gmail.com',
+              email: 'markrhenz@table-share.org',
               name: 'Table Share'
             },
             reply_to: {
-              email: 'markrhenz2@gmail.com',
+              email: 'markrhenz@table-share.org',
               name: 'Mark - Table Share'
             },
             content: [{
@@ -79,9 +116,11 @@ HOW TO USE IT:
 YOUR PRO BENEFITS:
 
 ✓ 5,000 rows (10x free tier)
-✓ 100 columns (same as free)
-✓ 90-day link expiration (vs 30 days)
-✓ Valid for 1 year from today
+✓ 100 columns (2x free tier)
+✓ 90-day link expiration (vs 7 days free)
+✓ Password protection for sensitive data
+✓ Remove Table Share branding
+✓ API key valid for 1 year
 
 NEED HELP?
 
