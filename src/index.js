@@ -27,25 +27,81 @@ const INDEX_HTML = `<!DOCTYPE html>
     <meta name="twitter:description" content="Stop taking screenshots. Paste your data and get an instant shareable link. No signup required.">
     <meta name="twitter:image" content="https://table-share.org/logo.png">
     <link rel="icon" type="image/png" href="/logo.png">
-    <link rel="stylesheet" href="/styles.css">
+    <style>
+        :root {
+            --bg-color: #fff;
+            --text-color: #000;
+            --secondary-bg: #f5f5f5;
+            --border-color: #000;
+            --accent-color: #0066cc;
+            --muted-color: #666;
+            --tagline-color: #333;
+        }
+        [data-theme="dark"] {
+            --bg-color: #000;
+            --text-color: #fff;
+            --secondary-bg: #2a2a2a;
+            --border-color: #fff;
+            --accent-color: #4da6ff;
+            --muted-color: #aaa;
+            --tagline-color: #ccc;
+            .logo {
+                filter: invert(1);
+            }
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif; background: var(--bg-color); color: var(--text-color); line-height: 1.6; padding: 20px; }
+        .container { max-width: 800px; margin: 0 auto; }
+        header { text-align: center; margin-bottom: 60px; padding-top: 40px; }
+        h1 { font-size: 48px; font-weight: 700; margin-bottom: 20px; }
+        .tagline { font-size: 24px; color: var(--tagline-color); margin-bottom: 40px; }
+        .cta { font-size: 18px; color: var(--muted-color); margin-bottom: 60px; }
+        .paste-box { width: 100%; border: 2px solid var(--border-color); padding: 20px; font-size: 16px; font-family: monospace; resize: vertical; min-height: 200px; margin-bottom: 20px; background: var(--bg-color); color: var(--text-color); }
+        .button { display: none; width: 100%; background: var(--accent-color); color: #fff; border: none; padding: 15px; font-size: 18px; font-weight: 600; cursor: pointer; margin-bottom: 20px; }
+        .button:hover { background: #0052A3; }
+        .status { text-align: center; font-size: 16px; color: var(--muted-color); min-height: 24px; }
+        .how-it-works { margin: 80px 0; padding: 40px; background: var(--secondary-bg); }
+        .how-it-works h2 { font-size: 32px; margin-bottom: 30px; text-align: center; }
+        .steps { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 30px; }
+        .step { text-align: center; }
+        .step-number { font-size: 48px; font-weight: 700; color: var(--accent-color); margin-bottom: 10px; }
+        .step h3 { font-size: 20px; margin-bottom: 10px; }
+        .step p { color: var(--muted-color); }
+        .use-cases { margin: 80px 0; }
+        .use-cases h2 { font-size: 32px; margin-bottom: 30px; text-align: center; }
+        .case-list { display: grid; gap: 20px; }
+        .case { padding: 20px; border: 2px solid var(--border-color); }
+        .case h3 { font-size: 20px; margin-bottom: 10px; }
+        .case p { color: var(--muted-color); }
+        .features { margin: 80px 0; padding: 40px; background: var(--secondary-bg); }
+        .features h2 { font-size: 32px; margin-bottom: 30px; text-align: center; }
+        .feature-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 30px; }
+        .feature { text-align: center; }
+        .feature-icon { font-size: 36px; margin-bottom: 10px; }
+        .feature h3 { font-size: 18px; margin-bottom: 10px; }
+        .feature p { color: var(--muted-color); font-size: 14px; }
+        footer { margin-top: 80px; padding-top: 40px; border-top: 2px solid var(--border-color); text-align: center; color: var(--muted-color); }
+        footer a { color: var(--accent-color); text-decoration: none; }
+        footer a:hover { text-decoration: underline; }
+        .theme-toggle { position: absolute; top: 20px; right: 20px; width: 40px; height: 40px; border-radius: 50%; border: 2px solid var(--border-color); background: var(--bg-color); cursor: pointer; transition: all 0.2s; }
+        .theme-toggle::after { content: ''; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 20px; height: 20px; border-radius: 50%; background: var(--text-color); }
+        [data-theme="dark"] img[src="/logo.png"] { filter: invert(1); }
+        [data-theme="dark"] img[src="/logo.png"] { filter: invert(1); }
+        @media (max-width: 600px) { h1 { font-size: 32px; } .tagline { font-size: 18px; } .how-it-works, .features { padding: 20px; } }
+    </style>
 </head>
 <body>
-    <header class="site-header">
-        <div class="header-container">
-            <a href="/" class="logo-link">
-                <img src="/logo.png" alt="Table Share" class="logo" width="48" height="48">
-                <span class="site-title">Table Share</span>
-            </a>
-            <button id="themeToggle" class="theme-toggle" aria-label="Toggle dark mode">
-                <span class="theme-icon">○</span>
-            </button>
-        </div>
-    </header>
-    <main class="container">
-        <section class="section-header text-center">
-            <h1 class="section-title">The fastest way to share a table</h1>
-            <p class="section-subtitle">Stop taking screenshots. Paste your data and get an instant shareable link.</p>
-        </section>
+    <button id="themeToggle" class="theme-toggle" aria-label="Toggle dark mode"></button>
+    <div class="container">
+        <header>
+            <div style="display: flex; align-items: center; justify-content: center; gap: 16px; margin-bottom: 20px;">
+                <img src="/logo.png" width="48" height="48" alt="Table Share" class="logo">
+                <h1 style="font-size: 48px; font-weight: 700; margin: 0;">Table Share</h1>
+            </div>
+            <p class="tagline">The fastest way to share a table</p>
+            <p class="cta">Stop taking screenshots. Paste your data and get an instant shareable link.</p>
+        </header>
+        <main>
             <div style="margin-bottom: 12px;">
                 <label for="titleInput" style="display: block; font-size: 14px; color: var(--muted-color); margin-bottom: 6px;">
                     Title (optional)
@@ -92,7 +148,7 @@ const INDEX_HTML = `<!DOCTYPE html>
                     </p>
                 </details>
             </div>
-            <textarea id="pasteBox" class="form-textarea" placeholder="Paste your table data here (from Excel, Google Sheets, CSV, or anywhere)...
+            <textarea id="pasteBox" class="paste-box" placeholder="Paste your table data here (from Excel, Google Sheets, CSV, or anywhere)...
 
 Example:
 Name    Age    City
@@ -200,22 +256,29 @@ Bob     25     LA"></textarea>
                 </div>
             </section>
         </main>
-        <footer class="site-footer">
-            <div class="footer-container">
-                <div class="footer-links">
-                    <a href="/pricing">Pricing</a>
-                    <a href="/terms">Terms</a>
-                    <a href="/privacy">Privacy</a>
-                    <a href="mailto:abuse@table-share.org">Report Abuse</a>
-                </div>
-                <div class="footer-credit">
-                    <p>© 2025 Table Share</p>
-                </div>
-            </div>
+        <footer>
+            <p>&copy; 2025 Table Share | <a href="mailto:markrhenz2@gmail.com">Contact</a> | <a href="/terms">Terms</a> | <a href="/privacy">Privacy</a></p>
         </footer>
+    </div>
     <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
-    <script src="/shared-theme.js"></script>
     <script>
+        // Theme management
+        const themeToggle = document.getElementById('themeToggle');
+        function applyTheme(theme) {
+            document.documentElement.setAttribute('data-theme', theme);
+            localStorage.setItem('theme', theme);
+            themeToggle.setAttribute('aria-label', theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode');
+        }
+        function getPreferredTheme() {
+            const stored = localStorage.getItem('theme');
+            if (stored) return stored;
+            return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+        }
+        applyTheme(getPreferredTheme());
+        themeToggle.addEventListener('click', () => {
+            const current = document.documentElement.getAttribute('data-theme');
+            applyTheme(current === 'dark' ? 'light' : 'dark');
+        });
         
         // Pro Mode validation with localStorage persistence
         const apiKeyInput = document.getElementById('apiKeyInput');
@@ -658,130 +721,52 @@ const PRICING_HTML = `<!DOCTYPE html>
     <meta name="description" content="Table Share pricing: Free forever plan with 500 rows. Pro plan at $5 one-time for 5,000 rows, custom expiration, and API access.">
     <meta property="og:title" content="Table Share Pricing - Free Forever or Pro for $5">
     <link rel="icon" type="image/png" href="/logo.png">
-    <link rel="stylesheet" href="/styles.css">
     <style>
-        /* Pricing page specific styles */
-        .pricing-grid { 
-            display: grid; 
-            grid-template-columns: 1fr 1fr; 
-            gap: var(--space-5xl); 
-            margin: var(--space-6xl) 0; 
+        :root {
+            --bg-color: #fff;
+            --text-color: #000;
+            --secondary-bg: #f5f5f5;
+            --border-color: #000;
+            --accent-color: #0066cc;
+            --muted-color: #666;
         }
-        .tier { 
-            border: var(--border-width) solid var(--border-color); 
-            padding: var(--space-5xl); 
-            background: var(--bg-color);
-            transition: transform 0.2s ease, box-shadow 0.2s ease;
-        }
-        .tier:hover {
-            transform: translateY(-4px);
-            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
-        }
-        [data-theme="dark"] .tier:hover {
-            box-shadow: 0 8px 25px rgba(255, 255, 255, 0.1);
-        }
-        .tier.pro { 
-            background: var(--secondary-bg); 
-            border-color: var(--accent-color);
-            position: relative;
-        }
-        .tier.pro::before {
-            content: "Most Popular";
-            position: absolute;
-            top: -12px;
-            left: 50%;
-            transform: translateX(-50%);
-            background: var(--accent-color);
-            color: white;
-            padding: var(--space-sm) var(--space-lg);
-            border-radius: var(--border-radius);
-            font-size: var(--font-size-sm);
-            font-weight: var(--font-weight-semibold);
-        }
-        .tier h2 { 
-            font-size: var(--font-size-3xl); 
-            margin-bottom: var(--space-md); 
-            text-align: center;
-        }
-        .price { 
-            font-size: var(--font-size-4xl); 
-            font-weight: var(--font-weight-bold); 
-            margin: var(--space-xl) 0; 
-            text-align: center;
-        }
-        .price small { 
-            font-size: var(--font-size-lg); 
-            color: var(--muted-color); 
-            font-weight: var(--font-weight-normal);
-        }
-        .tier ul { 
-            list-style: none; 
-            margin: var(--space-4xl) 0; 
-        }
-        .tier li { 
-            padding: var(--space-md) 0; 
-            border-bottom: 1px solid var(--border-color); 
-            display: flex;
-            align-items: center;
-            gap: var(--space-sm);
-        }
-        .tier li:last-child { 
-            border-bottom: none; 
-        }
-        .tier li::before {
-            content: "✓";
-            color: var(--success-color);
-            font-weight: var(--font-weight-bold);
-            font-size: var(--font-size-lg);
-        }
-        .cta-button { 
-            display: block; 
-            width: 100%; 
-            padding: var(--space-xl) var(--space-lg); 
-            background: var(--accent-color); 
-            color: #fff; 
-            text-align: center; 
-            text-decoration: none; 
-            font-size: var(--font-size-lg); 
-            font-weight: var(--font-weight-semibold); 
-            margin-top: var(--space-xl); 
-            border-radius: var(--border-radius);
-            transition: background-color 0.2s ease, transform 0.2s ease;
-        }
-        .cta-button:hover { 
-            background: var(--accent-hover); 
-            text-decoration: none;
-            color: #fff;
-            transform: translateY(-2px);
-        }
-        @media (max-width: 768px) { 
-            .pricing-grid { 
-                grid-template-columns: 1fr; 
-                gap: var(--space-3xl);
-            }
-            .tier {
-                padding: var(--space-xl);
+        [data-theme="dark"] {
+            --bg-color: #000;
+            --text-color: #fff;
+            --secondary-bg: #2a2a2a;
+            --border-color: #fff;
+            --accent-color: #4da6ff;
+            --muted-color: #aaa;
+            .logo {
+                filter: invert(1);
             }
         }
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif; max-width: 1000px; margin: 40px auto; padding: 20px; background: var(--bg-color); color: var(--text-color); }
+        .pricing-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 40px; margin: 60px 0; }
+        .tier { border: 2px solid var(--border-color); padding: 40px; }
+        .tier.pro { background: var(--secondary-bg); }
+        .tier h2 { font-size: 32px; margin-bottom: 10px; }
+        .price { font-size: 48px; font-weight: 700; margin: 20px 0; }
+        .price small { font-size: 18px; color: var(--muted-color); }
+        .tier ul { list-style: none; margin: 30px 0; }
+        .tier li { padding: 10px 0; border-bottom: 1px solid var(--border-color); }
+        .tier li:last-child { border-bottom: none; }
+        .cta-button { display: block; width: 100%; padding: 15px; background: var(--accent-color); color: #fff; text-align: center; text-decoration: none; font-size: 18px; font-weight: 600; margin-top: 20px; }
+        .cta-button:hover { background: #0052A3; }
+        @media (max-width: 768px) { .pricing-grid { grid-template-columns: 1fr; } }
+        .theme-toggle { position: absolute; top: 20px; right: 20px; width: 40px; height: 40px; border-radius: 50%; border: 2px solid var(--border-color); background: var(--bg-color); cursor: pointer; transition: all 0.2s; }
+        .theme-toggle::after { content: ''; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 20px; height: 20px; border-radius: 50%; background: var(--text-color); }
     </style>
 </head>
 <body>
-    <header class="site-header">
-        <div class="header-container">
-            <a href="/" class="logo-link">
-                <img src="/logo.png" alt="Table Share" class="logo" width="48" height="48">
-                <span class="site-title">Table Share</span>
-            </a>
-            <button id="themeToggle" class="theme-toggle" aria-label="Toggle dark mode">
-                <span class="theme-icon">○</span>
-            </button>
-        </div>
-    </header>
-    <main class="container">
-        <section class="section-header text-center">
-            <h1 class="section-title">Pricing</h1>
-            <p class="section-subtitle">Choose the plan that fits your needs</p>
-        </section>
+    <button id="themeToggle" class="theme-toggle" aria-label="Toggle dark mode"></button>
+    <div style="text-align: center; margin-bottom: 60px;">
+        <a href="/" style="text-decoration: none; color: var(--text-color); display: inline-flex; align-items: center; gap: 16px;">
+            <img src="/logo.png" width="48" height="48" alt="Table Share" class="logo">
+            <h1 style="margin: 0; font-size: 48px;">Table Share Pricing</h1>
+        </a>
+        <p style="font-size: 20px; color: var(--muted-color); margin-top: 20px;">Choose the plan that fits your needs</p>
+    </div>
     
     <div class="pricing-grid">
         <div class="tier">
@@ -817,25 +802,26 @@ const PRICING_HTML = `<!DOCTYPE html>
     
     <div style="text-align: center; margin-top: 60px;">
         <p style="color: var(--muted-color);">Questions? <a href="mailto:markrhenz2@gmail.com" style="color: var(--accent-color);">Contact us</a></p>
-        <div class="text-center" style="margin-top: var(--space-3xl);">
-            <p><a href="/" class="button" style="display: inline-block; padding: var(--space-md) var(--space-xl); font-size: var(--font-size-base);">← Back to Table Share</a></p>
-        </div>
-    </main>
-
-    <footer class="site-footer">
-        <div class="footer-container">
-            <div class="footer-links">
-                <a href="/pricing">Pricing</a>
-                <a href="/terms">Terms</a>
-                <a href="/privacy">Privacy</a>
-                <a href="mailto:abuse@table-share.org">Report Abuse</a>
-            </div>
-            <div class="footer-credit">
-                <p>© 2025 Table Share</p>
-            </div>
-        </div>
-    </footer>
-    <script src="/shared-theme.js"></script>
+        <p style="margin-top: 20px;"><a href="/" style="color: var(--accent-color);">← Back to Table Share</a></p>
+    </div>
+    <script>
+        const themeToggle = document.getElementById('themeToggle');
+        function applyTheme(theme) {
+            document.documentElement.setAttribute('data-theme', theme);
+            localStorage.setItem('theme', theme);
+            themeToggle.setAttribute('aria-label', theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode');
+        }
+        function getPreferredTheme() {
+            const stored = localStorage.getItem('theme');
+            if (stored) return stored;
+            return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+        }
+        applyTheme(getPreferredTheme());
+        themeToggle.addEventListener('click', () => {
+            const current = document.documentElement.getAttribute('data-theme');
+            applyTheme(current === 'dark' ? 'light' : 'dark');
+        });
+    </script>
 </body>
 </html>
 `;
@@ -873,7 +859,1016 @@ const SITEMAP_XML = `<?xml version="1.0" encoding="UTF-8"?>
     <changefreq>yearly</changefreq>
     <priority>0.3</priority>
   </url>
+  <url>
+    <loc>https://table-share.org/blog</loc>
+    <lastmod>${new Date().toISOString().split('T')[0]}</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://table-share.org/blog/share-excel-without-login</loc>
+    <lastmod>${new Date().toISOString().split('T')[0]}</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://table-share.org/blog/sql-results-sharing</loc>
+    <lastmod>${new Date().toISOString().split('T')[0]}</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://table-share.org/blog/google-sheets-alternatives</loc>
+    <lastmod>${new Date().toISOString().split('T')[0]}</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
 </urlset>`;
+
+const ROBOTS_TXT = `User-agent: *
+Allow: /
+Disallow: /api/
+
+Sitemap: https://table-share.org/sitemap.xml`;
+
+const BLOG_INDEX_HTML = `<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Table Share Blog - Data Sharing Tips & Guides | Free Tutorials</title>
+    <meta name="description" content="Learn how to share tables, CSV files, and spreadsheet data quickly and securely without signup. Free tutorials for developers, freelancers, and teams.">
+    <meta name="keywords" content="table sharing tutorials, spreadsheet guides, CSV sharing, developer tips, data sharing best practices">
+
+    <!-- Open Graph -->
+    <meta property="og:title" content="Table Share Blog - Free Data Sharing Guides">
+    <meta property="og:description" content="Free tutorials on sharing tables, CSV files, and spreadsheet data without signup.">
+    <meta property="og:url" content="https://table-share.org/blog">
+    <meta property="og:type" content="website">
+
+    <link rel="canonical" href="https://table-share.org/blog">
+    <link rel="stylesheet" href="/styles.css">
+    <link rel="stylesheet" href="/blog.css">
+    <link rel="icon" href="/logo.png" type="image/png">
+</head>
+<body>
+    <header class="blog-header">
+        <a href="/">
+            <img src="/logo.png" alt="Table Share Logo" class="blog-header-logo">
+            <strong>Table Share</strong>
+        </a>
+        <div>
+            <button id="themeToggle" class="blog-theme-toggle" aria-label="Toggle dark mode">🌙</button>
+        </div>
+    </header>
+
+    <main class="blog-container">
+        <h1 class="blog-title">Table Sharing Guides</h1>
+        <p class="blog-subtitle">
+            Free tutorials on sharing data quickly and securely without signup.
+        </p>
+
+        <section class="blog-card">
+            <h2>Latest Articles</h2>
+
+            <article class="blog-article">
+                <h3>
+                    <a href="/blog/share-excel-without-login">
+                        How to Share Excel Tables Without Login or Signup (2025)
+                    </a>
+                </h3>
+                <p class="blog-meta">
+                    <time datetime="2025-11-21">November 21, 2025</time> • 5 min read
+                </p>
+                <p>
+                    Stop emailing Excel files or forcing people to create accounts. Learn the fastest way to share spreadsheet data online in 2025 - no login required for you or recipients.
+                </p>
+                <a href="/blog/share-excel-without-login" class="blog-article-link">
+                    Read full article →
+                </a>
+            </article>
+
+            <article class="blog-article">
+                <h3>
+                    <a href="/blog/sql-results-sharing">
+                        Share SQL Query Results Instantly (Without Screenshots)
+                    </a>
+                </h3>
+                <p class="blog-meta">
+                    <time datetime="2025-11-21">November 21, 2025</time> • 4 min read
+                </p>
+                <p>
+                    For developers: paste SQL results directly into shareable HTML tables. No more ugly screenshots or formatting issues in Slack/Teams.
+                </p>
+                <a href="/blog/sql-results-sharing" class="blog-article-link">
+                    Read full article →
+                </a>
+            </article>
+
+            <article class="blog-article">
+                <h3>
+                    <a href="/blog/google-sheets-alternatives">
+                        10 Google Sheets Alternatives for Quick Data Sharing
+                    </a>
+                </h3>
+                <p class="blog-meta">
+                    <time datetime="2025-11-21">November 21, 2025</time> • 7 min read
+                </p>
+                <p>
+                    Google Sheets is overkill for simple table sharing. Compare lightweight alternatives that prioritize speed over collaboration features.
+                </p>
+                <a href="/blog/google-sheets-alternatives" class="blog-article-link">
+                    Read full article →
+                </a>
+            </article>
+        </section>
+
+        <section class="blog-cta">
+            <h2>Try Table Share</h2>
+            <p>
+                The fastest way to share tables online. Paste → Link → Done.
+            </p>
+            <a href="/" class="blog-cta-button">
+                Start Sharing Tables →
+            </a>
+        </section>
+    </main>
+
+    <footer class="blog-footer">
+        <p class="blog-footer-links">
+            <a href="/">Home</a> •
+            <a href="/pricing">Pricing</a> •
+            <a href="/blog">Blog</a> •
+            <a href="/terms">Terms</a> •
+            <a href="/privacy">Privacy</a>
+        </p>
+        <p class="blog-footer-text">© 2025 Table Share</p>
+    </footer>
+
+    <script src="/shared-theme.js"></script>
+    <script>
+        // Initialize theme toggle using shared script
+        function initThemeToggle() {
+            const themeToggle = document.getElementById('themeToggle');
+            if (themeToggle && window.SharedTheme) {
+                themeToggle.addEventListener('click', () => {
+                    const current = document.documentElement.getAttribute('data-theme');
+                    window.SharedTheme.applyTheme(current === 'dark' ? 'light' : 'dark');
+                });
+                return true;
+            }
+            return false;
+        }
+
+        // Try immediate initialization, fall back to DOMContentLoaded
+        if (!initThemeToggle()) {
+            document.addEventListener('DOMContentLoaded', () => {
+                if (!initThemeToggle()) {
+                    setTimeout(initThemeToggle, 100);
+                }
+            });
+        }
+    </script>
+</body>
+</html>`;
+
+
+const BLOG_EXCEL_HTML = `<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>How to Share Excel Tables Without Login (2025 Guide) | Table Share</title>
+    <meta name="description" content="Share Excel spreadsheet data online without login or email attachments. Step-by-step guide for 2025. Free, instant, no signup required.">
+    <meta name="keywords" content="share excel without login, share spreadsheet online, no signup excel sharing, excel to web table">
+    
+    <!-- Open Graph -->
+    <meta property="og:title" content="How to Share Excel Tables Without Login (2025)">
+    <meta property="og:description" content="The fastest way to share Excel data online. No login, no email attachments, no formatting issues.">
+    <meta property="og:url" content="https://table-share.org/blog/share-excel-without-login">
+    <meta property="og:type" content="article">
+    
+    <link rel="canonical" href="https://table-share.org/blog/share-excel-without-login">
+    <link rel="stylesheet" href="/styles.css">
+    <link rel="stylesheet" href="/blog.css">
+    <link rel="icon" href="/logo.png" type="image/png">
+    
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "Article",
+      "headline": "How to Share Excel Tables Without Login or Signup (2025)",
+      "datePublished": "2025-11-21",
+      "author": {
+        "@type": "Organization",
+        "name": "Table Share"
+      },
+      "publisher": {
+        "@type": "Organization",
+        "name": "Table Share",
+        "logo": {
+          "@type": "ImageObject",
+          "url": "https://table-share.org/logo.png"
+        }
+      }
+    }
+    </script>
+</head>
+<body>
+    <header class="blog-header">
+        <a href="/">
+            <img src="/logo.png" alt="Table Share Logo" class="blog-header-logo">
+            <strong>Table Share</strong>
+        </a>
+        <div>
+            <button id="themeToggle" class="blog-theme-toggle" aria-label="Toggle dark mode">🌙</button>
+        </div>
+    </header>
+
+    <nav class="blog-nav">
+        <a href="/blog" class="blog-back-link">← Back to Blog</a>
+    </nav>
+
+    <article class="blog-container blog-content">
+        <h1 class="blog-title">
+            How to Share Excel Tables Without Login or Signup
+        </h1>
+
+        <p class="blog-meta">
+            <time datetime="2025-11-21">November 21, 2025</time> • 5 min read
+        </p>
+
+        <section class="blog-section">
+            <h2>The Problem with Current Methods</h2>
+            <p>
+                You need to share a simple Excel table with a colleague or client. What are your options?
+            </p>
+            <ul>
+                <li><strong>Email attachment:</strong> Formatting breaks, version conflicts, mailbox limits</li>
+                <li><strong>Google Sheets:</strong> Forces recipient to log in or request access</li>
+                <li><strong>Screenshot:</strong> Not searchable, not copyable, looks unprofessional</li>
+                <li><strong>Paste into Slack/Teams:</strong> Loses all formatting instantly</li>
+            </ul>
+            <p>
+                Every method either loses formatting, requires accounts, or creates friction. There's a better way.
+            </p>
+        </section>
+
+        <section class="blog-card-highlight">
+            <h2>The Solution: Paste → Link → Share</h2>
+            <p>
+                Here's how to share any Excel table in under 10 seconds:
+            </p>
+
+            <div class="blog-card">
+                <h3>Step 1: Select Your Data</h3>
+                <p>
+                    In Excel, select the cells you want to share. Press <code class="blog-code">Ctrl+C</code> (or <code class="blog-code">Cmd+C</code> on Mac).
+                </p>
+            </div>
+
+            <div class="blog-card">
+                <h3>Step 2: Paste on Table Share</h3>
+                <p>
+                    Go to <a href="https://table-share.org">table-share.org</a>
+                </p>
+                <p>
+                    Click the text area and press <code class="blog-code">Ctrl+V</code>
+                </p>
+                <p>
+                    Your shareable link is instantly generated and auto-copied to your clipboard.
+                </p>
+            </div>
+
+            <div class="blog-card">
+                <h3>Step 3: Share Anywhere</h3>
+                <p>
+                    Paste the link into Slack, email, Teams, Discord - anywhere.
+                </p>
+                <p>
+                    Recipients click and see a clean, formatted table. <strong>No login required.</strong>
+                </p>
+            </div>
+        </section>
+        
+        <section class="blog-section">
+            <h2>Why This Method Wins</h2>
+
+            <div class="blog-table-wrapper">
+                <table class="blog-table">
+                    <thead>
+                        <tr>
+                            <th>Method</th>
+                            <th style="text-align: center;">Login Required?</th>
+                            <th style="text-align: center;">Keeps Formatting?</th>
+                            <th style="text-align: center;">Time to Share</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>Table Share</strong></td>
+                            <td style="text-align: center;">❌ No</td>
+                            <td style="text-align: center;">✅ Yes</td>
+                            <td style="text-align: center;">5 seconds</td>
+                        </tr>
+                        <tr>
+                            <td>Google Sheets</td>
+                            <td style="text-align: center;">✅ Yes</td>
+                            <td style="text-align: center;">✅ Yes</td>
+                            <td style="text-align: center;">3-5 minutes</td>
+                        </tr>
+                        <tr>
+                            <td>Email Attachment</td>
+                            <td style="text-align: center;">❌ No</td>
+                            <td style="text-align: center;">⚠️ Maybe</td>
+                            <td style="text-align: center;">1-2 minutes</td>
+                        </tr>
+                        <tr>
+                            <td>Screenshot</td>
+                            <td style="text-align: center;">❌ No</td>
+                            <td style="text-align: center;">❌ No</td>
+                            <td style="text-align: center;">30 seconds</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+        
+        <section class="blog-section">
+            <h2>Perfect For</h2>
+            <ul>
+                <li><strong>Freelancers:</strong> Share pricing tables with clients</li>
+                <li><strong>Developers:</strong> Share query results with teammates</li>
+                <li><strong>Project Managers:</strong> Quick status updates</li>
+                <li><strong>Data Analysts:</strong> Share findings without full reports</li>
+                <li><strong>Anyone:</strong> Who values speed over complexity</li>
+            </ul>
+        </section>
+        
+        <section class="blog-cta">
+            <h2>Try It Now (Free Forever)</h2>
+            <p>
+                No signup, no credit card, no trial period. Just paste and share.
+            </p>
+            <a href="/" class="blog-cta-button">
+                Share Your First Table →
+            </a>
+        </section>
+        
+        <section class="blog-section">
+            <h2>FAQ</h2>
+
+            <div class="blog-card">
+                <h3>Does it work with large Excel files?</h3>
+                <p>
+                    Free tier supports up to 500 rows. Pro tier handles 5,000 rows. Copy just the data you need to share, not entire workbooks.
+                </p>
+            </div>
+
+            <div class="blog-card">
+                <h3>How long do links last?</h3>
+                <p>
+                    Free links expire after 7 days (privacy by default). Pro users get 90 days. Perfect for temporary data sharing.
+                </p>
+            </div>
+
+            <div class="blog-card">
+                <h3>Can recipients edit the table?</h3>
+                <p>
+                    No. Tables are read-only snapshots. Recipients can download as CSV if they need to edit locally.
+                </p>
+            </div>
+
+            <div class="blog-card">
+                <h3>Does it work with Google Sheets too?</h3>
+                <p>
+                    Yes! Copy from Sheets the same way (Ctrl+C), paste into Table Share, get link. Works with any spreadsheet software.
+                </p>
+            </div>
+        </section>
+    </article>
+    
+    <footer class="blog-footer">
+        <p class="blog-footer-links">
+            <a href="/">Home</a> •
+            <a href="/pricing">Pricing</a> •
+            <a href="/blog">Blog</a> •
+            <a href="/terms">Terms</a> •
+            <a href="/privacy">Privacy</a>
+        </p>
+        <p class="blog-footer-text">© 2025 Table Share</p>
+    </footer>
+    
+    <script src="/shared-theme.js"></script>
+    <script>
+        // Initialize theme toggle using shared script
+        function initThemeToggle() {
+            const themeToggle = document.getElementById('themeToggle');
+            if (themeToggle && window.SharedTheme) {
+                themeToggle.addEventListener('click', () => {
+                    const current = document.documentElement.getAttribute('data-theme');
+                    window.SharedTheme.applyTheme(current === 'dark' ? 'light' : 'dark');
+                });
+                return true;
+            }
+            return false;
+        }
+        
+        // Try immediate initialization, fall back to DOMContentLoaded
+        if (!initThemeToggle()) {
+            document.addEventListener('DOMContentLoaded', () => {
+                if (!initThemeToggle()) {
+                    setTimeout(initThemeToggle, 100);
+                }
+            });
+        }
+    </script>
+</body>
+</html>
+`;
+
+const BLOG_SQL_HTML = `<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Share SQL Query Results Instantly (Without Screenshots) | Table Share</title>
+    <meta name="description" content="Stop taking screenshots of SQL results. Share query output as clean HTML tables in seconds. Perfect for developers sharing data in Slack, Teams, or email.">
+    <meta name="keywords" content="sql results sharing, share query results, database output sharing, sql to html table, developer tools">
+    
+    <!-- Open Graph -->
+    <meta property="og:title" content="Share SQL Query Results Instantly">
+    <meta property="og:description" content="For developers: paste SQL results directly into shareable HTML tables. No more ugly screenshots.">
+    <meta property="og:url" content="https://table-share.org/blog/sql-results-sharing">
+    <meta property="og:type" content="article">
+    
+    <link rel="canonical" href="https://table-share.org/blog/sql-results-sharing">
+    <link rel="stylesheet" href="/styles.css">
+    <link rel="stylesheet" href="/blog.css">
+    <link rel="icon" href="/logo.png" type="image/png">
+    
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "Article",
+      "headline": "Share SQL Query Results Instantly (Without Screenshots)",
+      "datePublished": "2025-11-21",
+      "author": {
+        "@type": "Organization",
+        "name": "Table Share"
+      },
+      "publisher": {
+        "@type": "Organization",
+        "name": "Table Share",
+        "logo": {
+          "@type": "ImageObject",
+          "url": "https://table-share.org/logo.png"
+        }
+      }
+    }
+    </script>
+</head>
+<body>
+    <header class="blog-header">
+        <a href="/">
+            <img src="/logo.png" alt="Table Share Logo" class="blog-header-logo">
+            <strong>Table Share</strong>
+        </a>
+        <div>
+            <button id="themeToggle" class="blog-theme-toggle" aria-label="Toggle dark mode">🌙</button>
+        </div>
+    </header>
+
+    <nav class="blog-nav">
+        <a href="/blog" class="blog-back-link">← Back to Blog</a>
+    </nav>
+
+    <article class="blog-container blog-content">
+        <h1 class="blog-title">
+            Share SQL Query Results Instantly (Without Screenshots)
+        </h1>
+
+        <p class="blog-meta">
+            <time datetime="2025-11-21">November 21, 2025</time> • 4 min read
+        </p>
+
+        <section class="blog-section">
+            <h2>The Developer's Dilemma</h2>
+            <p>
+                You run a SQL query. The results look perfect. Now you need to share them with your team in Slack.
+            </p>
+            <p>
+                Your options:
+            </p>
+            <ul>
+                <li><strong>Screenshot:</strong> Blurry, not searchable, can't copy values</li>
+                <li><strong>Paste raw text:</strong> Formatting destroyed, unreadable mess</li>
+                <li><strong>Export to CSV:</strong> Extra steps, requires download, loses context</li>
+                <li><strong>Copy to Google Sheets:</strong> Overkill, requires login, too slow</li>
+            </ul>
+            <p>
+                There's a faster way that takes 5 seconds.
+            </p>
+        </section>
+
+        <section class="blog-section">
+            <h2>The 5-Second Solution</h2>
+
+            <div class="blog-card-highlight">
+                <h3>Step 1: Copy Query Results</h3>
+                <p>
+                    In your SQL client (MySQL Workbench, pgAdmin, DBeaver, etc.), select your query results and copy them.
+                </p>
+                <div class="blog-code-block">
+                    SELECT * FROM users LIMIT 10;
+                </div>
+            </div>
+
+            <div class="blog-card-highlight">
+                <h3>Step 2: Paste on Table Share</h3>
+                <p>
+                    Go to <a href="https://table-share.org">table-share.org</a> and paste (Ctrl+V).
+                </p>
+                <p>
+                    Your shareable link is instantly generated.
+                </p>
+            </div>
+
+            <div class="blog-card-highlight">
+                <h3>Step 3: Share in Slack/Teams</h3>
+                <p>
+                    Paste the link. Your team sees a clean, formatted HTML table. No screenshots, no formatting issues.
+                </p>
+            </div>
+        </section>
+
+        <section class="blog-section">
+            <h2>Why Developers Love This</h2>
+            <ul>
+                <li><strong>Fast:</strong> 5 seconds from query to shareable link</li>
+                <li><strong>Clean:</strong> Proper HTML table formatting</li>
+                <li><strong>Searchable:</strong> Recipients can Ctrl+F to find values</li>
+                <li><strong>Copyable:</strong> Easy to copy individual cells or rows</li>
+                <li><strong>No login:</strong> Neither you nor recipients need accounts</li>
+                <li><strong>Privacy:</strong> Links auto-expire in 7 days</li>
+            </ul>
+        </section>
+
+        <section class="blog-section">
+            <h2>Perfect Use Cases</h2>
+
+            <div class="blog-card">
+                <h3>Debug Sessions</h3>
+                <p>
+                    "Here's what the database returned" - share query results instantly during debugging.
+                </p>
+            </div>
+
+            <div class="blog-card">
+                <h3>Code Reviews</h3>
+                <p>
+                    Show before/after data when reviewing database migrations or data transformations.
+                </p>
+            </div>
+
+            <div class="blog-card">
+                <h3>Quick Reports</h3>
+                <p>
+                    Share analytics queries with non-technical stakeholders without building dashboards.
+                </p>
+            </div>
+
+            <div class="blog-card">
+                <h3>Documentation</h3>
+                <p>
+                    Include example query results in technical documentation or tickets.
+                </p>
+            </div>
+        </section>
+
+        <section class="blog-cta">
+            <h2>Try It Now (Free Forever)</h2>
+            <p>
+                No signup required. Works with any SQL database.
+            </p>
+            <a href="/" class="blog-cta-button">
+                Share SQL Results →
+            </a>
+        </section>
+
+        <section class="blog-section">
+            <h2>FAQ</h2>
+
+            <div class="blog-card">
+                <h3>Does it work with all SQL databases?</h3>
+                <p>
+                    Yes! Works with MySQL, PostgreSQL, SQL Server, Oracle, SQLite - any database. Just copy the results from your SQL client.
+                </p>
+            </div>
+
+            <div class="blog-card">
+                <h3>How many rows can I share?</h3>
+                <p>
+                    Free tier: 500 rows. Pro tier: 5,000 rows. Perfect for most query results.
+                </p>
+            </div>
+
+            <div class="blog-card">
+                <h3>Is my data secure?</h3>
+                <p>
+                    Links are unguessable random IDs. Data auto-expires in 7 days. For sensitive data, use password protection (Pro feature).
+                </p>
+            </div>
+
+            <div class="blog-card">
+                <h3>Can I share query results from command line?</h3>
+                <p>
+                    Yes! Pipe your query output through our CLI tool (coming soon) or copy from terminal and paste on the website.
+                </p>
+            </div>
+        </section>
+    </article>
+
+    <footer class="blog-footer">
+        <p class="blog-footer-links">
+            <a href="/">Home</a> •
+            <a href="/pricing">Pricing</a> •
+            <a href="/blog">Blog</a> •
+            <a href="/terms">Terms</a> •
+            <a href="/privacy">Privacy</a>
+        </p>
+        <p class="blog-footer-text">© 2025 Table Share</p>
+    </footer>
+    
+    <script src="/shared-theme.js"></script>
+    <script>
+        // Initialize theme toggle using shared script
+        function initThemeToggle() {
+            const themeToggle = document.getElementById('themeToggle');
+            if (themeToggle && window.SharedTheme) {
+                themeToggle.addEventListener('click', () => {
+                    const current = document.documentElement.getAttribute('data-theme');
+                    window.SharedTheme.applyTheme(current === 'dark' ? 'light' : 'dark');
+                });
+                return true;
+            }
+            return false;
+        }
+        
+        // Try immediate initialization, fall back to DOMContentLoaded
+        if (!initThemeToggle()) {
+            document.addEventListener('DOMContentLoaded', () => {
+                if (!initThemeToggle()) {
+                    setTimeout(initThemeToggle, 100);
+                }
+            });
+        }
+    </script>
+</body>
+</html>
+`;
+
+const BLOG_SHEETS_HTML = `<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>10 Google Sheets Alternatives for Quick Data Sharing | Table Share</title>
+    <meta name="description" content="Google Sheets is overkill for simple table sharing. Compare lightweight alternatives that prioritize speed over collaboration. Free, no signup required.">
+    <meta name="keywords" content="google sheets alternatives, spreadsheet alternatives, quick data sharing, lightweight spreadsheet, no signup table sharing">
+    
+    <!-- Open Graph -->
+    <meta property="og:title" content="10 Google Sheets Alternatives for Quick Data Sharing">
+    <meta property="og:description" content="When you need to share data fast, not collaborate. Lightweight alternatives to Google Sheets.">
+    <meta property="og:url" content="https://table-share.org/blog/google-sheets-alternatives">
+    <meta property="og:type" content="article">
+    
+    <link rel="canonical" href="https://table-share.org/blog/google-sheets-alternatives">
+    <link rel="stylesheet" href="/styles.css">
+    <link rel="stylesheet" href="/blog.css">
+    <link rel="icon" href="/logo.png" type="image/png">
+    
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "Article",
+      "headline": "10 Google Sheets Alternatives for Quick Data Sharing",
+      "datePublished": "2025-11-21",
+      "author": {
+        "@type": "Organization",
+        "name": "Table Share"
+      },
+      "publisher": {
+        "@type": "Organization",
+        "name": "Table Share",
+        "logo": {
+          "@type": "ImageObject",
+          "url": "https://table-share.org/logo.png"
+        }
+      }
+    }
+    </script>
+</head>
+<body>
+    <header class="blog-header">
+        <a href="/">
+            <img src="/logo.png" alt="Table Share Logo" class="blog-header-logo">
+            <strong>Table Share</strong>
+        </a>
+        <div>
+            <button id="themeToggle" class="blog-theme-toggle" aria-label="Toggle dark mode">🌙</button>
+        </div>
+    </header>
+
+    <nav class="blog-nav">
+        <a href="/blog" class="blog-back-link">← Back to Blog</a>
+    </nav>
+
+    <article class="blog-container blog-content">
+        <h1 class="blog-title">
+            10 Google Sheets Alternatives for Quick Data Sharing
+        </h1>
+
+        <p class="blog-meta">
+            <time datetime="2025-11-21">November 21, 2025</time> • 7 min read
+        </p>
+
+        <section class="blog-section">
+            <h2>When Google Sheets is Overkill</h2>
+            <p>
+                Google Sheets is powerful. But sometimes you just need to share a simple table. You don't need:
+            </p>
+            <ul>
+                <li>Real-time collaboration</li>
+                <li>Complex formulas</li>
+                <li>Pivot tables</li>
+                <li>Conditional formatting</li>
+                <li>Version history</li>
+            </ul>
+            <p>
+                You just need to share data. Fast. Without forcing people to log in.
+            </p>
+        </section>
+
+        <section class="blog-section">
+            <h2>The Alternatives</h2>
+
+            <div class="blog-card">
+                <h3>1. Table Share (Our Pick)</h3>
+                <p>
+                    <strong>Best for:</strong> Instant sharing without signup
+                </p>
+                <p>
+                    Paste data, get link, done. No accounts, no friction. Links expire in 7 days for privacy.
+                </p>
+                <p>
+                    <strong>Time to share:</strong> 5 seconds | <strong>Login required:</strong> No
+                </p>
+            </div>
+            
+            <div class="blog-card">
+                <h3>2. Pastebin</h3>
+                <p>
+                    <strong>Best for:</strong> Plain text data
+                </p>
+                <p>
+                    Good for raw CSV or TSV data. No formatting, but fast and simple.
+                </p>
+                <p>
+                    <strong>Time to share:</strong> 10 seconds | <strong>Login required:</strong> No
+                </p>
+            </div>
+
+            <div class="blog-card">
+                <h3>3. GitHub Gist</h3>
+                <p>
+                    <strong>Best for:</strong> Developers sharing data with code
+                </p>
+                <p>
+                    Great for CSV/JSON data alongside code. Requires GitHub account.
+                </p>
+                <p>
+                    <strong>Time to share:</strong> 30 seconds | <strong>Login required:</strong> Yes
+                </p>
+            </div>
+
+            <div class="blog-card">
+                <h3>4. Notion Tables</h3>
+                <p>
+                    <strong>Best for:</strong> Tables within documentation
+                </p>
+                <p>
+                    Beautiful formatting, but requires Notion account and setup time.
+                </p>
+                <p>
+                    <strong>Time to share:</strong> 2-3 minutes | <strong>Login required:</strong> Yes
+                </p>
+            </div>
+
+            <div class="blog-card">
+                <h3>5. Airtable</h3>
+                <p>
+                    <strong>Best for:</strong> Database-like tables with relationships
+                </p>
+                <p>
+                    Powerful but complex. Overkill for simple data sharing.
+                </p>
+                <p>
+                    <strong>Time to share:</strong> 5+ minutes | <strong>Login required:</strong> Yes
+                </p>
+            </div>
+
+            <div class="blog-card">
+                <h3>6. Excel Online</h3>
+                <p>
+                    <strong>Best for:</strong> Microsoft ecosystem users
+                </p>
+                <p>
+                    Similar to Google Sheets. Requires Microsoft account.
+                </p>
+                <p>
+                    <strong>Time to share:</strong> 3-5 minutes | <strong>Login required:</strong> Yes
+                </p>
+            </div>
+
+            <div class="blog-card">
+                <h3>7. Markdown Tables</h3>
+                <p>
+                    <strong>Best for:</strong> GitHub README files
+                </p>
+                <p>
+                    Plain text format. Good for documentation, tedious to create manually.
+                </p>
+                <p>
+                    <strong>Time to share:</strong> 5+ minutes | <strong>Login required:</strong> Depends on platform
+                </p>
+            </div>
+
+            <div class="blog-card">
+                <h3>8. Coda</h3>
+                <p>
+                    <strong>Best for:</strong> Interactive documents with tables
+                </p>
+                <p>
+                    Powerful but requires learning curve. Too much for simple sharing.
+                </p>
+                <p>
+                    <strong>Time to share:</strong> 5+ minutes | <strong>Login required:</strong> Yes
+                </p>
+            </div>
+
+            <div class="blog-card">
+                <h3>9. CSV to HTML Converters</h3>
+                <p>
+                    <strong>Best for:</strong> One-time conversions
+                </p>
+                <p>
+                    Convert CSV to HTML, then host somewhere. Multi-step process.
+                </p>
+                <p>
+                    <strong>Time to share:</strong> 2-5 minutes | <strong>Login required:</strong> Varies
+                </p>
+            </div>
+
+            <div class="blog-card">
+                <h3>10. Email Attachments</h3>
+                <p>
+                    <strong>Best for:</strong> When you're already emailing
+                </p>
+                <p>
+                    Classic method. Formatting often breaks, creates version confusion.
+                </p>
+                <p>
+                    <strong>Time to share:</strong> 1-2 minutes | <strong>Login required:</strong> No
+                </p>
+            </div>
+        </section>
+        
+        <section class="blog-section">
+            <h2>Comparison Table</h2>
+
+            <div class="blog-table-wrapper">
+                <table class="blog-table">
+                    <thead>
+                        <tr>
+                            <th>Tool</th>
+                            <th>Speed</th>
+                            <th>No Login</th>
+                            <th>Formatting</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>Table Share</strong></td>
+                            <td>⚡⚡⚡</td>
+                            <td>✅</td>
+                            <td>✅</td>
+                        </tr>
+                        <tr>
+                            <td>Google Sheets</td>
+                            <td>⚡</td>
+                            <td>❌</td>
+                            <td>✅</td>
+                        </tr>
+                        <tr>
+                            <td>Pastebin</td>
+                            <td>⚡⚡</td>
+                            <td>✅</td>
+                            <td>❌</td>
+                        </tr>
+                        <tr>
+                            <td>GitHub Gist</td>
+                            <td>⚡⚡</td>
+                            <td>❌</td>
+                            <td>⚠️</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <section class="blog-cta">
+            <h2>Try the Fastest Option</h2>
+            <p>
+                Table Share: 5 seconds from paste to shareable link. No signup, no friction.
+            </p>
+            <a href="/" class="blog-cta-button">
+                Share Your First Table →
+            </a>
+        </section>
+
+        <section class="blog-section">
+            <h2>When to Use What</h2>
+
+            <div class="blog-card">
+                <h3>Use Table Share when:</h3>
+                <ul>
+                    <li>You need to share data RIGHT NOW</li>
+                    <li>Recipients shouldn't need accounts</li>
+                    <li>Data is temporary (expires in 7 days)</li>
+                    <li>You want clean HTML table formatting</li>
+                </ul>
+            </div>
+
+            <div class="blog-card">
+                <h3>Use Google Sheets when:</h3>
+                <ul>
+                    <li>Multiple people need to edit simultaneously</li>
+                    <li>You need complex formulas or charts</li>
+                    <li>Data needs to persist long-term</li>
+                    <li>Everyone already has Google accounts</li>
+                </ul>
+            </div>
+
+            <div class="blog-card">
+                <h3>Use GitHub Gist when:</h3>
+                <ul>
+                    <li>Sharing data alongside code</li>
+                    <li>Your audience is developers</li>
+                    <li>You want version control</li>
+                </ul>
+            </div>
+        </section>
+    </article>
+    
+    <footer class="blog-footer">
+        <p class="blog-footer-links">
+            <a href="/">Home</a> •
+            <a href="/pricing">Pricing</a> •
+            <a href="/blog">Blog</a> •
+            <a href="/terms">Terms</a> •
+            <a href="/privacy">Privacy</a>
+        </p>
+        <p class="blog-footer-text">© 2025 Table Share</p>
+    </footer>
+    
+    <script src="/shared-theme.js"></script>
+    <script>
+        // Initialize theme toggle using shared script
+        function initThemeToggle() {
+            const themeToggle = document.getElementById('themeToggle');
+            if (themeToggle && window.SharedTheme) {
+                themeToggle.addEventListener('click', () => {
+                    const current = document.documentElement.getAttribute('data-theme');
+                    window.SharedTheme.applyTheme(current === 'dark' ? 'light' : 'dark');
+                });
+                return true;
+            }
+            return false;
+        }
+        
+        // Try immediate initialization, fall back to DOMContentLoaded
+        if (!initThemeToggle()) {
+            document.addEventListener('DOMContentLoaded', () => {
+                if (!initThemeToggle()) {
+                    setTimeout(initThemeToggle, 100);
+                }
+            });
+        }
+    </script>
+</body>
+</html>
+`;
 
 export default {
   async fetch(request, env, ctx) {
@@ -915,6 +1910,30 @@ export default {
         });
       }
 
+      if (pathname === '/blog') {
+        return new Response(BLOG_INDEX_HTML, {
+          headers: { 'Content-Type': 'text/html', ...corsHeaders }
+        });
+      }
+
+      if (pathname === '/blog/share-excel-without-login') {
+        return new Response(BLOG_EXCEL_HTML, {
+          headers: { 'Content-Type': 'text/html', ...corsHeaders }
+        });
+      }
+
+      if (pathname === '/blog/sql-results-sharing') {
+        return new Response(BLOG_SQL_HTML, {
+          headers: { 'Content-Type': 'text/html', ...corsHeaders }
+        });
+      }
+
+      if (pathname === '/blog/google-sheets-alternatives') {
+        return new Response(BLOG_SHEETS_HTML, {
+          headers: { 'Content-Type': 'text/html', ...corsHeaders }
+        });
+      }
+
       if (pathname === '/sitemap.xml') {
         return new Response(SITEMAP_XML, {
           headers: {
@@ -925,18 +1944,22 @@ export default {
         });
       }
 
+      if (pathname === '/robots.txt') {
+        return new Response(ROBOTS_TXT, {
+          headers: {
+            'Content-Type': 'text/plain',
+            'Cache-Control': 'public, max-age=86400',
+            ...corsHeaders
+          }
+        });
+      }
+
       // Analytics Dashboard (admin only)
       if (pathname === '/analytics' && request.method === 'GET') {
         const adminKey = url.searchParams.get('key');
+        const ADMIN_KEY = 'tableshare-admin-2025-markrhenzon';
 
-        if (!env.ADMIN_KEY) {
-          return new Response('Analytics dashboard not configured', {
-            status: 503,
-            headers: { 'Content-Type': 'text/plain' }
-          });
-        }
-
-        if (adminKey !== env.ADMIN_KEY) {
+        if (adminKey !== ADMIN_KEY) {
           return new Response('Unauthorized', {
             status: 401,
             headers: { 'Content-Type': 'text/plain' }
