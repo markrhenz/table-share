@@ -22,10 +22,14 @@ export async function handleCreate(request, env) {
     // 3. Parse body
     const { data, title, honeypot, apiKey, password, expiry, noBranding } = await request.json();
     
-    // 4. Validate API key
+    // 5. Validate API key
     const { valid: isProUser, tier } = await validateApiKey(apiKey, env.TABLES);
 
-    // 5. Validate and set expiry
+    // 6. Validate and set expiry
+    // Invariant 2: Free users MUST default to 7-day expiry (604800 seconds).
+    // Invariant 3: Pro expiry limits MUST be enforced server-side: Free max: 604800, Pro max: 7776000 (90 days)
+    // Invariant 4: Pro features MUST NEVER block table creation.
+    // Invariant 6: Backend MUST NOT assume Pro intent unless explicitly validated via API key.
     let finalExpiry = 604800; // Default 7 days (FREE tier)
     if (expiry) {
       const requestedExpiry = parseInt(expiry);
@@ -110,7 +114,7 @@ export async function handleCreate(request, env) {
     try {
       await incrementMetric(env.TABLES, 'tables_created');
       if (tier === 'pro') {
-        await incrementMetric(env.TABLES, 'pro_tables');
+        await incrementMetric(env.TABLES, 'pro_intent_triggered');
       }
     } catch (error) {
       console.error('Analytics tracking failed:', error);

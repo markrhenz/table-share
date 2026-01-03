@@ -1,4 +1,5 @@
 // Removed unused import
+import { incrementMetric } from '../utils/analytics.js';
 
 export async function handleKofiWebhook(request, env) {
   try {
@@ -70,7 +71,15 @@ export async function handleKofiWebhook(request, env) {
       };
       
       await env.TABLES.put(`keys:${apiKey}`, JSON.stringify(keyData));
-      
+
+      // Track analytics
+      try {
+        await incrementMetric(env.TABLES, 'pro_purchase_completed');
+      } catch (error) {
+        console.error('Analytics tracking failed:', error);
+        // Don't throw - analytics failure shouldn't break webhook
+      }
+
       // Send email with API key via SendGrid
       try {
         const emailResponse = await fetch('https://api.sendgrid.com/v3/mail/send', {

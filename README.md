@@ -2,6 +2,8 @@
 
 The fastest way to share a table. Paste your data, get an instant shareable link. No signup required.
 
+Product guarantees are defined in [INVARIANTS.md](./INVARIANTS.md).
+
 ## Features
 
 - 🚀 **Fast**: Generate shareable links in under 5 seconds

@@ -2,6 +2,12 @@
 .env
 .env.local
 .env.*.local
+.env.*
+*.key
+*.token
+*.secret
+API_KEY.txt
+API_TOKEN.txt
 
 # Wrangler
 .wrangler/
@@ -41,3 +47,8 @@ audit-output/
 captured-homepage.html
 PR_VALIDATION_REPORT.json
 PROJECT_STATE.md
+
+# Removed agent directories
+.claude/
+.kilocode/
+backup_original/

@@ -15,163 +15,221 @@
 export const indexTemplate = `<!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Table Share - The Fastest Way to Share a Table</title>
-    <link rel="stylesheet" href="/styles.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Table Share - Share Tables Instantly | No Signup, Free CSV & Spreadsheet Sharing</title>
+  <!-- SEO Meta Tags -->
+  <meta name="description" content="Share tables online in 5 seconds. Paste CSV, Excel, or spreadsheet data - get instant shareable link. No signup required. Free up to 500 rows. The fastest pastebin for tables.">
+  <meta name="keywords" content="share table online, share csv online, pastebin for tables, spreadsheet sharing no login, share excel without account, csv to link, ephemeral table sharing">
+  <meta name="author" content="Table Share">
+  <link rel="canonical" href="https://table-share.org">
+  <!-- Open Graph Tags for Social Sharing -->
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://table-share.org">
+  <meta property="og:title" content="Table Share - Share Tables Instantly | No Signup Required">
+  <meta property="og:description" content="Paste CSV or spreadsheet data, get shareable link in 5 seconds. No signup for you or recipients. Free pastebin for tables.">
+  <meta property="og:image" content="https://table-share.org/logo.png">
+  <meta property="og:site_name" content="Table Share">
+  <!-- Twitter Card Tags -->
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:url" content="https://table-share.org">
+  <meta name="twitter:title" content="Table Share - Share Tables Instantly | No Signup Required">
+  <meta name="twitter:description" content="Paste CSV or spreadsheet data, get shareable link in 5 seconds. No signup for you or recipients. Free pastebin for tables.">
+  <meta name="twitter:image" content="https://table-share.org/logo.png">
+  <link rel="icon" type="image/png" href="/logo.png">
+
+  <!-- Schema.org structured data for Google rich snippets -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebSite",
+    "name": "Table Share",
+    "url": "https://table-share.org",
+    "description": "Share tables online in 5 seconds. Paste CSV, Excel, or spreadsheet data - get instant shareable link. No signup required. Free pastebin for tables.",
+    "logo": "https://table-share.org/logo.png",
+    "potentialAction": {
+      "@type": "SearchAction",
+      "target": "https://table-share.org/?q={search_term_string}",
+      "query-input": "required name=search_term_string"
+    }
+  }
+  </script>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: system-ui, -apple-system, sans-serif;
+      max-width: 700px;
+      margin: 40px auto;
+      padding: 20px;
+      background: #fff;
+      color: #000;
+      line-height: 1.5;
+    }
+
+    h1 {
+      font-size: 24px;
+      font-weight: normal;
+      margin-bottom: 8px;
+    }
+
+    .tagline {
+      font-size: 14px;
+      color: #666;
+      margin-bottom: 20px;
+    }
+
+    #dataInput {
+      width: 100%;
+      height: 300px;
+      font-family: Consolas, Monaco, monospace;
+      font-size: 14px;
+      border: 2px solid #000;
+      padding: 10px;
+      margin-bottom: 10px;
+    }
+
+    #generateBtn {
+      background: #0066CC;
+      color: #fff;
+      border: none;
+      padding: 12px 24px;
+      font-size: 16px;
+      cursor: pointer;
+      display: none;
+    }
+
+    #status {
+      color: #228B22;
+      margin-top: 10px;
+      display: none;
+    }
+
+    #status.show { display: block; }
+
+    footer {
+      margin-top: 40px;
+      padding-top: 20px;
+      border-top: 2px solid #000;
+      text-align: center;
+      font-size: 12px;
+      color: #666;
+    }
+
+    footer a {
+      color: #0066CC;
+      text-decoration: none;
+    }
+  </style>
 </head>
 <body>
-    <header>
-        <img src="/logo.png" width="48" height="48" alt="Table Share" class="logo">
-        <h1 class="logo-text">Table Share</h1>
-        <p class="tagline">The fastest way to share a table</p>
-        <p class="cta">Stop taking screenshots. Paste your data and get an instant shareable link.</p>
-    </header>
-    <main>
-        <textarea id="pasteBox" class="paste-box" placeholder="Paste your table data here (from Excel, Google Sheets, CSV, or anywhere)...
+  <h1>Table Share</h1>
+  <p class="tagline">Paste your table. Get a link.</p>
 
-Example:
-Name    Age    City
-Alice   30     NYC
-Bob     25     LA"></textarea>
-        <button id="generateBtn" class="button">Generate Link</button>
-        <div id="status" class="status"></div>
-        <section class="how-it-works">
-            <h2>How It Works</h2>
-            <div class="steps">
-                <div class="step">
-                    <div class="step-number">1</div>
-                    <h3>Paste</h3>
-                    <p>Copy data from Excel, Sheets, CSV, or any table</p>
-                </div>
-                <div class="step">
-                    <div class="step-number">2</div>
-                    <h3>Generate</h3>
-                    <p>Get an instant shareable link (auto-copied)</p>
-                </div>
-                <div class="step">
-                    <div class="step-number">3</div>
-                    <h3>Share</h3>
-                    <p>Send link anywhere. Recipients need no account.</p>
-                </div>
-            </div>
-        </section>
-        <section class="use-cases">
-            <h2>Perfect For</h2>
-            <div class="case-list">
-                <div class="case">
-                    <h3>🔧 Developers</h3>
-                    <p>Share SQL query results, API responses, or log data with teammates or clients instantly</p>
-                </div>
-                <div class="case">
-                    <h3>💼 Freelancers</h3>
-                    <p>Send pricing tables, project timelines, or deliverables without formatting nightmares</p>
-                </div>
-                <div class="case">
-                    <h3>👥 Teams</h3>
-                    <p>Quick data snapshots for meetings, action items, or temporary lists</p>
-                </div>
-                <div class="case">
-                    <h3>📊 Data Analysts</h3>
-                    <p>Share analysis results, pandas DataFrame outputs, or R data tables</p>
-                </div>
-            </div>
-        </section>
-        <section class="features">
-            <h2>Why Table Share?</h2>
-            <div class="feature-grid">
-                <div class="feature">
-                    <div class="feature-icon">⚡</div>
-                    <h3>5-Second Workflow</h3>
-                    <p>From paste to shareable link in under 5 seconds</p>
-                </div>
-                <div class="feature">
-                    <div class="feature-icon">🚫</div>
-                    <h3>No Accounts</h3>
-                    <p>Zero signup for you or recipients. Forever.</p>
-                </div>
-                <div class="feature">
-                    <div class="feature-icon">📱</div>
-                    <h3>Mobile-Perfect</h3>
-                    <p>Clean, readable tables on any device</p>
-                </div>
-                <div class="feature">
-                    <div class="feature-icon">🔒</div>
-                    <h3>Auto-Expires</h3>
-                    <p>Links expire in 30 days (privacy by default)</p>
-                </div>
-                <div class="feature">
-                    <div class="feature-icon">💾</div>
-                    <h3>CSV Download</h3>
-                    <p>Recipients can export to spreadsheet</p>
-                </div>
-                <div class="feature">
-                    <div class="feature-icon">🛡️</div>
-                    <h3>Security Built-In</h3>
-                    <p>XSS prevention, rate limiting, content filtering</p>
-                </div>
-            </div>
-        </section>
-    </main>
-    <footer>
-        <p>&copy; 2025 Table Share | <a href="mailto:markrhenz@table-share.org">Contact</a> | <a href="/terms">Terms</a> | <a href="/privacy">Privacy</a></p>
-    </footer>
-    <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
-    <script>
-        const pasteBox = document.getElementById('pasteBox');
-        const generateBtn = document.getElementById('generateBtn');
-        const status = document.getElementById('status');
-        pasteBox.addEventListener('paste', () => {
-            setTimeout(() => {
-                if (pasteBox.value.trim()) {
-                    generateBtn.style.display = 'block';
-                }
-            }, 100);
+  <textarea id="dataInput" placeholder="Paste your table here (from Excel, Sheets, or CSV)"></textarea>
+
+  <button id="generateBtn">Generate Link</button>
+
+  <div id="status"></div>
+
+  <footer>
+    Created with <a href="/">Table Share</a>
+  </footer>
+
+  <!-- Honeypot for bot detection -->
+  <input type="text" name="website" id="website" style="position:absolute;left:-9999px;" tabindex="-1" autocomplete="off" aria-hidden="true">
+
+
+  <script>
+    const dataInput = document.getElementById('dataInput');
+    const generateBtn = document.getElementById('generateBtn');
+    const status = document.getElementById('status');
+
+    // Show button on paste
+    dataInput.addEventListener('paste', () => {
+      setTimeout(() => {
+        if (dataInput.value.trim()) {
+          generateBtn.style.display = 'block';
+        }
+      }, 100);
+    });
+
+    // Process on button click
+    generateBtn.addEventListener('click', processData);
+
+    async function processData() {
+      const rawData = dataInput.value.trim();
+
+      if (!rawData) return;
+
+      // Check honeypot
+      if (document.getElementById('website').value) {
+        showError('Invalid submission detected');
+        return;
+      }
+
+      // Show loading
+      status.textContent = 'Generating your link...';
+      status.classList.add('show');
+      generateBtn.style.display = 'none';
+
+      // Parse manually
+      const rows = rawData
+        .trim()
+        .split(/\\r?\\n/)
+        .map(row => row.trim().split(/\\t|,/));
+
+      if (rows.length === 0) {
+        showError('No data found to share.');
+        return;
+      }
+
+      // Send to API
+      try {
+        const response = await fetch('/api/create', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            data: rows,
+            honeypot: document.getElementById('website').value
+          })
         });
-        pasteBox.addEventListener('input', () => {
-            if (pasteBox.value.trim()) {
-                generateBtn.style.display = 'block';
-            } else {
-                generateBtn.style.display = 'none';
-            }
-        });
-        generateBtn.addEventListener('click', async () => {
-            const data = pasteBox.value.trim();
-            if (!data) return;
-            status.textContent = 'Generating link...';
-            generateBtn.disabled = true;
-            try {
-                const parsed = Papa.parse(data, {
-                    quoteChar: '"',
-                    escapeChar: '"',
-                    header: false,
-                    dynamicTyping: false,
-                    skipEmptyLines: true
-                });
-                const response = await fetch('/api/create', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        data: parsed.data,
-                        honeypot: ''
-                    })
-                });
-                const result = await response.json();
-                if (result.url) {
-                    await navigator.clipboard.writeText(result.url);
-                    status.textContent = '✓ Link copied to clipboard!';
-                    setTimeout(() => {
-                        globalThis.location.href = result.url;
-                    }, 1000);
-                } else {
-                    throw new Error('Failed to generate link');
-                }
-            } catch (error) {
-                status.textContent = '✗ Error: ' + error.message;
-                generateBtn.disabled = false;
-            }
-        });
-    </script>
+
+        const result = await response.json();
+
+        if (!response.ok) {
+          throw new Error(result.error || 'Failed to create table');
+        }
+
+        // Copy to clipboard
+        await navigator.clipboard.writeText(result.url);
+
+        // Show success
+        showSuccess('✓ Link copied!');
+
+        // Clear after 3 seconds
+        setTimeout(() => {
+          status.classList.remove('show');
+        }, 3000);
+
+      } catch (error) {
+        showError(error.message);
+      }
+    }
+
+    function showSuccess(message) {
+      status.textContent = message;
+      status.classList.add('show');
+    }
+
+    function showError(message) {
+      status.textContent = message;
+      status.classList.add('show');
+      generateBtn.style.display = 'block';
+    }
+  </script>
 </body>
 </html> `;
 
@@ -181,6 +239,9 @@ export const viewTemplate = `<!DOCTYPE html>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>{{TABLE_TITLE}} - Table Share</title>
+  <meta name="description" content="View shared table: {{TABLE_TITLE}}. Table shared via Table Share - no signup required.">
+  <meta name="robots" content="noindex, nofollow">
+  <link rel="icon" type="image/png" href="/logo.png">
   <style>
     body {
       font-family: system-ui, sans-serif;
@@ -295,96 +356,214 @@ export const viewTemplate = `<!DOCTYPE html>
 export const pricingTemplate = `<!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Pricing - Table Share</title>
-    <link rel="icon" type="image/png" href="/logo.png">
-    <style>
-        :root {
-            --bg-color: #fff;
-            --text-color: #000;
-            --secondary-bg: #f5f5f5;
-            --border-color: #000;
-            --accent-color: #0066cc;
-            --muted-color: #666;
-        }
-        [data-theme="dark"] {
-            --bg-color: #1a1a1a;
-            --text-color: #fff;
-            --secondary-bg: #2a2a2a;
-            --border-color: #fff;
-            --accent-color: #4da6ff;
-            --muted-color: #aaa;
-        }
-        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif; max-width: 1000px; margin: 40px auto; padding: 20px; background: var(--bg-color); color: var(--text-color); }
-        .pricing-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 40px; margin: 60px 0; }
-        .tier { border: 2px solid var(--border-color); padding: 40px; }
-        .tier.pro { background: var(--secondary-bg); }
-        .tier h2 { font-size: 32px; margin-bottom: 10px; }
-        .price { font-size: 48px; font-weight: 700; margin: 20px 0; }
-        .price small { font-size: 18px; color: var(--muted-color); }
-        .tier ul { list-style: none; margin: 30px 0; }
-        .tier li { padding: 10px 0; border-bottom: 1px solid var(--border-color); }
-        .tier li:last-child { border-bottom: none; }
-        .cta-button { display: block; width: 100%; padding: 15px; background: var(--accent-color); color: #fff; text-align: center; text-decoration: none; font-size: 18px; font-weight: 600; margin-top: 20px; }
-        .cta-button:hover { background: #0052A3; }
-        @media (max-width: 768px) { .pricing-grid { grid-template-columns: 1fr; } }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Pricing - Table Share</title>
+  <meta name="description" content="Table Share pricing: Free plan with 500 rows and 7-day links. Pro plan at $5 one-time for 5,000 rows, 90-day links, password protection, and API access.">
+  <meta property="og:title" content="Table Share Pricing - Free Plan or Pro for $5">
+  <link rel="canonical" href="https://table-share.org/pricing">
+  <link rel="icon" type="image/png" href="/logo.png">
+
+  <!-- Schema.org structured data for Google rich snippets -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebSite",
+    "name": "Table Share",
+    "url": "https://table-share.org",
+    "description": "Share tables online in 5 seconds. Paste CSV, Excel, or spreadsheet data - get instant shareable link. No signup required. Free pastebin for tables.",
+    "logo": "https://table-share.org/logo.png",
+    "potentialAction": {
+      "@type": "SearchAction",
+      "target": "https://table-share.org/?q={search_term_string}",
+      "query-input": "required name=search_term_string"
+    }
+  }
+  </script>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: system-ui, -apple-system, sans-serif;
+      max-width: 800px;
+      margin: 40px auto;
+      padding: 20px;
+      background: #fff;
+      color: #000;
+      line-height: 1.5;
+    }
+
+    h1 {
+      font-size: 32px;
+      font-weight: normal;
+      margin-bottom: 8px;
+    }
+
+    .tagline {
+      font-size: 16px;
+      color: #666;
+      margin-bottom: 40px;
+    }
+
+    .back-link {
+      display: inline-block;
+      margin-bottom: 20px;
+      color: #0066CC;
+      text-decoration: none;
+      font-size: 14px;
+    }
+
+    .back-link:hover { text-decoration: underline; }
+
+    .pricing-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+      margin-top: 40px;
+    }
+
+    .plan {
+      border: 2px solid #000;
+      padding: 20px;
+    }
+
+    .plan h2 {
+      font-size: 20px;
+      margin-bottom: 10px;
+    }
+
+    .price {
+      font-size: 24px;
+      margin-bottom: 20px;
+    }
+
+    .features {
+      list-style: none;
+      margin-bottom: 20px;
+    }
+
+    .features li {
+      margin-bottom: 8px;
+      padding-left: 20px;
+      position: relative;
+    }
+
+    .features li::before {
+      content: '✓';
+      position: absolute;
+      left: 0;
+      color: #228B22;
+    }
+
+    .get-started {
+      background: #0066CC;
+      color: #fff;
+      border: none;
+      padding: 12px 24px;
+      font-size: 16px;
+      cursor: pointer;
+      text-decoration: none;
+      display: inline-block;
+    }
+
+    .popular {
+      background: #0066CC;
+      color: #fff;
+    }
+
+    .popular h2,
+    .popular .price {
+      color: #fff;
+    }
+
+    footer {
+      margin-top: 60px;
+      padding-top: 20px;
+      border-top: 2px solid #000;
+      text-align: center;
+      font-size: 12px;
+      color: #666;
+    }
+
+    footer a {
+      color: #0066CC;
+      text-decoration: none;
+    }
+
+    @media (max-width: 600px) {
+      .pricing-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
 </head>
 <body>
-    <div style="text-align: center; margin-bottom: 60px;">
-        <a href="/" style="text-decoration: none; color: var(--text-color); display: inline-flex; align-items: center; gap: 16px;">
-            <img src="/logo.png" width="48" height="48" alt="Table Share">
-            <h1 style="margin: 0; font-size: 48px;">Table Share Pricing</h1>
-        </a>
-        <p style="font-size: 20px; color: var(--muted-color); margin-top: 20px;">Choose the plan that fits your needs</p>
+  <a href="/" class="back-link">← Back to Table Share</a>
+
+  <h1>Pricing</h1>
+  <p class="tagline">Choose the plan that's right for you.</p>
+
+  <div class="pricing-grid">
+    <div class="plan">
+      <h2>Free</h2>
+      <div class="price">$0</div>
+      <ul class="features">
+        <li>Up to 500 rows</li>
+        <li>Up to 20 columns</li>
+        <li>Link expires in 7 days</li>
+        <li>Basic sharing</li>
+      </ul>
+      <button class="get-started" onclick="location.href='/'">Get Started</button>
     </div>
-    
-    <div class="pricing-grid">
-        <div class="tier">
-            <h2>Free</h2>
-            <div class="price">$0<small>/forever</small></div>
-            <ul>
-                <li>✓ 500 rows max</li>
-                <li>✓ 50 columns max</li>
-                <li>✓ 7-day expiration</li>
-                <li>✓ CSV download</li>
-                <li>✓ Dark mode</li>
-                <li>✓ No signup required</li>
-            </ul>
-            <a href="/" class="cta-button">Start Free</a>
-        </div>
-        
-        <div class="tier pro">
-            <h2>Pro</h2>
-            <div class="price">$5<small>/one-time</small></div>
-            <ul>
-                <li>✓ <strong>5,000 rows</strong> (10x increase)</li>
-                <li>✓ <strong>100 columns</strong> (2x increase)</li>
-                <li>✓ <strong>Custom expiration</strong> (1-30 days)</li>
-                <li>✓ <strong>Password protection</strong></li>
-                <li>✓ <strong>Remove branding</strong></li>
-                <li>✓ <strong>API access</strong></li>
-                <li>✓ <strong>Extended validity</strong> (up to 90 days)</li>
-            </ul>
-            <a href="https://ko-fi.com/tableshare" class="cta-button">Get Pro via Ko-fi</a>
-            <p style="text-align: center; margin-top: 10px; font-size: 14px; color: var(--muted-color);">Instant API key after payment</p>
-        </div>
+
+    <div class="plan popular">
+      <h2>Pro</h2>
+      <div class="price">$5<span style="font-size:16px">one-time</span></div>
+      <ul class="features">
+        <li>Up to 5,000 rows</li>
+        <li>Up to 100 columns</li>
+        <li>Custom expiration (1-90 days)</li>
+        <li>Password protection</li>
+        <li>CSV export</li>
+        <li>Priority support</li>
+        <li>No ads</li>
+      </ul>
+      <button class="get-started">Get Pro</button>
     </div>
-    
-    <div style="text-align: center; margin-top: 60px;">
-        <p style="color: var(--muted-color);">Questions? <a href="mailto:markrhenz@table-share.org" style="color: var(--accent-color);">Contact us</a></p>
-        <p style="margin-top: 20px;"><a href="/" style="color: var(--accent-color);">← Back to Table Share</a></p>
-    </div>
+  </div>
+
+  <footer>
+    Created with <a href="/">Table Share</a>
+  </footer>
 </body>
 </html> `;
 
 export const termsTemplate = `<!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <title>Terms of Service - Table Share</title>
+    <meta name="description" content="Table Share Terms of Service. No accounts required. Free tables expire in 7 days, Pro tables in 90 days. Acceptable use policy and data handling.">
     <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="canonical" href="https://table-share.org/terms">
+    <link rel="icon" type="image/png" href="/logo.png">
+
+    <!-- Schema.org structured data for Google rich snippets -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "WebSite",
+      "name": "Table Share",
+      "url": "https://table-share.org",
+      "description": "Share tables online in 5 seconds. Paste CSV, Excel, or spreadsheet data - get instant shareable link. No signup required. Free pastebin for tables.",
+      "logo": "https://table-share.org/logo.png",
+      "potentialAction": {
+        "@type": "SearchAction",
+        "target": "https://table-share.org/?q={search_term_string}",
+        "query-input": "required name=search_term_string"
+      }
+    }
+    </script>
     <style>
         body {
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif;
@@ -418,7 +597,7 @@ export const termsTemplate = `<!DOCTYPE html>
     </ul>
     
     <h2>4. Data & Privacy</h2>
-    <p>We store your pasted data for 7 days (or custom duration up to 30 days if premium). No accounts = no personal data collected. See <a href="/privacy">Privacy Policy</a>.</p>
+    <p>We store your pasted data for 7 days (or custom duration up to 90 days if Pro). No accounts = no personal data collected. See <a href="/privacy">Privacy Policy</a>.</p>
     
     <h2>5. No Warranty</h2>
     <p>Service provided "as is." We don't guarantee uptime, data persistence, or security.</p>
@@ -432,11 +611,31 @@ export const termsTemplate = `<!DOCTYPE html>
 </html> `;
 
 export const privacyTemplate = `<!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <title>Privacy Policy - Table Share</title>
+    <meta name="description" content="Table Share Privacy Policy. Minimal data collection: pasted tables stored 7 days (free) or 90 days (Pro). No accounts, no tracking, no personal data.">
     <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="canonical" href="https://table-share.org/privacy">
+    <link rel="icon" type="image/png" href="/logo.png">
+
+    <!-- Schema.org structured data for Google rich snippets -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "WebSite",
+      "name": "Table Share",
+      "url": "https://table-share.org",
+      "description": "Share tables online in 5 seconds. Paste CSV, Excel, or spreadsheet data - get instant shareable link. No signup required. Free pastebin for tables.",
+      "logo": "https://table-share.org/logo.png",
+      "potentialAction": {
+        "@type": "SearchAction",
+        "target": "https://table-share.org/?q={search_term_string}",
+        "query-input": "required name=search_term_string"
+      }
+    }
+    </script>
     <style>
         body {
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif;
@@ -457,7 +656,7 @@ export const privacyTemplate = `<!DOCTYPE html>
     <h2>1. What We Collect</h2>
     <p><strong>No accounts = minimal data:</strong></p>
     <ul>
-        <li>Pasted table data (stored 7 days, up to 30 days for premium)</li>
+        <li>Pasted table data (stored 7 days, up to 90 days for Pro)</li>
         <li>IP address (rate limiting only, not logged)</li>
         <li>Browser metadata (standard HTTP headers)</li>
     </ul>
@@ -471,7 +670,7 @@ export const privacyTemplate = `<!DOCTYPE html>
     </ul>
     
     <h2>3. Data Retention</h2>
-    <p>Tables auto-delete after 7 days (or custom duration for premium users up to 30 days). Manual deletion: email us.</p>
+    <p>Tables auto-delete after 7 days (or custom duration for Pro users up to 90 days). Manual deletion: email us.</p>
     
     <h2>4. Third Parties</h2>
     <p>We use Cloudflare (hosting/CDN). They may collect standard logs. No analytics/tracking.</p>

@@ -468,7 +468,7 @@ Bob     25     LA"></textarea>
                 // Check if free user trying to use password
                 const passwordValue = document.getElementById('passwordInputMain') ? document.getElementById('passwordInputMain').value.trim() : '';
 
-                if (passwordValue && !isProUser) {
+                if (passwordValue && !isProUser && proDetails && proDetails.open) {
                     // Show upgrade modal for password feature
                     const modal = document.getElementById('upgradeModal');
                     modal.querySelector('h2').textContent = 'Pro Feature';
@@ -673,7 +673,7 @@ Bob     25     LA"></textarea>
     <p style="margin-bottom: 20px; color: var(--muted-color);">Free tables are limited to <strong>500 rows</strong>.</p>
     <p style="margin-bottom: 30px;">Upgrade once for <strong>$5</strong> to share tables up to <strong>5,000 rows</strong>.</p>
     <a href="/pricing" style="display: inline-block; background: var(--accent-color); color: #fff; padding: 15px 30px; text-decoration: none; font-weight: 600; margin-right: 10px;">Get Pro - $5</a>
-    <button onclick="document.getElementById('upgradeModal').style.display='none'" style="background: transparent; border: 2px solid var(--border-color); padding: 15px 30px; cursor: pointer; color: var(--text-color);">Cancel</button>
+    <button onclick="document.getElementById('upgradeModal').style.display='none'; document.getElementById('expirySelect').value='604800'; document.getElementById('noBranding').checked=false; document.getElementById('passwordInputMain').value=''; document.getElementById('passwordInput').value='';" style="background: transparent; border: 2px solid var(--border-color); padding: 15px 30px; cursor: pointer; color: var(--text-color);">Cancel</button>
   </div>
 </div>
 </body>
@@ -793,7 +793,7 @@ const PRIVACY_HTML = `<!DOCTYPE html>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Privacy Policy - Table Share</title>
-    <meta name="description" content="Table Share Privacy Policy. Minimal data collection, no tracking, 30-day auto-deletion.">
+    <meta name="description" content="Table Share Privacy Policy. Minimal data collection: pasted tables stored 7 days (free) or 90 days (Pro). No accounts, no tracking, no personal data.">
     <link rel="icon" type="image/png" href="/logo.png">
     
     <!-- Schema.org structured data for Google rich snippets -->
@@ -2621,7 +2621,7 @@ export default {
       // Analytics Dashboard (admin only)
       if (pathname === '/analytics' && request.method === 'GET') {
         const adminKey = url.searchParams.get('key');
-        const ADMIN_KEY = 'tableshare-admin-2025-markrhenzon';
+        const ADMIN_KEY = env.ADMIN_KEY;
 
         if (adminKey !== ADMIN_KEY) {
           return new Response('Unauthorized', {
