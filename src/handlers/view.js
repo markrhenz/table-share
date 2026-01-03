@@ -271,6 +271,14 @@ const VIEW_TEMPLATE = `<!DOCTYPE html>
     </button>
   </div>
 
+  <div id="proUpgradePrompt" style="display: none; background: var(--secondary-bg, #f5f5f5); border: 2px solid var(--border-color); padding: 16px; margin: 20px 0; text-align: center; border-radius: 4px;">
+    <p style="margin: 0 0 12px 0; font-size: 14px; color: var(--text-color);">
+      Extend table expiration up to 90 days
+    </p>
+    <a href="/pricing" style="background: var(--accent-color); color: #fff; padding: 8px 16px; text-decoration: none; font-size: 14px; font-weight: 600; border-radius: 4px; margin-right: 12px;">Upgrade to Pro</a>
+    <button onclick="dismissProPrompt(); return false;" style="background: transparent; border: 2px solid var(--border-color); padding: 8px 16px; cursor: pointer; font-size: 14px; color: var(--text-color);">Dismiss</button>
+  </div>
+
   {{#NO_BRANDING}}
   {{else}}
   <footer>
@@ -329,6 +337,42 @@ const VIEW_TEMPLATE = `<!DOCTYPE html>
       link.click();
       window.URL.revokeObjectURL(url);
     }
+
+    function dismissProPrompt() {
+      document.getElementById('proUpgradePrompt').style.display = 'none';
+      sessionStorage.setItem('proPromptDismissed', 'true');
+    }
+
+    function showProPromptIfFree() {
+      if (sessionStorage.getItem('proPromptDismissed') === 'true') {
+        return;
+      }
+
+      const expirationEl = document.querySelector('p[style*="color: var(--muted-color)"]');
+      if (!expirationEl) return;
+
+      const expirationText = expirationEl.textContent.trim();
+      let isFree = false;
+
+      if (expirationText === 'Expires soon') {
+        isFree = true;
+      } else if (expirationText.startsWith('Expires in ')) {
+        const match = expirationText.match(/Expires in (\d+) days/);
+        if (match) {
+          const days = parseInt(match[1]);
+          if (days <= 7) {
+            isFree = true;
+          }
+        }
+      }
+
+      if (isFree) {
+        document.getElementById('proUpgradePrompt').style.display = 'block';
+      }
+    }
+
+    // Show Pro prompt after page load for free users
+    document.addEventListener('DOMContentLoaded', showProPromptIfFree);
   </script>
 </body>
 </html>`;
