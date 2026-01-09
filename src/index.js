@@ -12,17 +12,17 @@ const INDEX_HTML = `<!DOCTYPE html>
     <meta name="description" content="Share tables online in 5 seconds. Paste CSV, Excel, or spreadsheet data - get instant shareable link. No signup required. Free up to 500 rows. The fastest pastebin for tables.">
     <meta name="keywords" content="share table online, share csv online, pastebin for tables, spreadsheet sharing no login, share excel without account, csv to link, ephemeral table sharing">
     <meta name="author" content="Table Share">
-    <link rel="canonical" href="https://table-share.org">
+    <link rel="canonical" href="https://table-share.org/">
     <!-- Open Graph Tags for Social Sharing -->
     <meta property="og:type" content="website">
-    <meta property="og:url" content="https://table-share.org">
+    <meta property="og:url" content="https://table-share.org/">
     <meta property="og:title" content="Table Share - Share Tables Instantly | No Signup Required">
     <meta property="og:description" content="Paste CSV or spreadsheet data, get shareable link in 5 seconds. No signup for you or recipients. Free pastebin for tables.">
     <meta property="og:image" content="https://table-share.org/logo.png">
     <meta property="og:site_name" content="Table Share">
     <!-- Twitter Card Tags -->
     <meta name="twitter:card" content="summary">
-    <meta name="twitter:url" content="https://table-share.org">
+    <meta name="twitter:url" content="https://table-share.org/">
     <meta name="twitter:title" content="Table Share - Share Tables Instantly | No Signup Required">
     <meta name="twitter:description" content="Paste CSV or spreadsheet data, get shareable link in 5 seconds. No signup for you or recipients. Free pastebin for tables.">
     <meta name="twitter:image" content="https://table-share.org/logo.png">
@@ -1041,7 +1041,11 @@ const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
   'Access-Control-Allow-Headers': 'Content-Type',
-  'Access-Control-Max-Age': '86400'
+  'Access-Control-Max-Age': '86400',
+  'Content-Security-Policy': "default-src 'self'; script-src 'self' 'unsafe-inline' cdn.jsdelivr.net scripts.simpleanalyticscdn.com; style-src 'self' 'unsafe-inline'; img-src 'self' data:; connect-src 'self' https://api.simpleanalytics.io; frame-ancestors 'none'",
+  'X-Content-Type-Options': 'nosniff',
+  'X-Frame-Options': 'DENY',
+  'Referrer-Policy': 'strict-origin-when-cross-origin'
 };
 
 const SITEMAP_XML = `<?xml version="1.0" encoding="UTF-8"?>

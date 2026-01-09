@@ -77,5 +77,6 @@
 
     // Make ThemeManager available globally for manual control if needed
     window.TableShareTheme = ThemeManager;
+    window.SharedTheme = ThemeManager;
 
 })();

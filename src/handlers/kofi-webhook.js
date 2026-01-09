@@ -1,4 +1,4 @@
-// Removed unused import
+// Ko-fi Webhook Handler with Deduplication
 
 export async function handleKofiWebhook(request, env) {
   try {
@@ -46,10 +46,33 @@ export async function handleKofiWebhook(request, env) {
     console.log('✅ Parsed Ko-fi webhook data:', JSON.stringify(data, null, 2));
     
     // Verify webhook (get token from Ko-fi dashboard)
-    const KOFI_VERIFICATION_TOKEN = env.KOFI_TOKEN; // Store in wrangler.toml
+    const KOFI_VERIFICATION_TOKEN = env.KOFI_TOKEN;
     if (data.verification_token !== KOFI_VERIFICATION_TOKEN) {
+      console.error('❌ Invalid verification token');
       return new Response('Unauthorized', { status: 401 });
     }
+    
+    // DEDUPLICATION: Check if this transaction was already processed
+    const transactionId = data.message_id;
+    if (!transactionId) {
+      console.error('❌ Missing transaction ID (message_id)');
+      return new Response('Missing transaction ID', { status: 400 });
+    }
+    
+    const dedupKey = `webhook:${transactionId}`;
+    const existingTransaction = await env.TABLES.get(dedupKey);
+    
+    if (existingTransaction) {
+      console.log(`⚠️ Duplicate webhook detected for transaction: ${transactionId}`);
+      console.log('Already processed at:', existingTransaction);
+      // Return 200 to prevent Ko-fi from retrying
+      return new Response('Already processed', { status: 200 });
+    }
+    
+    // Mark transaction as being processed (with 30-day TTL)
+    await env.TABLES.put(dedupKey, new Date().toISOString(), {
+      expirationTtl: 30 * 24 * 60 * 60 // 30 days
+    });
     
     // Check if payment is for Pro key (either donation or shop order)
     const isProPurchase =
@@ -66,35 +89,24 @@ export async function handleKofiWebhook(request, env) {
         email: data.email,
         createdAt: new Date().toISOString(),
         expiresAt: new Date(Date.now() + 365 * 24 * 60 * 60 * 1000).toISOString(), // 1 year
-        transactionId: data.message_id
+        transactionId: transactionId
       };
       
       await env.TABLES.put(`keys:${apiKey}`, JSON.stringify(keyData));
       
-      // Send email with API key via SendGrid
+      // Send email with API key via Resend
       try {
-        const emailResponse = await fetch('https://api.sendgrid.com/v3/mail/send', {
+        const emailResponse = await fetch('https://api.resend.com/emails', {
           method: 'POST',
           headers: {
-            'Authorization': `Bearer ${env.SENDGRID_API_KEY}`,  // Added space after Bearer
+            'Authorization': `Bearer ${env.RESEND_API_KEY}`,
             'Content-Type': 'application/json'
           },
           body: JSON.stringify({
-            personalizations: [{
-              to: [{ email: data.email }],
-              subject: 'Your Table Share Pro API Key 🎉'
-            }],
-            from: {
-              email: 'markrhenz@table-share.org',
-              name: 'Table Share'
-            },
-            reply_to: {
-              email: 'markrhenz@table-share.org',
-              name: 'Mark - Table Share'
-            },
-            content: [{
-              type: 'text/plain',
-              value: `Hi there!
+            from: 'Table Share <no-reply@notifications.table-share.org>',
+            to: [data.email],
+            subject: 'Your Table Share Pro API Key 🎉',
+            text: `Hi there!
 
 Thanks for upgrading to Table Share Pro! 🎉
 
@@ -131,7 +143,6 @@ Thanks for supporting Table Share!
 - Mark
 Table Share
 https://table-share.org`
-            }]
           })
         });
         
@@ -139,7 +150,7 @@ https://table-share.org`
           console.log(`✅ API key successfully emailed to ${data.email}`);
         } else {
           const errorText = await emailResponse.text();
-          console.error(`❌ SendGrid error: ${errorText}`);
+          console.error(`❌ Resend error: ${errorText}`);
           console.log(`⚠️ MANUAL ACTION: Email this key to ${data.email}: ${apiKey}`);
         }
       } catch (emailError) {
@@ -153,7 +164,7 @@ https://table-share.org`
 NEW PRO USER
 Email: ${data.email}
 API Key: ${apiKey}
-Transaction: ${data.message_id}
+Transaction: ${transactionId}
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 `);
       

@@ -13,5 +13,5 @@ id = "a3ac01d322fa4914940675f437dafef0"
 
 # Environment variables are now stored as Cloudflare Workers secrets
 # Use: wrangler secret put ADMIN_KEY
-# Use: wrangler secret put SENDGRID_API_KEY
+# Use: wrangler secret put RESEND_API_KEY  # Email delivery via Resend (not SendGrid)
 # Use: wrangler secret put KOFI_TOKEN
