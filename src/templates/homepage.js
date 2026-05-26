@@ -126,10 +126,10 @@ export const INDEX_HTML = `<!DOCTYPE html>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif; background: var(--bg-color); color: var(--text-color); line-height: 1.6; padding: 20px; }
         .container { max-width: 800px; margin: 0 auto; }
-        header { text-align: center; margin-bottom: 60px; padding-top: 40px; }
+        header { text-align: center; margin-bottom: 24px; padding-top: 20px; }
         h1 { font-size: 48px; font-weight: 700; margin-bottom: 20px; }
         .tagline { font-size: 24px; color: var(--tagline-color); margin-bottom: 40px; }
-        .cta { font-size: 18px; color: var(--muted-color); margin-bottom: 60px; }
+        .cta { font-size: 18px; color: var(--muted-color); margin-bottom: 16px; }
         .paste-box { width: 100%; border: 2px solid var(--border-color); padding: 20px; font-size: 16px; font-family: monospace; resize: vertical; min-height: 200px; margin-bottom: 20px; background: var(--bg-color); color: var(--text-color); }
         .button { display: none; width: 100%; background: var(--accent-color); color: #fff; border: none; padding: 15px; font-size: 18px; font-weight: 600; cursor: pointer; margin-bottom: 20px; }
         .button:hover { background: #0052A3; }
@@ -154,71 +154,7 @@ export const INDEX_HTML = `<!DOCTYPE html>
         .feature-icon { font-size: 36px; margin-bottom: 10px; }
         .feature h3 { font-size: 18px; margin-bottom: 10px; }
         .feature p { color: var(--muted-color); font-size: 14px; }
-/* URL Fetch Mode - Pro Feature */
-.input-mode-switcher {
-    display: flex;
-    gap: 0;
-    margin-bottom: 16px;
-    border: 2px solid var(--border-color);
-}
-.mode-btn {
-    flex: 1;
-    padding: 12px 16px;
-    font-size: 15px;
-    font-weight: 600;
-    border: none;
-    cursor: pointer;
-    background: var(--bg-color);
-    color: var(--muted-color);
-    transition: background 0.15s, color 0.15s;
-    font-family: inherit;
-    text-align: center;
-}
-.mode-btn.active {
-    background: var(--text-color);
-    color: var(--bg-color);
-}
-.mode-btn:first-child {
-    border-right: 2px solid var(--border-color);
-}
-.pro-badge-inline {
-    display: inline-block;
-    background: #c89b3c;
-    color: #000;
-    font-size: 10px;
-    padding: 1px 5px;
-    font-weight: 700;
-    letter-spacing: 0.5px;
-    vertical-align: middle;
-    margin-left: 6px;
-}
-.url-input-container {
-    display: none;
-    position: relative;
-}
-.url-input-container.active {
-    display: block;
-}
-.url-input {
-    width: 100%;
-    border: 2px solid var(--border-color);
-    padding: 20px;
-    padding-left: 20px;
-    font-size: 16px;
-    font-family: monospace;
-    min-height: 60px;
-    background: var(--bg-color);
-    color: var(--text-color);
-    margin-bottom: 20px;
-}
-.url-input:focus {
-    outline: 2px solid var(--accent-color);
-    outline-offset: -2px;
-}
-.url-input::placeholder {
-    color: var(--muted-color);
-    opacity: 0.7;
-}
+/* URL Pro Banner */
 .url-pro-banner {
     background: linear-gradient(135deg, #1a1a1a 0%, #2a2a2a 100%);
     border: 2px solid #c89b3c;
@@ -237,8 +173,6 @@ export const INDEX_HTML = `<!DOCTYPE html>
     text-decoration: underline;
     font-weight: 700;
 }
-.paste-box-container.active { display: block; }
-.paste-box-container { display: none; }
 
         footer { margin-top: 80px; padding-top: 40px; border-top: 2px solid var(--border-color); text-align: center; color: var(--muted-color); }
         footer a { color: var(--accent-color); text-decoration: none; }
@@ -262,47 +196,20 @@ export const INDEX_HTML = `<!DOCTYPE html>
             </div>
             <p class="tagline" style="font-size: 32px; font-weight: 700; margin-bottom: 16px;">Share Tables in 3 Seconds</p>
             <p class="cta" style="font-size: 20px;">No signup. No permissions. Just paste and share.</p>
-            <p style="font-size: 14px; color: var(--muted-color); margin-top: 16px;" id="statsLine">
-                <span id="tableCount" style="font-weight: 700;">Loading...</span> tables shared
+            <p style="font-size: 14px; color: var(--muted-color); margin-top: 16px; display: none;" id="statsLine">
+                <span id="tableCount" style="font-weight: 700;"></span> tables shared
             </p>
         </header>
         <main id="main">
-            <div style="margin-bottom: 12px;">
-                <label for="titleInput" style="display: block; font-size: 14px; color: var(--muted-color); margin-bottom: 6px;">
-                    Title (optional)
-                </label>
-                <input 
-                    type="text" 
-                    id="titleInput" 
-                    placeholder="e.g., Q4 Sales Report" 
-                    maxlength="100"
-                    style="width: 100%; border: 2px solid var(--border-color); padding: 10px; font-size: 16px; background: var(--bg-color); color: var(--text-color);"
-                >
+            <!-- Honeypot field for bot detection (invisible to humans) -->
+            <div style="position: absolute; left: -9999px; top: -9999px;" aria-hidden="true">
+                <input type="text" id="honeypotField" name="website" tabindex="-1" autocomplete="off" value="">
             </div>
-            <!-- Hidden Pro Mode inputs for JS functionality -->
-            <div style="display: none;">
-                <input type="password" id="apiKeyInput">
-                <div id="proStatus"></div>
-                <div id="expiryContainer">
-                    <select id="expirySelect">
-                        <option value="604800" selected>7 days</option>
-                        <option value="7776000">90 days</option>
-                    </select>
-                </div>
-                <div id="passwordContainer"></div>
-                <input type="checkbox" id="noBranding">
-                <details id="proDetails"></details>
-            </div>
-            <div class="input-mode-switcher">
-                <button type="button" class="mode-btn active" data-mode="paste" id="modePaste">
-                    📋 Paste Data
-                </button>
-                <button type="button" class="mode-btn" data-mode="url" id="modeUrl">
-                    🔗 Fetch from URL <span class="pro-badge-inline">PRO</span>
-                </button>
-            </div>
+            <!-- Hidden inputs for JS compatibility -->
+            <input type="hidden" id="apiKeyInput" value="">
 
-            <div class="paste-box-container active" id="pasteContainer">
+            <!-- Paste Box - First Interactive Element -->
+            <div id="pasteContainer">
                 <textarea id="pasteBox" class="paste-box" placeholder="Paste your table data here (from Excel, Google Sheets, CSV, or anywhere)...
 
 Example:
@@ -314,48 +221,104 @@ Bob     25     LA"></textarea>
                 </div>
             </div>
 
-            <div class="url-input-container" id="urlContainer">
+            <!-- URL Container (hidden by default) -->
+            <div id="urlContainer" style="display: none;">
                 <div class="url-pro-banner" id="urlProBanner">
                     🔒 URL fetching requires a Pro key. <a href="/pricing">Get Pro - $5</a>
                 </div>
                 <input
                     type="url"
                     id="urlInput"
-                    class="url-input"
+                    class="paste-box"
                     placeholder="https://example.com/data.csv"
                     autocomplete="off"
                     spellcheck="false"
                 >
-                <div style="font-size: 13px; color: var(--muted-color); margin-top: -12px; margin-bottom: 12px;">
+                <div style="font-size: 13px; color: var(--muted-color); margin-top: 8px; margin-bottom: 12px;">
                     Direct link to a .csv file or any URL that returns CSV/TSV text data
                 </div>
             </div>
-            <div style="margin-bottom: 12px;">
-                <label for="passwordInputMain" style="display: flex; align-items: center; gap: 8px; font-size: 14px; color: var(--muted-color); margin-bottom: 6px;">
-                    🔒 Password protect
-                    <span style="background: var(--accent-color); color: #fff; font-size: 10px; padding: 2px 6px; border-radius: 3px; font-weight: 600;">PRO</span>
-                </label>
-                <input
-                    type="password"
-                    id="passwordInputMain"
-                    placeholder="Optional - recipients will need this password"
-                    style="width: 100%; border: 2px solid var(--border-color); padding: 10px; font-size: 14px; background: var(--bg-color); color: var(--text-color);"
-                >
-                <p style="font-size: 12px; color: var(--muted-color); margin-top: 6px;">
-                    <a href="#" id="showProKey" style="color: var(--accent-color);">Have a Pro key? Click here</a>
-                </p>
-                <div id="proKeySection" style="display: none; margin-top: 8px;">
-                    <input
-                        type="password"
-                        id="apiKeyInputVisible"
-                        placeholder="Paste your Pro API key here"
-                        style="width: 100%; border: 2px solid var(--border-color); padding: 10px; font-size: 14px; background: var(--bg-color); color: var(--text-color);"
-                    >
-                    <div id="proStatusVisible" style="font-size: 12px; margin-top: 6px; font-weight: 600;"></div>
-                </div>
-            </div>
-             <button id="generateBtn" class="button">Generate Link</button>
+
+             <button id="generateBtn" class="button">Generate Table</button>
              <div id="status" class="status" aria-live="polite" aria-atomic="true"></div>
+
+            <!-- Collapsible Options Section -->
+            <details id="optionsSection" style="margin-top: 16px; border: 2px solid var(--border-color);">
+                <summary style="padding: 12px 16px; cursor: pointer; font-size: 14px; font-weight: 600; background: var(--secondary-bg); user-select: none;">
+                    ⚙ Options (title, password, expiry)
+                </summary>
+                <div style="padding: 16px;">
+                    <!-- Title -->
+                    <div style="margin-bottom: 12px;">
+                        <label for="titleInput" style="font-size: 13px; color: var(--muted-color); display: block; margin-bottom: 4px;">Title (optional)</label>
+                        <input type="text" id="titleInput" placeholder="e.g., Q4 Sales Report" maxlength="100"
+                            style="width: 100%; border: 2px solid var(--border-color); padding: 8px 10px; font-size: 14px; background: var(--bg-color); color: var(--text-color);">
+                    </div>
+
+                    <!-- No headers -->
+                    <div style="margin-bottom: 12px;">
+                        <label for="noHeadersCheck" style="display: flex; align-items: center; gap: 6px; font-size: 13px; color: var(--muted-color); cursor: pointer;">
+                            <input type="checkbox" id="noHeadersCheck" style="width: 16px; height: 16px; cursor: pointer;">
+                            No headers (treat first row as data)
+                        </label>
+                    </div>
+
+                    <!-- Password protect -->
+                    <div style="margin-bottom: 12px;">
+                        <label for="passwordInputMain" style="font-size: 13px; color: var(--muted-color); display: flex; align-items: center; gap: 6px; margin-bottom: 4px;">
+                            🔒 Password protect
+                            <span style="background: #c89b3c; color: #000; font-size: 10px; padding: 1px 5px; font-weight: 700;">PRO</span>
+                        </label>
+                        <input type="password" id="passwordInputMain" placeholder="Optional - recipients will need this password"
+                            style="width: 100%; border: 2px solid var(--border-color); padding: 8px 10px; font-size: 14px; background: var(--bg-color); color: var(--text-color);">
+                    </div>
+
+                    <!-- Expiry -->
+                    <div style="margin-bottom: 12px;">
+                        <label for="expirySelect" style="font-size: 13px; color: var(--muted-color); display: flex; align-items: center; gap: 6px; margin-bottom: 4px;">
+                            ⏰ Link expiry
+                            <span id="expiryProBadge" style="background: #c89b3c; color: #000; font-size: 10px; padding: 1px 5px; font-weight: 700;">PRO</span>
+                        </label>
+                        <select id="expirySelect"
+                            style="width: 100%; border: 2px solid var(--border-color); padding: 8px 10px; font-size: 14px; background: var(--bg-color); color: var(--text-color);">
+                            <option value="604800" selected>7 days (free)</option>
+                            <option value="2592000" disabled id="opt30d">30 days (Pro)</option>
+                            <option value="7776000" disabled id="opt90d">90 days (Pro)</option>
+                        </select>
+                    </div>
+
+                    <!-- Remove branding -->
+                    <div style="margin-bottom: 12px;">
+                        <label for="noBranding" style="display: flex; align-items: center; gap: 6px; font-size: 13px; color: var(--muted-color); cursor: pointer;">
+                            <input type="checkbox" id="noBranding" style="width: 16px; height: 16px; cursor: pointer;" disabled>
+                            Remove "Created with Table Share" footer
+                            <span style="background: #c89b3c; color: #000; font-size: 10px; padding: 1px 5px; font-weight: 700;">PRO</span>
+                        </label>
+                    </div>
+
+                    <!-- URL Fetch mode -->
+                    <div style="margin-top: 12px; padding-top: 12px; border-top: 1px solid var(--border-color);">
+                        <label style="display: flex; align-items: center; gap: 6px; font-size: 13px; color: var(--muted-color); cursor: pointer;">
+                            <input type="checkbox" id="urlModeToggle" style="width: 16px; height: 16px; cursor: pointer;" disabled>
+                            🔗 Fetch from URL instead of paste
+                            <span style="background: #c89b3c; color: #000; font-size: 10px; padding: 1px 5px; font-weight: 700;">PRO</span>
+                        </label>
+                    </div>
+
+                    <!-- Pro key section -->
+                    <div style="margin-top: 16px; padding-top: 12px; border-top: 1px solid var(--border-color);">
+                        <p style="font-size: 12px; color: var(--muted-color); margin-bottom: 6px;">
+                            <a href="#" id="showProKey" style="color: var(--accent-color);">Have a Pro key? Click here</a> |
+                            <a href="/pricing" style="color: var(--accent-color);">Get Pro - $5</a>
+                        </p>
+                        <div id="proKeySection" style="display: none; margin-top: 8px;">
+                            <input type="password" id="apiKeyInputVisible" placeholder="Paste your Pro API key here"
+                                style="width: 100%; border: 2px solid var(--border-color); padding: 8px 10px; font-size: 14px; background: var(--bg-color); color: var(--text-color);">
+                            <div id="proStatusVisible" style="font-size: 12px; margin-top: 6px; font-weight: 600;"></div>
+                        </div>
+                    </div>
+                </div>
+            </details>
             <!-- History Section -->
             <div id="history-section" style="margin-top: 30px; display: none;">
               <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
@@ -511,6 +474,39 @@ Bob     25     LA"></textarea>
         const proKeySection = document.getElementById('proKeySection');
         const showProKeyLink = document.getElementById('showProKey');
 
+        // ===== URL FETCH MODE VARIABLES =====
+        const pasteContainer = document.getElementById('pasteContainer');
+        const urlContainer = document.getElementById('urlContainer');
+        const urlInput = document.getElementById('urlInput');
+        const urlProBanner = document.getElementById('urlProBanner');
+        const urlModeToggle = document.getElementById('urlModeToggle');
+        let currentMode = 'paste';
+
+        // Update Pro controls based on key status
+        function updateProControls() {
+            const key = localStorage.getItem('proApiKey') || '';
+            const isPro = key.startsWith('ts_live_') && key.length >= 28;
+
+            // Enable/disable expiry options
+            const opt30d = document.getElementById('opt30d');
+            const opt90d = document.getElementById('opt90d');
+            const expiryProBadge = document.getElementById('expiryProBadge');
+            
+            if (opt30d) opt30d.disabled = !isPro;
+            if (opt90d) opt90d.disabled = !isPro;
+            if (expiryProBadge) expiryProBadge.style.display = isPro ? 'none' : 'inline-block';
+
+            // Enable/disable remove branding
+            const noBranding = document.getElementById('noBranding');
+            if (noBranding) noBranding.disabled = !isPro;
+
+            // Enable/disable URL mode toggle
+            if (urlModeToggle) urlModeToggle.disabled = !isPro;
+
+            // Update URL Pro banner visibility
+            if (urlProBanner) urlProBanner.style.display = (currentMode === 'url' && !isPro) ? 'block' : 'none';
+        }
+
         // Toggle Pro key section
         showProKeyLink.addEventListener('click', (e) => {
             e.preventDefault();
@@ -528,6 +524,8 @@ Bob     25     LA"></textarea>
             proKeySection.style.display = 'block';
             showProKeyLink.textContent = 'Hide Pro key input';
         }
+        // Initialize Pro controls state
+        updateProControls();
 
         // Validate visible key input and sync with hidden
         apiKeyInputVisible.addEventListener('input', () => {
@@ -537,6 +535,7 @@ Bob     25     LA"></textarea>
             if (!key) {
                 proStatusVisible.textContent = '';
                 localStorage.removeItem('proApiKey');
+                updateProControls();
                 return;
             }
 
@@ -544,10 +543,12 @@ Bob     25     LA"></textarea>
                 proStatusVisible.textContent = '✓ Pro Mode Active';
                 proStatusVisible.style.color = '#00cc66';
                 localStorage.setItem('proApiKey', key);
+                updateProControls();
             } else {
                 proStatusVisible.textContent = '✗ Invalid key format';
                 proStatusVisible.style.color = '#ff4444';
                 localStorage.removeItem('proApiKey');
+                updateProControls();
             }
         });
 
@@ -628,13 +629,14 @@ Bob     25     LA"></textarea>
                     const resp = await fetch('/api/fetch-url', {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({
+                            body: JSON.stringify({
                             url: urlVal,
                             apiKey: apiKey,
                             title: titleVal,
                             password: passwordVal || undefined,
                             expiry: document.getElementById('expirySelect')?.value || undefined,
-                            noBranding: document.getElementById('noBranding')?.checked || false
+                            noBranding: document.getElementById('noBranding')?.checked || false,
+                            noHeaders: document.getElementById('noHeadersCheck')?.checked || false
                         })
                     });
 
@@ -650,21 +652,27 @@ Bob     25     LA"></textarea>
                         return;
                     }
 
-                    // Success!
-                    try {
-                        await navigator.clipboard.writeText(result.url);
-                        status.innerHTML = '✅ <a href="' + result.url + '" target="_blank" style="color: var(--accent-color); font-weight: 700;">' + result.url + '</a> — copied! (' + result.rows + ' rows, ' + result.cols + ' cols)';
-                    } catch (clipErr) {
-                        status.innerHTML = '✅ <a href="' + result.url + '" target="_blank" style="color: var(--accent-color); font-weight: 700;">' + result.url + '</a> — ' + result.rows + ' rows';
-                    }
-
                     // Save to history
                     const id = result.url.split('/').pop();
                     addToHistory(id, result.url, urlVal.substring(0, 50));
 
-                    btn.textContent = 'Fetch & Create Table';
-                    btn.disabled = false;
-                    urlInput.value = '';
+                    // Attempt clipboard write, then redirect with brief confirmation
+                    let copied = false;
+                    try {
+                        await navigator.clipboard.writeText(result.url);
+                        copied = true;
+                    } catch (clipErr) {
+                        // Clipboard failed silently - user can copy from address bar
+                    }
+
+                    status.innerHTML = copied
+                        ? '✅ Link copied! Opening table...'
+                        : '✅ Table created! Opening...';
+
+                    // Brief delay so user sees confirmation before redirect
+                    setTimeout(() => {
+                        window.location.href = result.url;
+                    }, 800);
                     return;
                 }
 
@@ -673,7 +681,7 @@ Bob     25     LA"></textarea>
                 if (!text.trim()) {
                     status.innerHTML = '<span style="color: #d00;">Please paste some data first</span>';
                     btn.disabled = false;
-                    btn.textContent = 'Generate Link';
+                    btn.textContent = 'Generate Table';
                     return;
                 }
 
@@ -688,18 +696,19 @@ Bob     25     LA"></textarea>
                 if (!parsed.data || parsed.data.length === 0) {
                     status.innerHTML = '<span style="color: #d00;">Could not parse data. Use tabs or commas to separate columns.</span>';
                     btn.disabled = false;
-                    btn.textContent = 'Generate Link';
+                    btn.textContent = 'Generate Table';
                     return;
                 }
 
                 const payload = {
                     data: parsed.data,
                     title: titleVal,
-                    honeypot: '',
+                    honeypot: document.getElementById('honeypotField')?.value || '',
                     apiKey: apiKey,
                     password: passwordVal || undefined,
                     expiry: document.getElementById('expirySelect')?.value || undefined,
-                    noBranding: document.getElementById('noBranding')?.checked || false
+                    noBranding: document.getElementById('noBranding')?.checked || false,
+                    noHeaders: document.getElementById('noHeadersCheck')?.checked || false
                 };
 
                 const resp = await fetch('/api/create', {
@@ -716,27 +725,36 @@ Bob     25     LA"></textarea>
                     }
                     status.innerHTML = '<span style="color: #d00;">' + (result.error || 'Failed') + '</span>';
                     btn.disabled = false;
-                    btn.textContent = 'Generate Link';
+                    btn.textContent = 'Generate Table';
                     return;
-                }
-
-                try {
-                    await navigator.clipboard.writeText(result.url);
-                    status.innerHTML = '✅ <a href="' + result.url + '" target="_blank" style="color: var(--accent-color); font-weight: 700;">' + result.url + '</a> — copied to clipboard!';
-                } catch (clipErr) {
-                    status.innerHTML = '✅ <a href="' + result.url + '" target="_blank" style="color: var(--accent-color); font-weight: 700;">' + result.url + '</a>';
                 }
 
                 const id = result.url.split('/').pop();
                 addToHistory(id, result.url, text.substring(0, 50));
 
-                btn.textContent = 'Generate Link';
-                btn.disabled = false;
+                // Attempt clipboard write, then redirect with brief confirmation
+                let copied = false;
+                try {
+                    await navigator.clipboard.writeText(result.url);
+                    copied = true;
+                } catch (clipErr) {
+                    // Clipboard failed silently - user can copy from address bar
+                }
+
+                status.innerHTML = copied
+                    ? '✅ Link copied! Opening table...'
+                    : '✅ Table created! Opening...';
+
+                // Brief delay so user sees confirmation before redirect
+                setTimeout(() => {
+                    window.location.href = result.url;
+                }, 800);
+                return;
 
             } catch (error) {
                 status.innerHTML = '<span style="color: #d00;">Error: ' + error.message + '</span>';
                 btn.disabled = false;
-                btn.textContent = currentMode === 'url' ? 'Fetch & Create Table' : 'Generate Link';
+                btn.textContent = currentMode === 'url' ? 'Fetch & Create Table' : 'Generate Table';
             }
         });
 
@@ -857,55 +875,44 @@ Bob     25     LA"></textarea>
           }
         }
 
-        // ===== URL FETCH MODE =====
-        const modePaste = document.getElementById('modePaste');
-        const modeUrl = document.getElementById('modeUrl');
-        const pasteContainer = document.getElementById('pasteContainer');
-        const urlContainer = document.getElementById('urlContainer');
-        const urlInput = document.getElementById('urlInput');
-        const urlProBanner = document.getElementById('urlProBanner');
-        let currentMode = 'paste';
+        // Event Listeners
+        document.getElementById('clear-history-btn')?.addEventListener('click', clearHistory);
+        document.getElementById('export-history-btn')?.addEventListener('click', exportHistory);
 
-        function switchMode(mode) {
-            currentMode = mode;
-            // Toggle active states
-            modePaste.classList.toggle('active', mode === 'paste');
-            modeUrl.classList.toggle('active', mode === 'url');
-            pasteContainer.classList.toggle('active', mode === 'paste');
-            urlContainer.classList.toggle('active', mode === 'url');
-
-            // Show/hide containers
-            pasteContainer.style.display = mode === 'paste' ? 'block' : 'none';
-            urlContainer.style.display = mode === 'url' ? 'block' : 'none';
-
-            // Check Pro status for URL mode
-            if (mode === 'url') {
-                const savedKey = localStorage.getItem('proApiKey');
-                urlProBanner.style.display = savedKey ? 'none' : 'block';
-                // Show the generate button if URL has content
-                const btn = document.getElementById('generateBtn');
-                if (urlInput.value.trim()) {
-                    btn.style.display = 'block';
+        // URL mode toggle handler
+        if (urlModeToggle) {
+            urlModeToggle.addEventListener('change', function() {
+                if (this.checked) {
+                    urlContainer.style.display = 'block';
+                    pasteContainer.style.display = 'none';
+                    currentMode = 'url';
+                    document.getElementById('generateBtn').textContent = 'Fetch & Create Table';
+                    // Show banner if not Pro
+                    const key = localStorage.getItem('proApiKey') || '';
+                    const isPro = key.startsWith('ts_live_') && key.length >= 28;
+                    urlProBanner.style.display = isPro ? 'none' : 'block';
+                    // Show generate button if URL has content
+                    if (urlInput.value.trim()) {
+                        document.getElementById('generateBtn').style.display = 'block';
+                    }
+                } else {
+                    urlContainer.style.display = 'none';
+                    pasteContainer.style.display = 'block';
+                    currentMode = 'paste';
+                    document.getElementById('generateBtn').textContent = 'Generate Table';
+                    // Show generate button if paste has content
+                    if (document.getElementById('pasteBox').value.trim()) {
+                        document.getElementById('generateBtn').style.display = 'block';
+                    }
                 }
-            }
-
-            // Update button text
-            const btn = document.getElementById('generateBtn');
-            btn.textContent = mode === 'url' ? 'Fetch & Create Table' : 'Generate Link';
+            });
         }
-
-        modePaste.addEventListener('click', () => switchMode('paste'));
-        modeUrl.addEventListener('click', () => switchMode('url'));
 
         // Show generate button when URL is typed
         urlInput.addEventListener('input', function() {
             const btn = document.getElementById('generateBtn');
             btn.style.display = this.value.trim() ? 'block' : 'none';
         });
-
-        // Event Listeners
-        document.getElementById('clear-history-btn')?.addEventListener('click', clearHistory);
-        document.getElementById('export-history-btn')?.addEventListener('click', exportHistory);
 
         // Toggle history visibility
         let historyExpanded = true;
@@ -920,18 +927,27 @@ Bob     25     LA"></textarea>
         // Initial render
         renderHistory();
 
-        // Fetch and display stats
+        // Fetch and display stats — hidden by default, revealed only on success with a real number.
+        // 3s timeout; silent fail; threshold avoids the "3 tables shared" optics.
         (async function() {
+            const MIN_THRESHOLD = 50;
+            const TIMEOUT_MS = 3000;
+            const statsLine = document.getElementById('statsLine');
+            if (!statsLine) return;
+            const controller = new AbortController();
+            const timeoutId = setTimeout(() => controller.abort(), TIMEOUT_MS);
             try {
-                const response = await fetch('/api/stats');
-                if (response.ok) {
-                    const data = await response.json();
-                    document.getElementById('tableCount').textContent = data.total.toLocaleString();
-                } else {
-                    document.getElementById('statsLine').style.display = 'none';
-                }
+                const response = await fetch('/api/stats', { signal: controller.signal });
+                clearTimeout(timeoutId);
+                if (!response.ok) return;
+                const data = await response.json();
+                const total = parseInt(data && data.total, 10);
+                if (isNaN(total) || total < MIN_THRESHOLD) return;
+                document.getElementById('tableCount').textContent = total.toLocaleString();
+                statsLine.style.display = 'block';
             } catch (e) {
-                document.getElementById('statsLine').style.display = 'none';
+                clearTimeout(timeoutId);
+                /* silent — stays hidden */
             }
         })();
     </script>
