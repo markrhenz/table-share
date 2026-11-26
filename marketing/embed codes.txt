@@ -1,0 +1,16 @@
+PRODUCT HUNT:
+<a href="https://www.producthunt.com/products/table-share/reviews/new?utm_source=badge-product_review&utm_medium=badge&utm_source=badge-table&#0045;share" target="_blank"><img src="https://api.producthunt.com/widgets/embed-image/v1/product_review.svg?product_id=1120544&theme=light" alt="Table&#0032;Share - Share&#0032;tables&#0032;in&#0032;5&#0032;seconds&#0046;&#0032;No&#0032;signup&#0046;&#0032;Paste&#0032;to&#0032;link&#0046; | Product Hunt" style="width: 250px; height: 54px;" width="250" height="54" /></a>
+
+
+Peerlist:
+<a href="https://peerlist.io/markrhenz/project/table-share" target="_blank" rel="noreferrer">
+				<img
+					src="https://peerlist.io/api/v1/projects/embed/PRJHP6LG8NNOKJ6PLCRJGGPOEQE8NK?showUpvote=false&theme=light"
+					alt="Table Share"
+					style="width: auto; height: 72px;"
+				/>
+			</a>
+
+
+SaaSHub:
+<a href='https://www.saashub.com/table-share-org?utm_source=badge&utm_campaign=badge&utm_content=table-share-org&badge_variant=color&badge_kind=approved' target='_blank'><img src="https://cdn-b.saashub.com/img/badges/approved-color.png?v=1" alt="Table-Share.org badge" style="max-width: 150px;"/></a>

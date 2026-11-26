@@ -10,12 +10,12 @@ const BASE62_CHARS = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ012345
 export function generateId() {
   const bytes = new Uint8Array(8);
   crypto.getRandomValues(bytes);
-  
+
   let id = '';
   for (let i = 0; i < 8; i++) {
     id += BASE62_CHARS[bytes[i] % 62];
   }
-  
+
   return id;
 }
 
@@ -28,20 +28,20 @@ export function generateId() {
  */
 export async function generateUniqueId(kvNamespace) {
   const MAX_ATTEMPTS = 3;
-  
+
   for (let attempt = 1; attempt <= MAX_ATTEMPTS; attempt++) {
     const id = generateId();
-    
+
     // Check if ID already exists in KV
     const exists = await kvNamespace.get(id);
-    
+
     if (!exists) {
       return id;
     }
-    
+
     // Log collision (rare but possible)
     console.warn(`ID collision on attempt ${attempt}/${MAX_ATTEMPTS}: ${id}`);
   }
-  
+
   throw new Error(`Failed to generate unique ID after ${MAX_ATTEMPTS} attempts`);
 }

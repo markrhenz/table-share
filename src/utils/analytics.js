@@ -1,11 +1,21 @@
 /**
- * Increment a daily analytics counter
- * Also bumps the lifetime total counter for that metric (single-key, O(1) reads).
+ * Increment a daily analytics counter.
+ *
+ * KV WRITE COST: 1 write, plus 1 more if bumpLifetime is true. The Workers free
+ * plan allows 1,000 KV writes/day total, so every call here is charged against
+ * the same budget that table creation needs. Only bump the lifetime counter for
+ * metrics something actually READS — right now that is 'tables_created' only
+ * (see handleStats). Lifetime counters for table_views / pro_tables / url_fetched
+ * were write-only dead weight.
+ *
  * @param {KVNamespace} kv - Cloudflare KV namespace
- * @param {string} metric - Metric name (e.g., 'tables_created', 'views', 'pro_conversions')
+ * @param {string} metric - Metric name (e.g., 'tables_created', 'table_views')
+ * @param {Object} [options]
+ * @param {boolean} [options.bumpLifetime=true] - Also bump stats:lifetime:{metric}
  * @returns {Promise<number>} Updated daily count
  */
-export async function incrementMetric(kv, metric) {
+export async function incrementMetric(kv, metric, options = {}) {
+  const { bumpLifetime = true } = options;
   const today = new Date().toISOString().split('T')[0]; // YYYY-MM-DD format
   const key = `stats:${metric}:${today}`;
 
@@ -18,9 +28,23 @@ export async function incrementMetric(kv, metric) {
     const newCount = count + 1;
     await kv.put(key, String(newCount), { expirationTtl: 2592000 }); // 30 days
 
-    // Also bump lifetime counter (single key, no TTL) — fire-and-forget so a failure
-    // here never blocks the user flow. Used by /api/stats for fast homepage display.
-    incrementLifetimeTotal(kv, metric).catch(() => { /* swallow */ });
+    // Bump the lifetime counter. MUST be awaited.
+    //
+    // This was previously fire-and-forget:
+    //     incrementLifetimeTotal(kv, metric).catch(() => {});
+    // Cloudflare Workers cancels pending async work as soon as the response is
+    // returned, so the get+put never completed and stats:lifetime:tables_created
+    // never incremented in production — it sat frozen at whatever the one-time
+    // backfill wrote. Confirmed live 2026-09-06: 4 creates moved the daily counter
+    // 220->224 while lifetime stayed at 220 across a 95s propagation window.
+    //
+    // ctx.waitUntil() would be the lower-latency fix, but handleCreate never
+    // receives ctx (index.js doesn't thread it), so await is the honest option.
+    // incrementLifetimeTotal has its own try/catch and cannot throw, and the
+    // daily put above has already succeeded by this point.
+    if (bumpLifetime) {
+      await incrementLifetimeTotal(kv, metric);
+    }
 
     return newCount;
   } catch (error) {

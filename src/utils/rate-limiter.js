@@ -3,7 +3,7 @@
  * Key format: 'rate-limit:{ip}:{minute}'
  * @param {string} ip - Client IP address
  * @returns {string} KV key for rate limiting
- * @example getRateLimitKey('192.168.1.1') 
+ * @example getRateLimitKey('192.168.1.1')
  * // Returns: 'rate-limit:192.168.1.1:29847123'
  */
 export function getRateLimitKey(ip) {
@@ -19,13 +19,13 @@ export function getRateLimitKey(ip) {
  */
 export function isWhitelisted(ip) {
   if (!ip) return true; // Allow if no IP (development)
-  
+
   const whitelist = [
     '127.0.0.1',     // IPv4 localhost
     '::1',           // IPv6 localhost
     'localhost'
   ];
-  
+
   return whitelist.includes(ip);
 }
 
@@ -42,28 +42,28 @@ export async function checkRateLimit(kvNamespace, ip, maxRequests = 5) {
   if (isWhitelisted(ip)) {
     return { allowed: true, remaining: maxRequests };
   }
-  
+
   try {
     const key = getRateLimitKey(ip);
-    
+
     // Get current count from KV
     const countStr = await kvNamespace.get(key);
     const count = countStr ? parseInt(countStr, 10) : 0;
-    
+
     // Check if limit exceeded
     if (count >= maxRequests) {
       return { allowed: false, remaining: 0 };
     }
-    
+
     // Increment counter with 60-second expiration
     const newCount = count + 1;
     await kvNamespace.put(key, String(newCount), { expirationTtl: 60 });
-    
-    return { 
-      allowed: true, 
-      remaining: maxRequests - newCount 
+
+    return {
+      allowed: true,
+      remaining: maxRequests - newCount
     };
-    
+
   } catch (error) {
     // Fail open - allow request if KV operation fails
     console.error('Rate limit check failed:', error);

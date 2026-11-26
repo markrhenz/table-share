@@ -16,14 +16,18 @@ export default [
         FormData: 'readonly',
         crypto: 'readonly',
         console: 'readonly',
+        TextEncoder: 'readonly',
+        TextDecoder: 'readonly',
+        addEventListener: 'readonly',
+        setTimeout: 'readonly',
+        clearTimeout: 'readonly',
         // Browser globals (for inline scripts)
         document: 'readonly',
         window: 'readonly',
         localStorage: 'readonly',
         navigator: 'readonly',
         alert: 'readonly',
-        confirm: 'readonly',
-        setTimeout: 'readonly'
+        confirm: 'readonly'
       }
     },
     rules: {

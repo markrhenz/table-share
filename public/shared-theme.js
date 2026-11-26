@@ -10,7 +10,7 @@
     const ThemeManager = {
         // Get current theme from localStorage or system preference
         getCurrentTheme() {
-            const saved = localStorage.getItem('table-share-theme');
+            const saved = localStorage.getItem('theme');
             if (saved) {
                 return saved;
             }
@@ -22,7 +22,7 @@
         // Apply theme to document
         applyTheme(theme) {
             document.documentElement.setAttribute('data-theme', theme);
-            localStorage.setItem('table-share-theme', theme);
+            localStorage.setItem('theme', theme);
             
             // Update toggle icon
             const icon = document.querySelector('.theme-icon');
@@ -58,7 +58,7 @@
             const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
             mediaQuery.addEventListener('change', (e) => {
                 // Only auto-update if user hasn't manually set a preference
-                const saved = localStorage.getItem('table-share-theme');
+                const saved = localStorage.getItem('theme');
                 if (!saved) {
                     this.applyTheme(e.matches ? 'dark' : 'light');
                 }

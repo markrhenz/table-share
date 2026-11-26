@@ -199,6 +199,9 @@ export const INDEX_HTML = `<!DOCTYPE html>
             <p style="font-size: 14px; color: var(--muted-color); margin-top: 16px; display: none;" id="statsLine">
                 <span id="tableCount" style="font-weight: 700;"></span> tables shared
             </p>
+            <p style="font-size: 13px; color: var(--muted-color); margin-top: 12px;">
+                As featured on <a href="https://www.producthunt.com/products/table-share" target="_blank" rel="noopener" style="color: var(--accent-color); font-weight: 600;">Product Hunt</a>
+            </p>
         </header>
         <main id="main">
             <!-- Honeypot field for bot detection (invisible to humans) -->
@@ -442,7 +445,7 @@ Bob     25     LA"></textarea>
             </section>
         </main>
         <footer>
-            <p>&copy; 2025 Table Share | <a href="/blog">Blog</a> | <a href="/pricing">Pricing</a> | <a href="mailto:markrhenz@table-share.org">Contact</a> | <a href="/terms">Terms</a> | <a href="/privacy">Privacy</a></p>
+            <p>&copy; 2026 Table Share | <a href="/blog">Blog</a> | <a href="/pricing">Pricing</a> | <a href="mailto:markrhenz@table-share.org">Contact</a> | <a href="/terms">Terms</a> | <a href="/privacy">Privacy</a></p>
         </footer>
     </div>
     <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
@@ -563,7 +566,38 @@ Bob     25     LA"></textarea>
         const pasteBox = document.getElementById('pasteBox');
         const generateBtn = document.getElementById('generateBtn');
         const status = document.getElementById('status');
-        pasteBox.addEventListener('paste', () => {
+        let warnedPasteValue = null;
+
+        function extractClipboardTable(html) {
+            if (!html) return null;
+
+            const parsedDocument = new DOMParser().parseFromString(html, 'text/html');
+            const table = parsedDocument.querySelector('table');
+            if (!table) return null;
+
+            const rows = Array.from(table.rows).map(row =>
+                Array.from(row.cells).map(cell => cell.textContent.trim())
+            ).filter(row => row.length > 0);
+
+            return rows.length > 0 ? rows : null;
+        }
+
+        pasteBox.addEventListener('paste', (event) => {
+            const html = event.clipboardData?.getData('text/html') || '';
+            const clipboardTable = extractClipboardTable(html);
+
+            if (clipboardTable) {
+                event.preventDefault();
+                pasteBox.value = Papa.unparse(clipboardTable, {
+                    delimiter: '\\t',
+                    newline: '\\n'
+                });
+                pasteBox.dispatchEvent(new Event('input', { bubbles: true }));
+                status.textContent = 'Table detected: ' + clipboardTable.length + ' rows × ' +
+                    Math.max(...clipboardTable.map(row => row.length)) + ' columns.';
+                return;
+            }
+
             setTimeout(() => {
                 if (currentMode === 'paste' && pasteBox.value.trim()) {
                     generateBtn.style.display = 'block';
@@ -573,6 +607,7 @@ Bob     25     LA"></textarea>
             }, 100);
         });
         pasteBox.addEventListener('input', () => {
+            warnedPasteValue = null;
             if (currentMode === 'paste') {
                 if (pasteBox.value.trim()) {
                     generateBtn.style.display = 'block';
@@ -700,6 +735,45 @@ Bob     25     LA"></textarea>
                     return;
                 }
 
+                const parsedRowWidths = parsed.data.map(row => row.length);
+                const narrowestRow = Math.min(...parsedRowWidths);
+                const widestParsedRow = Math.max(...parsedRowWidths);
+                if (narrowestRow !== widestParsedRow && warnedPasteValue !== text) {
+                    warnedPasteValue = text;
+                    status.innerHTML = '<span style="color: #d00;">Inconsistent columns detected (' + narrowestRow +
+                        '–' + widestParsedRow + '). This may be plain text rather than a table. Paste directly from Excel or Google Sheets, or click Generate Anyway.</span>';
+                    btn.disabled = false;
+                    btn.textContent = 'Generate Anyway';
+                    return;
+                }
+
+                // Client-side tier-aware pre-validation (UX only — the server is the enforcement layer).
+                // Mirrors TIER_LIMITS in src/utils/sanitizer.js: free 500x50, pro 5000x100.
+                const hasProKey = apiKey.startsWith('ts_live_') && apiKey.length >= 28;
+                const clientLimits = hasProKey
+                    ? { maxRows: 5000, maxCols: 100, label: 'Pro' }
+                    : { maxRows: 500, maxCols: 50, label: 'Free' };
+
+                if (parsed.data.length > clientLimits.maxRows) {
+                    status.innerHTML = '<span style="color: #d00;">Too many rows: ' + parsed.data.length +
+                        ' (max ' + clientLimits.maxRows + ' on ' + clientLimits.label + ' tier).' +
+                        (hasProKey ? '' : ' <a href="/pricing" style="color: var(--accent-color);">Get Pro →</a>') + '</span>';
+                    btn.disabled = false;
+                    btn.textContent = 'Generate Table';
+                    return;
+                }
+
+                const widestRow = widestParsedRow;
+                if (widestRow > clientLimits.maxCols) {
+                    status.innerHTML = '<span style="color: #d00;">Too many columns: ' + widestRow +
+                        ' (max ' + clientLimits.maxCols + ' on ' + clientLimits.label + ' tier).' +
+                        (hasProKey ? '' : ' <a href="/pricing" style="color: var(--accent-color);">Get Pro →</a>') + '</span>';
+                    btn.disabled = false;
+                    btn.textContent = 'Generate Table';
+                    return;
+                }
+
+                const _q = new URLSearchParams(location.search);
                 const payload = {
                     data: parsed.data,
                     title: titleVal,
@@ -708,7 +782,9 @@ Bob     25     LA"></textarea>
                     password: passwordVal || undefined,
                     expiry: document.getElementById('expirySelect')?.value || undefined,
                     noBranding: document.getElementById('noBranding')?.checked || false,
-                    noHeaders: document.getElementById('noHeadersCheck')?.checked || false
+                    noHeaders: document.getElementById('noHeadersCheck')?.checked || false,
+                    src: _q.get('s') || undefined,
+                    utm: _q.get('utm_source') || undefined
                 };
 
                 const resp = await fetch('/api/create', {
@@ -724,6 +800,11 @@ Bob     25     LA"></textarea>
                         document.getElementById('upgradeModal').style.display = 'flex';
                     }
                     status.innerHTML = '<span style="color: #d00;">' + (result.error || 'Failed') + '</span>';
+                    // If we sent a Pro-format key but the server applied FREE limits, the key
+                    // was rejected server-side (revoked, expired, or never issued).
+                    if (hasProKey && result.error && (result.error.includes('max 50)') || result.error.includes('max 500)'))) {
+                        status.innerHTML += '<br><span style="color: #d00;">Your Pro key was not accepted by the server — it may be revoked, expired, or mistyped. <a href="/recover" style="color: var(--accent-color);">Recover your key</a></span>';
+                    }
                     btn.disabled = false;
                     btn.textContent = 'Generate Table';
                     return;
@@ -761,6 +842,18 @@ Bob     25     LA"></textarea>
         // History Management
         const HISTORY_KEY = 'table-share-history';
         const MAX_HISTORY = 50;
+
+        // HTML-escape for anything rendered via innerHTML below.
+        // History entries are built CLIENT-SIDE from the raw textarea contents and
+        // stored in localStorage, so they never pass through the server's
+        // sanitizeCell/escapeHtml. Without this, pasting <svg onload=eval(name)>
+        // (23 chars, fits the 50-char preview) gives persistent arbitrary code
+        // execution on every homepage load, on the same origin that holds
+        // localStorage.proApiKey. Escape on OUTPUT; keep localStorage raw.
+        function escHistory(s) {
+          const map = { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' };
+          return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) { return map[c]; });
+        }
 
         function addToHistory(id, url, previewText) {
           try {
@@ -855,16 +948,16 @@ Bob     25     LA"></textarea>
 
           section.style.display = 'block';
 
-          list.innerHTML = history.map(entry => 
+          list.innerHTML = history.map(entry =>
             '<div style="margin-bottom: 12px; padding-bottom: 12px; border-bottom: 1px solid var(--border-color);">' +
               '<div style="font-size: 13px; color: var(--text); margin-bottom: 4px;">' +
-                entry.preview +
+                escHistory(entry.preview) +
               '</div>' +
               '<div style="font-size: 11px; opacity: 0.7;">' +
-                '<a href="' + entry.url + '" target="_blank" style="color: var(--text); text-decoration: underline;">' +
-                  entry.url +
+                '<a href="' + escHistory(entry.url) + '" target="_blank" style="color: var(--text); text-decoration: underline;">' +
+                  escHistory(entry.url) +
                 '</a>' +
-                '<span style="margin-left: 10px;">' + getRelativeTime(entry.created) + '</span>' +
+                '<span style="margin-left: 10px;">' + escHistory(getRelativeTime(entry.created)) + '</span>' +
               '</div>' +
             '</div>'
           ).join('');

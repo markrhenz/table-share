@@ -41,3 +41,6 @@ audit-output/
 captured-homepage.html
 PR_VALIDATION_REPORT.json
 PROJECT_STATE.md
+
+# Local run results (contain admin data, never commit)
+local-status/

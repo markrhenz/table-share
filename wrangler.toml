@@ -11,7 +11,19 @@ directory = "./public"
 binding = "TABLES"
 id = "a3ac01d322fa4914940675f437dafef0"
 
+# Phase 0 measurement backbone — Analytics Engine (zero KV-write cost).
+[[analytics_engine_datasets]]
+binding = "AE"
+dataset = "table_share_events"
+
+# SECURITY (2026-07): OWNER_KEY removed from [vars] — it was plaintext in git history and is
+# considered compromised. It now lives as a Workers secret (same env.OWNER_KEY binding, zero code changes):
+#   wrangler secret put OWNER_KEY     <- paste a NEW rotated key, never reuse the old one
+
 # Environment variables are now stored as Cloudflare Workers secrets
 # Use: wrangler secret put ADMIN_KEY
-# Use: wrangler secret put RESEND_API_KEY  # Email delivery via Resend (not SendGrid)
+# Use: wrangler secret put SENDGRID_API_KEY  # Actually Resend API key (legacy name)
 # Use: wrangler secret put KOFI_TOKEN
+# Admin funnel readout (/api/admin/funnel) needs these two:
+# Use: wrangler secret put CF_ACCOUNT_ID   # your Cloudflare account id
+# Use: wrangler secret put AE_SQL_TOKEN    # API token w/ Account Analytics:Read

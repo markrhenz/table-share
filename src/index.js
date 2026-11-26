@@ -4,11 +4,13 @@ import { handleView } from './handlers/view.js';
 import { handleKofiWebhook } from './handlers/kofi-webhook.js';
 import { handleAnalytics, handleStats } from './handlers/analytics.js';
 import { handleFetchURL } from './handlers/fetch-url.js';
+import { handleAdminPendingEmails, handleAdminListKeys, handleAdminRevokeKey, handleAdminFunnel } from './handlers/admin.js';
+import { handleRecoverKey } from './handlers/recover-key.js';
 
 // Template imports (barrel file)
 import { INDEX_HTML, TERMS_HTML, PRIVACY_HTML, PRICING_HTML, SITEMAP_XML, ROBOTS_TXT,
   BLOG_INDEX_HTML, BLOG_EXCEL_HTML, BLOG_SQL_HTML, BLOG_SHEETS_HTML, BLOG_CSV_HTML,
-  BLOG_PASTEBIN_HTML } from './templates/index.js';
+  BLOG_PASTEBIN_HTML, DOCS_HTML, RECOVER_HTML } from './templates/index.js';
 
 // Security headers import
 import { corsHeaders } from './utils/headers.js';
@@ -34,6 +36,8 @@ const STATIC_ROUTES = {
   '/blog/google-sheets-alternatives': { html: BLOG_SHEETS_HTML },
   '/blog/share-csv-online': { html: BLOG_CSV_HTML },
   '/blog/pastebin-for-tables': { html: BLOG_PASTEBIN_HTML },
+  '/docs': { html: DOCS_HTML, cache: 'public, max-age=300, s-maxage=3600' },
+  '/recover': { html: RECOVER_HTML, cache: 'public, max-age=300, s-maxage=3600' },
 };
 
 const NOT_FOUND_HTML = `<!DOCTYPE html>
@@ -78,9 +82,11 @@ export default {
         return new Response(null, { status: 204, headers: corsHeaders });
       }
 
-      // Trailing slash redirect (except for root)
+      // Trailing slash redirect (except for root).
+      // url.search MUST be preserved: /t/{id}/?s= and /pricing/?utm= carry the
+      // loop/seed attribution params. Dropping them scores the create as 'direct'.
       if (pathname !== '/' && pathname.endsWith('/')) {
-        return Response.redirect(url.origin + pathname.slice(0, -1), 301);
+        return Response.redirect(url.origin + pathname.slice(0, -1) + url.search, 301);
       }
 
       // Static route lookup
@@ -148,6 +154,25 @@ export default {
       // /api/kofi-webhook POST
       if (pathname === '/api/kofi-webhook' && request.method === 'POST') {
         return await handleKofiWebhook(request, env);
+      }
+
+      // Admin endpoints (gated by ADMIN_KEY secret)
+      if (pathname === '/api/admin/pending-emails' && request.method === 'GET') {
+        return await handleAdminPendingEmails(request, env, url);
+      }
+      if (pathname === '/api/admin/keys' && request.method === 'GET') {
+        return await handleAdminListKeys(request, env, url);
+      }
+      if (pathname === '/api/admin/revoke' && request.method === 'POST') {
+        return await handleAdminRevokeKey(request, env, url);
+      }
+      if (pathname === '/api/admin/funnel' && request.method === 'GET') {
+        return await handleAdminFunnel(request, env, url);
+      }
+
+      // /api/recover POST — public key recovery form
+      if (pathname === '/api/recover' && request.method === 'POST') {
+        return await handleRecoverKey(request, env);
       }
 
       // 404 Not Found

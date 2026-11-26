@@ -1,0 +1,15 @@
+// Barrel export for all templates
+export { INDEX_HTML } from './homepage.js';
+export { TERMS_HTML } from './terms.js';
+export { PRIVACY_HTML } from './privacy.js';
+export { PRICING_HTML } from './pricing.js';
+export { SITEMAP_XML } from './sitemap.js';
+export { ROBOTS_TXT } from './robots.js';
+export { BLOG_INDEX_HTML } from './blog-index.js';
+export { BLOG_EXCEL_HTML } from './blog-excel.js';
+export { BLOG_SQL_HTML } from './blog-sql.js';
+export { BLOG_SHEETS_HTML } from './blog-sheets.js';
+export { BLOG_CSV_HTML } from './blog-csv.js';
+export { BLOG_PASTEBIN_HTML } from './blog-pastebin.js';
+export { DOCS_HTML } from './docs.js';
+export { RECOVER_HTML } from './recover.js';

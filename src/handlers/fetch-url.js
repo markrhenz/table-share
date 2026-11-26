@@ -2,9 +2,10 @@ import { jsonResponse } from '../utils/headers.js';
 import { validateApiKey } from '../utils/api-key.js';
 import { validateURL } from '../utils/url-validator.js';
 import { checkRateLimit } from '../utils/rate-limiter.js';
-import { validateInput, sanitizeCell, detectMaliciousContent, escapeHtml } from '../utils/sanitizer.js';
+import { validateInput, sanitizeCell, detectMaliciousContent, escapeHtml, TIER_LIMITS } from '../utils/sanitizer.js';
 import { generateUniqueId } from '../utils/id-generator.js';
 import { incrementMetric } from '../utils/analytics.js';
+import { hashPassword } from '../utils/password.js';
 
 export async function handleFetchURL(request, env) {
   try {
@@ -12,15 +13,15 @@ export async function handleFetchURL(request, env) {
     const ip = request.headers.get('CF-Connecting-IP') || '127.0.0.1';
 
     // Step 2 - Parse request body with try/catch
-    let url, apiKey, title, password, expiry, noBranding;
+    let url, apiKey, title, password, expiry, noBranding, noHeaders;
     try {
-      ({ url, apiKey, title, password, expiry, noBranding } = await request.json());
+      ({ url, apiKey, title, password, expiry, noBranding, noHeaders } = await request.json());
     } catch (parseError) {
       return jsonResponse({ error: 'Invalid request body' }, 400);
     }
 
     // Step 3 - Validate API key (PRO GATE)
-    const { valid: isProUser, tier } = await validateApiKey(apiKey, env.TABLES);
+    const { valid: isProUser, tier } = await validateApiKey(apiKey, env.TABLES, env);
     if (tier !== 'pro' && tier !== 'owner') {
       return jsonResponse({ error: 'URL fetching requires a Pro API key', upgradeUrl: '/pricing' }, 403);
     }
@@ -113,49 +114,83 @@ export async function handleFetchURL(request, env) {
       }
     }
 
-    // Step 9 - Parse CSV server-side. Since we don't have PapaParse on the backend, do a simple split
+    // Step 9 - Parse CSV server-side with RFC 4180 compliant parser
     function parseCSV(text) {
-      const lines = text.split(/\r?\n/).filter(l => l.trim().length > 0);
-      if (lines.length === 0) return [];
+      if (!text || text.trim().length === 0) return [];
 
-      // Detect delimiter from first line
-      const firstLine = lines[0];
+      // Detect delimiter from first line (scan up to first newline outside quotes)
+      let firstLine = '';
+      let inQ = false;
+      for (let i = 0; i < text.length && i < 10000; i++) {
+        if (text[i] === '"') inQ = !inQ;
+        if (!inQ && (text[i] === '\n' || text[i] === '\r')) break;
+        firstLine += text[i];
+      }
       const tabCount = (firstLine.match(/\t/g) || []).length;
       const commaCount = (firstLine.match(/,/g) || []).length;
       const delimiter = tabCount >= commaCount ? '\t' : ',';
 
-      return lines.map(line => {
-        const cells = [];
-        let current = '';
-        let inQuotes = false;
+      // Parse character by character, respecting quotes
+      const rows = [];
+      let row = [];
+      let cell = '';
+      let inQuotes = false;
+      let i = 0;
 
-        for (let i = 0; i < line.length; i++) {
-          const char = line[i];
-          if (inQuotes) {
-            if (char === '"') {
-              if (i + 1 < line.length && line[i + 1] === '"') {
-                current += '"';
-                i++;
-              } else {
-                inQuotes = false;
-              }
+      while (i < text.length) {
+        const char = text[i];
+
+        if (inQuotes) {
+          if (char === '"') {
+            if (i + 1 < text.length && text[i + 1] === '"') {
+              cell += '"';
+              i += 2;
+              continue;
             } else {
-              current += char;
+              inQuotes = false;
+              i++;
+              continue;
             }
           } else {
-            if (char === '"') {
-              inQuotes = true;
-            } else if (char === delimiter) {
-              cells.push(current);
-              current = '';
-            } else {
-              current += char;
-            }
+            cell += char;
+            i++;
+            continue;
           }
         }
-        cells.push(current);
-        return cells;
-      });
+
+        // Not in quotes
+        if (char === '"') {
+          inQuotes = true;
+          i++;
+        } else if (char === delimiter) {
+          row.push(cell);
+          cell = '';
+          i++;
+        } else if (char === '\r') {
+          // Handle \r\n and \r
+          row.push(cell);
+          cell = '';
+          if (row.some(c => c.trim().length > 0)) rows.push(row);
+          row = [];
+          if (i + 1 < text.length && text[i + 1] === '\n') i++;
+          i++;
+        } else if (char === '\n') {
+          row.push(cell);
+          cell = '';
+          if (row.some(c => c.trim().length > 0)) rows.push(row);
+          row = [];
+          i++;
+        } else {
+          cell += char;
+          i++;
+        }
+      }
+
+      // Last cell/row
+      row.push(cell);
+      if (row.some(c => c.trim().length > 0)) rows.push(row);
+
+      return rows;
     }
 
     const parsedData = parseCSV(csvText);
@@ -166,35 +201,45 @@ export async function handleFetchURL(request, env) {
       return jsonResponse({ error: validation.error }, 400);
     }
 
-    // Step 11 - Sanitize all cells
-    const sanitizedData = parsedData.map(row => row.map(cell => sanitizeCell(cell)));
-
-    // Step 12 - Normalize rows to uniform length
-    const maxCols = Math.max(...sanitizedData.map(row => row.length));
-    sanitizedData.forEach(row => {
-      while (row.length < maxCols) row.push('');
-    });
-
-    // Step 13 - Check malicious content per cell
-    for (const row of sanitizedData) {
+    // Step 11 - Check malicious content on RAW parsed data FIRST
+    for (const row of parsedData) {
       for (const cell of row) {
-        if (detectMaliciousContent(cell)) {
+        if (detectMaliciousContent(String(cell || ''))) {
           return jsonResponse({ error: 'Invalid content detected' }, 400);
         }
       }
     }
 
-    // Step 14 - Handle optional password (same logic as create.js)
-    let passwordHash = null;
-    if (password && password.trim()) {
-      const encoder = new TextEncoder();
-      const pwData = encoder.encode(password.trim());
-      const hashBuffer = await crypto.subtle.digest('SHA-256', pwData);
-      const hashArray = Array.from(new Uint8Array(hashBuffer));
-      passwordHash = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+    // Step 12 - THEN sanitize all cells
+    const sanitizedData = parsedData.map(row => row.map(cell => sanitizeCell(cell)));
+
+    // Step 13 - Normalize rows to uniform length
+    const maxCols = Math.max(...sanitizedData.map(row => row.length));
+    sanitizedData.forEach(row => {
+      while (row.length < maxCols) row.push('');
+    });
+
+    // Step 14 - Post-sanitization size check
+    const sanitizedJsonSize = JSON.stringify(sanitizedData).length;
+    const limits = TIER_LIMITS[tier] || TIER_LIMITS.free;
+    if (sanitizedJsonSize > limits.maxSize) {
+      return jsonResponse({ error: 'Data too large after processing (max 5MB). Try fewer special characters or smaller dataset.' }, 400);
     }
 
-    // Step 15 - Handle expiry (same logic as create.js)
+    // Step 15 - Handle optional password. Uses the SAME PBKDF2 + per-table salt
+    // path as create.js. This previously used unsalted SHA-256, which silently
+    // downgraded every URL-fetch password to the legacy verify branch.
+    let passwordHash = null;
+    let passwordSalt = null;
+    let passwordKdf = null;
+    if (password && password.trim()) {
+      const hashed = await hashPassword(password.trim());
+      passwordHash = hashed.hash;
+      passwordSalt = hashed.salt;
+      passwordKdf = hashed.kdf;
+    }
+
+    // Step 16 - Handle expiry (same logic as create.js)
     const sanitizedTitle = title ? escapeHtml(title.trim().substring(0, 100)) : null;
     let finalExpiry = 7776000; // Default 90 days for Pro
     if (tier === 'owner') {
@@ -206,10 +251,10 @@ export async function handleFetchURL(request, env) {
       }
     }
 
-    // Step 16 - Generate ID and store
+    // Step 17 - Generate ID and store
     const id = await generateUniqueId(env.TABLES);
 
-    const tableData = {
+     const tableData = {
       data: sanitizedData,
       title: sanitizedTitle,
       createdAt: new Date().toISOString(),
@@ -217,24 +262,44 @@ export async function handleFetchURL(request, env) {
       rowCount: sanitizedData.length,
       colCount: maxCols,
       passwordHash: passwordHash,
-      noBranding: noBranding || false,
+      passwordSalt: passwordSalt,
+      passwordKdf: passwordKdf,
+      // Pro-gated for parity with create.js. This handler is already Pro-only,
+      // but keep the gate explicit so a future auth change can't leak the flag.
+      noBranding: (tier === 'pro' || tier === 'owner') ? (noBranding || false) : false,
+      noHeaders: noHeaders || false,
       tier: tier,
       source: 'url-fetch',
-      sourceUrl: url.trim().substring(0, 500)
+      // Store origin + path ONLY. Signed CSV endpoints routinely carry credentials
+      // in the query string (?token=, ?signature=, ?api_key=, ?X-Amz-Signature=),
+      // and the full URL was persisted into a table record with up to a 90-day TTL.
+      // The rendered page never needed the query string.
+      sourceUrl: (function () {
+        try {
+          const u = new URL(url.trim());
+          return (u.origin + u.pathname).substring(0, 500);
+        } catch {
+          return null;
+        }
+      })()
     };
 
     await env.TABLES.put(id, JSON.stringify(tableData), { expirationTtl: finalExpiry });
 
-    // Step 17 - Track analytics
+    // Step 18 - Track analytics.
+    // Only 'tables_created' has a lifetime reader (handleStats). The lifetime
+    // counters for url_fetched and pro_tables are written by nobody's reader, and
+    // since incrementMetric now AWAITS that write, leaving them on would cost
+    // 6 sequential KV writes per URL fetch against the 1,000/day free ceiling.
     try {
       await incrementMetric(env.TABLES, 'tables_created');
-      await incrementMetric(env.TABLES, 'url_fetched');
-      await incrementMetric(env.TABLES, 'pro_tables');
+      await incrementMetric(env.TABLES, 'url_fetched', { bumpLifetime: false });
+      await incrementMetric(env.TABLES, 'pro_tables', { bumpLifetime: false });
     } catch (e) {
       // fail silently
     }
 
-    // Step 18 - Return success
+    // Step 19 - Return success
     const resultUrl = new URL(request.url).origin + '/t/' + id;
     return jsonResponse({
       id,

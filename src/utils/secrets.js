@@ -16,20 +16,20 @@
  */
 export function getSecret(env, name, options = {}) {
   const { required = true, fallback = null, description = name } = options;
-  
+
   // Get value from environment
   const value = env[name];
-  
+
   // If value exists and is not empty, return it
   if (value && value.trim().length > 0) {
     return value.trim();
   }
-  
+
   // If not required and no fallback, return null
   if (!required && !fallback) {
     return null;
   }
-  
+
   // If fallback exists and is valid, return it
   if (fallback && fallback.trim().length > 0) {
     // Using fallback - acceptable for development
@@ -41,7 +41,7 @@ export function getSecret(env, name, options = {}) {
     const errorMsg = `Missing required environment variable: ${name}${description !== name ? ` (${description})` : ''}`;
     throw new Error(errorMsg);
   }
-  
+
   return null;
 }
 
@@ -55,22 +55,22 @@ export function getSecret(env, name, options = {}) {
 export function validateSecrets(env, secrets) {
   const results = {};
   const errors = [];
-  
+
   for (const secret of secrets) {
     try {
       const { name, options = {} } = secret;
       results[name] = getSecret(env, name, options);
     } catch (error) {
-      if (options.required !== false) {
+      if (secret.options?.required !== false) {
         errors.push(error.message);
       }
     }
   }
-  
+
   if (errors.length > 0) {
     throw new Error(`Environment validation failed:\n${errors.join('\n')}`);
   }
-  
+
   return results;
 }
 
