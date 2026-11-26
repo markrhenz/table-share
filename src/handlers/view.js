@@ -365,6 +365,7 @@ const VIEW_TEMPLATE = `<!DOCTYPE html>
     </a>
   </div>
   {{TITLE_SECTION}}
+  {{CREATOR_UPSELL}}
   <div class="action-bar">
     <span class="action-meta">{{ROW_COUNT}} row{{ROW_PLURAL}} &times; {{COL_COUNT}} col{{COL_PLURAL}}{{ACTION_BAR_EXPIRY}}</span>
     <div class="action-buttons">
@@ -401,6 +402,29 @@ const VIEW_TEMPLATE = `<!DOCTYPE html>
   {{/NO_BRANDING}}
 
   <script>
+    (function () {
+      try {
+        var box = document.getElementById('creatorUpsell');
+        if (!box) return;
+        if ((localStorage.getItem('proApiKey') || '').indexOf('ts_live_') === 0) return;
+        var hideUntil = parseInt(localStorage.getItem('ts_upsell_hide_until') || '0', 10);
+        if (hideUntil > Date.now()) return;
+        var tid = box.getAttribute('data-table');
+        var hist = JSON.parse(localStorage.getItem('table-share-history') || '[]');
+        var mine = Array.isArray(hist) && hist.some(function (h) { return h && h.id === tid; });
+        if (!mine) return;
+        var d = new Date(box.getAttribute('data-expires'));
+        var el = document.getElementById('upsellDate');
+        if (el && !isNaN(d.getTime())) {
+          el.textContent = d.toLocaleDateString(undefined, { weekday: 'short', month: 'short', day: 'numeric' });
+        }
+        box.style.display = 'block';
+        document.getElementById('upsellClose').addEventListener('click', function () {
+          box.style.display = 'none';
+          localStorage.setItem('ts_upsell_hide_until', String(Date.now() + 3 * 24 * 60 * 60 * 1000));
+        });
+      } catch (e) { /* never break the table page */ }
+    })();
     const themeToggle = document.getElementById('themeToggle');
     function applyTheme(theme) {
       document.documentElement.setAttribute('data-theme', theme);
@@ -613,7 +637,8 @@ export async function handleView(request, env, id) {
   <a href="/"><img src="/logo.png" width="64" height="64" alt="Table Share"></a>
   <h1 style="font-size: 36px; margin: 20px 0 10px;">Table Not Found</h1>
   <p style="font-size: 18px; color: var(--muted-color); margin-bottom: 8px;">This table doesn't exist or has expired.</p>
-  <p style="font-size: 14px; color: var(--muted-color);">Free tables expire after 7 days. Pro tables last 90 days.</p>
+  <p style="font-size: 14px; color: var(--muted-color);">Free links stop working after 7 days.</p>
+  <p style="font-size: 14px; color: var(--muted-color);">Shared this link yourself? Pro keeps links up to 90 days, with password protection, for $5 once. <a href="/pricing?utm_source=expired_page" style="text-decoration: underline;">Get Pro</a></p>
   <a href="/" class="btn">Share a New Table</a>
   <script>
     const s = localStorage.getItem('theme');
@@ -853,7 +878,23 @@ export async function handleView(request, env, id) {
     const ogTitle = title ? `${title} - Table Share` : 'Shared Table - Table Share';
     const ogDesc = `${rowCount} row${rowCount !== 1 ? 's' : ''} \u00D7 ${colCount} col${colCount !== 1 ? 's' : ''} \u00B7 View this table on Table Share \u2014 no signup needed.`;
 
+    // Creator upsell: rendered (hidden) only on free tables. Client script reveals it
+    // only to the browser that created this table (id is in its local history) and
+    // that has no Pro key saved. Recipients never see it.
+    const lifespanMs = expiryDate - new Date(createdAt);
+    const isFreeTable = !passwordHash && !noBranding && lifespanMs <= (7 * 24 + 1) * 60 * 60 * 1000;
+    const creatorUpsellHtml = isFreeTable ? `<div id="creatorUpsell" data-table="${id}" data-expires="${expiryDate.toISOString()}" style="display:none; border: 2px solid var(--border-color); padding: 14px 16px; margin: 0 0 16px 0; position: relative; font-size: 14px; line-height: 1.5;">
+    <button id="upsellClose" aria-label="Dismiss" style="position:absolute; top:6px; right:8px; background:transparent; border:none; color:var(--muted-color); font-size:18px; cursor:pointer;">&times;</button>
+    <strong>Your link is live.</strong> It stops working on <strong id="upsellDate">in 7 days</strong> (free links last 7 days).<br>
+    Need it to last longer? Pro keeps links up to <strong>90 days</strong>, adds <strong>password protection</strong>, removes branding, and handles <strong>5,000 rows</strong>. <strong>$5 once</strong>, no subscription.
+    <div style="margin-top: 10px; display:flex; gap:10px; flex-wrap:wrap;">
+      <a href="https://ko-fi.com/s/0a371a6316" target="_blank" rel="noopener" style="background: var(--accent-color); color:#fff; padding: 8px 18px; font-weight:600; text-decoration:none;">Get Pro - $5</a>
+      <a href="/pricing?utm_source=creator_banner" style="padding: 8px 4px; color: var(--accent-color); text-decoration: underline;">What's included</a>
+    </div>
+  </div>` : '';
+
     let html = VIEW_TEMPLATE
+      .replace(/{{CREATOR_UPSELL}}/g, () => creatorUpsellHtml)
       .replace(/{{PAGE_TITLE}}/g, () => pageTitle)
       .replace(/{{OG_TITLE}}/g, () => ogTitle)
       .replace(/{{OG_DESC}}/g, () => ogDesc)
